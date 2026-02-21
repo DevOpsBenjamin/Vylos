@@ -1,0 +1,201 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { EventRunner, type EventRunnerCallbacks } from '../../src/engine/core/EventRunner';
+import { EventManager } from '../../src/engine/managers/EventManager';
+import { HistoryManager } from '../../src/engine/managers/HistoryManager';
+import { NavigationManager } from '../../src/engine/managers/NavigationManager';
+import { SaveManager } from '../../src/engine/managers/SaveManager';
+import { SettingsManager } from '../../src/engine/managers/SettingsManager';
+import { VylosStorage } from '../../src/engine/storage/VylosStorage';
+import { Engine } from '../../src/engine/core/Engine';
+import type { VylosAPI, VylosEvent, BaseGameState } from '../../src/engine/types';
+import { createEngine, clearComponentOverrides, getComponentOverride } from '../../src/engine/core/EngineFactory';
+import type { VylosPlugin } from '../../src/engine/types';
+import { defineComponent } from 'vue';
+
+function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+  return {
+    locationId: 'cafe',
+    gameTime: 8,
+    flags: {},
+    counters: {},
+    player: { name: 'Alice' },
+    ...overrides,
+  };
+}
+
+function makeCallbacks(state?: BaseGameState): EventRunnerCallbacks & { state: BaseGameState } {
+  const s = state ?? makeState();
+  return {
+    state: s,
+    onSay: vi.fn(),
+    onChoice: vi.fn(),
+    onSetBackground: vi.fn(),
+    onSetForeground: vi.fn(),
+    onShowOverlay: vi.fn(),
+    onHideOverlay: vi.fn(),
+    onSetLocation: vi.fn(),
+    onClear: vi.fn(),
+    resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
+    getState: vi.fn(() => s),
+    setState: vi.fn((newState: BaseGameState) => { Object.assign(s, newState); }),
+  };
+}
+
+describe('Game loop integration', () => {
+  it('executes an event, locks it, and records history', async () => {
+    const callbacks = makeCallbacks();
+    const eventRunner = new EventRunner(callbacks);
+    const eventManager = new EventManager();
+    const historyManager = new HistoryManager();
+    const navigationManager = new NavigationManager();
+    const storage = new VylosStorage('test-loop-1');
+    await storage.open();
+    const saveManager = new SaveManager(storage);
+    const settingsManager = new SettingsManager(storage);
+
+    const engine = new Engine({
+      eventManager,
+      historyManager,
+      navigationManager,
+      eventRunner,
+      saveManager,
+      settingsManager,
+    });
+
+    const event: VylosEvent = {
+      id: 'intro',
+      async execute(api: VylosAPI) {
+        await api.say('Hello');
+        await api.say('World');
+      },
+    };
+
+    // Start engine in background
+    const runPromise = engine.run([event], callbacks.getState);
+
+    // Wait for first say
+    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith('Hello', null));
+    eventRunner.resolveWait();
+
+    // Wait for second say
+    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith('World', null));
+    eventRunner.resolveWait();
+
+    // Event complete — now we need to handle navigation wait
+    // Give engine a tick to process completion
+    await new Promise(r => setTimeout(r, 50));
+
+    // Stop engine
+    engine.stop();
+    await runPromise;
+
+    // Verify event was locked
+    expect(eventManager.getStatus('intro')).toBe('locked');
+    // Verify history recorded
+    expect(historyManager.count).toBe(1);
+    expect(historyManager.current?.eventId).toBe('intro');
+  });
+
+  it('handles jump between events', async () => {
+    const callbacks = makeCallbacks();
+    const eventRunner = new EventRunner(callbacks);
+    const eventManager = new EventManager();
+    const historyManager = new HistoryManager();
+    const navigationManager = new NavigationManager();
+    const storage = new VylosStorage('test-loop-2');
+    await storage.open();
+    const saveManager = new SaveManager(storage);
+    const settingsManager = new SettingsManager(storage);
+
+    const engine = new Engine({
+      eventManager,
+      historyManager,
+      navigationManager,
+      eventRunner,
+      saveManager,
+      settingsManager,
+    });
+
+    const spoken: string[] = [];
+    callbacks.onSay = vi.fn((text: string) => spoken.push(text));
+
+    const events: VylosEvent[] = [
+      {
+        id: 'first',
+        async execute(api: VylosAPI) {
+          await api.say('In first event');
+          api.jump('second');
+        },
+      },
+      {
+        id: 'second',
+        async execute(api: VylosAPI) {
+          await api.say('In second event');
+        },
+      },
+    ];
+
+    const runPromise = engine.run(events, callbacks.getState);
+
+    // First event: "In first event"
+    await vi.waitFor(() => expect(spoken).toContain('In first event'));
+    eventRunner.resolveWait();
+
+    // After jump, second event: "In second event"
+    await vi.waitFor(() => expect(spoken).toContain('In second event'));
+    eventRunner.resolveWait();
+
+    await new Promise(r => setTimeout(r, 50));
+    engine.stop();
+    await runPromise;
+
+    expect(spoken).toEqual(['In first event', 'In second event']);
+    expect(historyManager.count).toBe(2);
+  });
+});
+
+describe('DI / Plugin system', () => {
+  beforeEach(() => {
+    clearComponentOverrides();
+  });
+
+  it('createEngine produces a working engine', () => {
+    const callbacks = makeCallbacks();
+    const engine = createEngine({ callbacks });
+    expect(engine).toBeDefined();
+    expect(engine.eventManager).toBeInstanceOf(EventManager);
+    expect(engine.historyManager).toBeInstanceOf(HistoryManager);
+    expect(engine.navigationManager).toBeInstanceOf(NavigationManager);
+  });
+
+  it('plugin can override a manager', () => {
+    class CustomEventManager extends EventManager {
+      readonly isCustom = true;
+    }
+
+    const plugin: VylosPlugin = {
+      setup(container) {
+        container.register('EventManager', { useClass: CustomEventManager });
+      },
+    };
+
+    const callbacks = makeCallbacks();
+    const engine = createEngine({ callbacks, plugin });
+    expect((engine.eventManager as CustomEventManager).isCustom).toBe(true);
+  });
+
+  it('plugin can register component overrides', () => {
+    const CustomTopBar = defineComponent({ template: '<div>Custom</div>' });
+
+    const plugin: VylosPlugin = {
+      components: {
+        TopBar: CustomTopBar,
+      },
+    };
+
+    const callbacks = makeCallbacks();
+    createEngine({ callbacks, plugin });
+    expect(getComponentOverride('TopBar')).toBe(CustomTopBar);
+    expect(getComponentOverride('NonExistent')).toBeUndefined();
+  });
+});

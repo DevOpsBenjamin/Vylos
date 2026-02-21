@@ -1,0 +1,36 @@
+<template>
+  <div class="relative w-full h-full overflow-hidden bg-black" style="container-type: size">
+    <!-- z-0: Background -->
+    <BackgroundLayer />
+
+    <!-- z-10: Foreground / character sprites -->
+    <ForegroundLayer />
+
+    <!-- z-20: Location + Action overlays (left / right panels) -->
+    <LocationOverlay />
+    <ActionOverlay />
+
+    <!-- z-25: Top bar -->
+    <TopBar />
+
+    <!-- z-30: Dialogue box -->
+    <DialogueBox />
+
+    <!-- z-35: Choice panel (inside DialogueBox z-range) -->
+    <ChoicePanel />
+
+    <!-- z-40: Custom overlay -->
+    <CustomOverlay />
+  </div>
+</template>
+
+<script setup lang="ts">
+import BackgroundLayer from '../core/BackgroundLayer.vue';
+import ForegroundLayer from '../core/ForegroundLayer.vue';
+import DialogueBox from '../core/DialogueBox.vue';
+import ChoicePanel from '../core/ChoicePanel.vue';
+import CustomOverlay from '../core/CustomOverlay.vue';
+import ActionOverlay from '../menu/ActionOverlay.vue';
+import LocationOverlay from '../menu/LocationOverlay.vue';
+import TopBar from '../menu/TopBar.vue';
+</script>
