@@ -57,7 +57,7 @@ function continueGame() {
 }
 
 function loadGame() {
-  engineState.openMenu(MenuType.SaveLoad);
+  engineState.openMenu(MenuType.Load);
 }
 
 function openSettings() {

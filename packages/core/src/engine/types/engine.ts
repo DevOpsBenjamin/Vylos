@@ -62,7 +62,8 @@ export interface LocationEntry {
 
 export enum MenuType {
   PauseMenu = 'pause_menu',
-  SaveLoad = 'save_load',
+  Save = 'save',
+  Load = 'load',
   Settings = 'settings',
 }
 

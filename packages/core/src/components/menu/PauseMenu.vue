@@ -47,11 +47,11 @@ function resume() {
 }
 
 function save() {
-  engineState.openMenu(MenuType.SaveLoad);
+  engineState.openMenu(MenuType.Save);
 }
 
 function load() {
-  engineState.openMenu(MenuType.SaveLoad);
+  engineState.openMenu(MenuType.Load);
 }
 
 function settings() {

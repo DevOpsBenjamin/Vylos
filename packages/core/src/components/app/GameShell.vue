@@ -15,8 +15,8 @@
       <!-- Game view -->
       <EngineView v-else-if="isRunning" />
 
-      <!-- Save/Load menu (modal, shown over game) -->
-      <SaveLoadMenu v-if="engineState.menuOpen === MenuType.SaveLoad" />
+      <!-- Save/Load menu (modal, shown over game or main menu) -->
+      <SaveLoadMenu v-if="engineState.menuOpen === MenuType.Save || engineState.menuOpen === MenuType.Load" />
 
       <!-- Settings menu (modal) -->
       <SettingsMenu v-if="engineState.menuOpen === MenuType.Settings" />
