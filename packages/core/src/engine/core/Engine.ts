@@ -1,4 +1,4 @@
-import type { VylosEvent, BaseGameState } from '../types';
+import type { VylosEvent, BaseGameState, Checkpoint, SaveSlot } from '../types';
 import { EventManager } from '../managers/EventManager';
 import { HistoryManager } from '../managers/HistoryManager';
 import { NavigationManager, NavigationAction } from '../managers/NavigationManager';
@@ -37,6 +37,16 @@ export class Engine {
   readonly settingsManager: SettingsManager;
   private running = false;
 
+  /** Pending mid-event resume after load */
+  private pendingResume: {
+    eventId: string;
+    checkpoints: Checkpoint[];
+    initialState: BaseGameState;
+  } | null = null;
+
+  /** Flag to skip event lock/push when interrupted by a load */
+  private loadInterrupted = false;
+
   constructor(deps: EngineDeps) {
     this.eventManager = deps.eventManager;
     this.historyManager = deps.historyManager;
@@ -54,6 +64,13 @@ export class Engine {
     logger.info('Engine started');
 
     while (this.running) {
+      // Handle pending load resume before anything else
+      if (this.pendingResume) {
+        this.loadInterrupted = false;
+        await this.handleResume(getState);
+        continue;
+      }
+
       const state = getState();
 
       // Update UI (locations, actions, background)
@@ -102,6 +119,42 @@ export class Engine {
     logger.info('Engine stopped');
   }
 
+  /**
+   * Load a save and resume execution.
+   * Restores game state, history, event lock state, and sets up mid-event resume if needed.
+   */
+  loadSave(saveData: SaveSlot, setState: (state: BaseGameState) => void): void {
+    // Restore game state
+    setState(JSON.parse(JSON.stringify(saveData.gameState)));
+
+    // Restore event lock state
+    this.eventManager.resetAll();
+    if (saveData.lockedEventIds) {
+      this.eventManager.restoreLockedIds(saveData.lockedEventIds);
+    }
+
+    // Restore history
+    if (saveData.history) {
+      this.historyManager.restore(saveData.history, saveData.historyIndex ?? -1);
+    } else {
+      this.historyManager.clear();
+    }
+
+    // Set up mid-event resume if saved during an event
+    if (saveData.eventId && saveData.checkpoints?.length && saveData.initialState) {
+      this.pendingResume = {
+        eventId: saveData.eventId,
+        checkpoints: saveData.checkpoints,
+        initialState: saveData.initialState,
+      };
+    }
+
+    // Interrupt current execution so the loop picks up the new state
+    this.loadInterrupted = true;
+    this.eventRunner.interrupt('load');
+    this.navigationManager.cancel();
+  }
+
   /** Execute a single event, handling jumps */
   private async executeEvent(event: VylosEvent, getState: () => BaseGameState): Promise<void> {
     let currentEvent: VylosEvent | undefined = event;
@@ -113,12 +166,17 @@ export class Engine {
       try {
         await this.eventRunner.executeEvent(currentEvent);
 
+        // Skip lock/push if interrupted by a load
+        if (this.loadInterrupted) return;
+
         // Event completed successfully
         const state = getState();
         this.eventManager.setLocked(currentEvent.id, state);
         this.historyManager.push(currentEvent.id, this.eventRunner.checkpoints.getAll());
         currentEvent = undefined;
       } catch (error) {
+        if (this.loadInterrupted) return;
+
         if (error instanceof JumpSignal) {
           // Lock current event, find jump target
           const state = getState();
@@ -137,6 +195,48 @@ export class Engine {
           logger.error('Event execution error:', error);
           currentEvent = undefined;
         }
+      }
+    }
+  }
+
+  /** Handle resuming a mid-event save */
+  private async handleResume(getState: () => BaseGameState): Promise<void> {
+    const resume = this.pendingResume!;
+    this.pendingResume = null;
+
+    const event = this.eventManager.get(resume.eventId);
+    if (!event) {
+      logger.error(`Resume: event not found: ${resume.eventId}`);
+      return;
+    }
+
+    this.eventManager.setRunning(resume.eventId);
+    this.eventRunner.checkpoints.restore(resume.checkpoints);
+    logger.debug(`Resuming event: ${resume.eventId} (${resume.checkpoints.length} checkpoints)`);
+
+    try {
+      await this.eventRunner.resumeEvent(event, resume.initialState);
+
+      if (this.loadInterrupted) return;
+
+      const state = getState();
+      this.eventManager.setLocked(resume.eventId, state);
+      this.historyManager.push(resume.eventId, this.eventRunner.checkpoints.getAll());
+    } catch (error) {
+      if (this.loadInterrupted) return;
+
+      if (error instanceof JumpSignal) {
+        const state = getState();
+        this.eventManager.setLocked(resume.eventId, state);
+        this.historyManager.push(resume.eventId, this.eventRunner.checkpoints.getAll());
+
+        const target = this.eventManager.get(error.targetEventId);
+        if (target) {
+          logger.debug(`Resume jump to: ${error.targetEventId}`);
+          await this.executeEvent(target, getState);
+        }
+      } else {
+        logger.error('Resume execution error:', error);
       }
     }
   }

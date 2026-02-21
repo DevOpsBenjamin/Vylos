@@ -19,6 +19,11 @@ export class HistoryManager {
     return this.history.length;
   }
 
+  /** Current navigation index */
+  get index(): number {
+    return this.currentIndex;
+  }
+
   /** Whether back navigation is possible */
   get canGoBack(): boolean {
     return this.currentIndex > 0;

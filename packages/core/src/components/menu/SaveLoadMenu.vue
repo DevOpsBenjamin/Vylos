@@ -74,15 +74,31 @@ onMounted(refreshSlots);
 async function handleSlot(slot: number): Promise<void> {
   if (!engine) return;
   if (activeTab.value === 'save') {
-    await engine.saveManager.save(slot, gameState.state, engineState.currentLocationId, 0);
+    await engine.saveManager.save(slot, {
+      gameState: gameState.state,
+      eventId: engine.eventRunner.currentEventId,
+      stepNumber: engine.eventRunner.checkpoints.count,
+      label: `Save ${slot}`,
+      thumbnail: null,
+      checkpoints: engine.eventRunner.currentEventId
+        ? engine.eventRunner.checkpoints.getAll()
+        : undefined,
+      initialState: engine.eventRunner.getInitialState() ?? undefined,
+      history: engine.historyManager.getAll(),
+      historyIndex: engine.historyManager.index,
+      lockedEventIds: engine.eventManager.getLockedIds(),
+    });
     await refreshSlots();
   } else {
     const data = await engine.saveManager.load(slot);
     if (data) {
-      gameState.setState(data.gameState);
+      engine.loadSave(data, (s) => gameState.setState(s));
       if (data.gameState.locationId) {
         engineState.setLocation(data.gameState.locationId);
       }
+      engineState.historyBrowsing = false;
+      engineState.setDialogue(null);
+      engineState.setChoices(null);
       engineState.closeMenu();
     }
   }

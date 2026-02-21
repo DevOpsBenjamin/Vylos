@@ -92,6 +92,16 @@ export class EventRunner implements VylosAPI {
     return this.browseIndex >= 0;
   }
 
+  /** Current event ID (null if no event executing) */
+  get currentEventId(): string | null {
+    return this.currentEvent?.id ?? null;
+  }
+
+  /** Get initial state snapshot for save (deep clone) */
+  getInitialState(): BaseGameState | null {
+    return this.initialState ? structuredClone(this.initialState) : null;
+  }
+
   /** Get the live dialogue for restoring display after exiting history */
   getLiveDialogue(): { text: string; speaker: string | null } | null {
     return this.liveDialogue;
@@ -193,6 +203,29 @@ export class EventRunner implements VylosAPI {
       throw error;
     } finally {
       this.callbacks.onClear();
+    }
+  }
+
+  /** Resume a saved mid-event execution (for load). Checkpoints must be restored externally first. */
+  async resumeEvent(event: VylosEvent, savedInitialState: BaseGameState): Promise<void> {
+    this.initialState = structuredClone(savedInitialState);
+    this.currentEvent = event;
+    this.currentStep = 0;
+    this.interrupted = false;
+    this.browseIndex = -1;
+    this.liveDialogue = null;
+    this.pendingRedo = null;
+
+    // Restore to initial state, then replay through all stored checkpoints
+    this.callbacks.setState(structuredClone(savedInitialState));
+    this.checkpoints.setReplayTo(this.checkpoints.count);
+
+    try {
+      await this.runEventExecution(event);
+    } finally {
+      this.callbacks.onClear();
+      this.initialState = null;
+      this.currentEvent = null;
     }
   }
 

@@ -1,4 +1,4 @@
-import type { BaseGameState, SaveSlot, SaveMeta } from '../types';
+import type { SaveSlot, SaveMeta } from '../types';
 import { VylosStorage } from '../storage/VylosStorage';
 import { logger } from '../utils/logger';
 
@@ -17,18 +17,14 @@ export class SaveManager {
     this.ready = storage.open();
   }
 
-  /** Save game state to a slot */
-  async save(slot: number, gameState: BaseGameState, eventId: string | null, stepNumber: number, label?: string): Promise<void> {
+  /** Save a complete slot (timestamp and version are set automatically) */
+  async save(slot: number, saveData: Omit<SaveSlot, 'slot' | 'timestamp' | 'version'>): Promise<void> {
     await this.ready;
     const data: SaveSlot = {
       slot,
       timestamp: Date.now(),
       version: SAVE_VERSION,
-      gameState: JSON.parse(JSON.stringify(gameState)),
-      eventId,
-      stepNumber,
-      label: label ?? `Save ${slot}`,
-      thumbnail: null,
+      ...JSON.parse(JSON.stringify(saveData)),
     };
 
     try {
