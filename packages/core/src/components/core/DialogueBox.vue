@@ -3,9 +3,9 @@
     <div
       v-if="engineState.dialogue"
       class="dlg-wrapper"
-      @click="engine?.eventRunner.resolveWait()"
+      @click="handleClick"
     >
-      <div class="dlg-box">
+      <div class="dlg-box" :class="{ 'dlg-box--history': engineState.historyBrowsing }">
         <!-- Speaker name -->
         <div v-if="engineState.dialogue.speaker" class="dlg-speaker">
           {{ engineState.dialogue.speaker }}
@@ -16,8 +16,15 @@
           {{ engineState.dialogue.text }}
         </p>
 
-        <!-- Continue indicator -->
-        <div class="dlg-continue">&#9660; continue</div>
+        <!-- Continue / History indicator -->
+        <div class="dlg-continue">
+          <template v-if="engineState.historyBrowsing">
+            &#9664; &#9654; history
+          </template>
+          <template v-else>
+            &#9660; continue
+          </template>
+        </div>
       </div>
     </div>
   </Transition>
@@ -31,6 +38,44 @@ import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+
+function handleClick(): void {
+  if (!engine) return;
+
+  if (engine.eventRunner.isBrowsingHistory) {
+    // In history mode — advance through history (click = forward)
+    const step = engine.eventRunner.historyForward();
+    if (step) {
+      if (step.type === 'say' && step.dialogue) {
+        engineState.setDialogue(step.dialogue);
+        engineState.setChoices(null);
+      } else if (step.type === 'choice' && step.choiceOptions) {
+        engineState.setDialogue(null);
+        engineState.setChoices({
+          prompt: null,
+          options: step.choiceOptions,
+          historyStepIndex: step.stepIndex,
+          historySelectedValue: step.choiceResult,
+        });
+      }
+    }
+    if (!engine.eventRunner.isBrowsingHistory) {
+      engineState.historyBrowsing = false;
+      const live = engine.eventRunner.getLiveDialogue();
+      if (live) {
+        engineState.setDialogue({
+          text: live.text,
+          speaker: live.speaker,
+          isNarration: !live.speaker,
+        });
+      }
+      engineState.setChoices(null);
+    }
+  } else {
+    // Normal mode — resolve the wait to advance dialogue
+    engine.eventRunner.resolveWait();
+  }
+}
 </script>
 
 <style scoped>
@@ -62,6 +107,11 @@ const engine = inject<Engine>(ENGINE_INJECT_KEY);
   padding: 2cqh 2.5cqw;
   max-width: 85cqw;
   margin: 0 auto;
+  transition: border-color 0.2s ease;
+}
+
+.dlg-box--history {
+  border-color: rgba(147, 197, 253, 0.4);
 }
 
 .dlg-speaker {

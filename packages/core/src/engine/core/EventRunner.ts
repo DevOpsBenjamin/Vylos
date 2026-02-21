@@ -1,3 +1,4 @@
+import { toRaw } from 'vue';
 import type {
   VylosAPI,
   VylosEvent,
@@ -6,6 +7,8 @@ import type {
   SayOptions,
   ChoiceItem,
   CheckpointType,
+  ChoiceOption,
+  DialogueState,
 } from '../types';
 import { CheckpointManager } from './CheckpointManager';
 import { WaitManager } from '../managers/WaitManager';
@@ -40,6 +43,15 @@ export interface EventRunnerCallbacks {
   setState(state: BaseGameState): void;
 }
 
+/** Data returned when browsing history steps */
+export interface HistoryStep {
+  type: 'say' | 'choice';
+  dialogue?: DialogueState | null;
+  choiceOptions?: ChoiceOption[];
+  choiceResult?: string;
+  stepIndex: number;
+}
+
 /**
  * EventRunner implements VylosAPI and drives event execution.
  *
@@ -56,35 +68,106 @@ export class EventRunner implements VylosAPI {
   private currentStep = 0;
   private interrupted = false;
 
+  /** History browsing index (-1 = live, not browsing) */
+  private browseIndex = -1;
+  /** The live dialogue being displayed when history browsing started */
+  private liveDialogue: { text: string; speaker: string | null } | null = null;
+  /** Current background path (tracked for checkpoint storage) */
+  private currentBackground: string | null = null;
+
+  /** Snapshot of game state before event started (for redo) */
+  private initialState: BaseGameState | null = null;
+  /** Reference to the currently executing event (for redo) */
+  private currentEvent: VylosEvent | null = null;
+  /** Pending redo request (set by UI, consumed by redo loop) */
+  private pendingRedo: { step: number; choice: string } | null = null;
+
   constructor(callbacks: EventRunnerCallbacks) {
     this.callbacks = callbacks;
     this.checkpoints = new CheckpointManager();
   }
 
-  /** Execute an event, handling jump signals and interrupts */
+  /** Whether the player is browsing text history */
+  get isBrowsingHistory(): boolean {
+    return this.browseIndex >= 0;
+  }
+
+  /** Get the live dialogue for restoring display after exiting history */
+  getLiveDialogue(): { text: string; speaker: string | null } | null {
+    return this.liveDialogue;
+  }
+
+  /** Go back one step in history. Returns step data or null if at beginning. */
+  historyBack(): HistoryStep | null {
+    const targetIndex = this.browseIndex === -1
+      ? this.checkpoints.count - 1  // Start from last completed checkpoint
+      : this.browseIndex - 1;
+
+    if (targetIndex < 0) return null;
+
+    // Find a browsable checkpoint (say with dialogue, or choice with options)
+    let idx = targetIndex;
+    while (idx >= 0) {
+      const cp = this.checkpoints.getAt(idx);
+      if (cp?.dialogue || cp?.choiceOptions) break;
+      idx--;
+    }
+    if (idx < 0) return null;
+
+    this.browseIndex = idx;
+    return this.buildHistoryStep(idx);
+  }
+
+  /** Go forward one step in history. Returns step data or null if exiting history. */
+  historyForward(): HistoryStep | null {
+    if (this.browseIndex === -1) return null;
+
+    // Find next browsable checkpoint after current
+    let idx = this.browseIndex + 1;
+    while (idx < this.checkpoints.count) {
+      const cp = this.checkpoints.getAt(idx);
+      if (cp?.dialogue || cp?.choiceOptions) break;
+      idx++;
+    }
+
+    if (idx >= this.checkpoints.count) {
+      // Reached the end — return to live
+      this.browseIndex = -1;
+      return null;
+    }
+
+    this.browseIndex = idx;
+    return this.buildHistoryStep(idx);
+  }
+
+  /** Exit history browsing without returning step data */
+  exitHistoryBrowsing(): void {
+    this.browseIndex = -1;
+  }
+
+  /** Request a choice redo from history (called by UI) */
+  requestRedoChoice(stepIndex: number, newChoice: string): void {
+    this.pendingRedo = { step: stepIndex, choice: newChoice };
+    this.waitManager.reject(new InterruptSignal('choice redo'));
+  }
+
+  /** Execute an event, handling jump signals, interrupts, and redo */
   async executeEvent(event: VylosEvent): Promise<void> {
+    this.initialState = structuredClone(toRaw(this.callbacks.getState()));
+    this.currentEvent = event;
     this.checkpoints.clear();
     this.currentStep = 0;
     this.interrupted = false;
+    this.browseIndex = -1;
+    this.liveDialogue = null;
+    this.pendingRedo = null;
 
     try {
-      const state = this.callbacks.getState();
-      await event.execute(this, state);
-    } catch (error) {
-      if (error instanceof JumpSignal) {
-        throw error; // Propagate to engine for handling
-      }
-      if (error instanceof EventEndError) {
-        logger.debug('Event ended normally');
-        return;
-      }
-      if (error instanceof InterruptSignal) {
-        logger.debug('Event interrupted:', error.reason);
-        return;
-      }
-      throw error;
+      await this.runEventExecution(event);
     } finally {
       this.callbacks.onClear();
+      this.initialState = null;
+      this.currentEvent = null;
     }
   }
 
@@ -144,18 +227,30 @@ export class EventRunner implements VylosAPI {
       return;
     }
 
+    // Track the live dialogue (for history browsing restoration)
+    this.liveDialogue = { text: resolvedText, speaker };
+
     // Show dialogue in UI
     this.callbacks.onSay(resolvedText, speaker);
 
     // Wait for player to click continue
     await this.waitManager.wait();
 
-    // Capture checkpoint after interaction
+    // Exit history browsing if active
+    this.browseIndex = -1;
+
+    // Capture checkpoint after interaction (store dialogue for history)
     this.checkpoints.capture(
       this.callbacks.getState(),
       'say' as CheckpointType,
+      undefined,
+      {
+        dialogue: { text: resolvedText, speaker, isNarration: !speaker },
+        background: this.currentBackground,
+      },
     );
 
+    this.liveDialogue = null;
     this.callbacks.onClear();
     this.currentStep++;
   }
@@ -192,11 +287,12 @@ export class EventRunner implements VylosAPI {
     // Wait for player selection
     const result = await this.waitManager.wait<string>();
 
-    // Capture checkpoint with choice result
+    // Capture checkpoint with choice result and options (for history redo)
     this.checkpoints.capture(
       this.callbacks.getState(),
       'choice' as CheckpointType,
       result,
+      { choiceOptions: resolvedOptions },
     );
 
     this.callbacks.onClear();
@@ -205,6 +301,7 @@ export class EventRunner implements VylosAPI {
   }
 
   setBackground(path: string): void {
+    this.currentBackground = path;
     this.callbacks.onSetBackground(path);
   }
 
@@ -281,6 +378,72 @@ export class EventRunner implements VylosAPI {
   /** Resolve the current wait (called by UI) */
   resolveWait(value?: unknown): void {
     this.waitManager.resolve(value);
+  }
+
+  // --- Private helpers ---
+
+  /** Build a HistoryStep from a checkpoint at the given index */
+  private buildHistoryStep(idx: number): HistoryStep {
+    const cp = this.checkpoints.getAt(idx)!;
+    if (cp.choiceOptions) {
+      return {
+        type: 'choice',
+        choiceOptions: cp.choiceOptions,
+        choiceResult: cp.choiceResult,
+        stepIndex: idx,
+      };
+    }
+    return {
+      type: 'say',
+      dialogue: cp.dialogue,
+      stepIndex: idx,
+    };
+  }
+
+  /** Inner execution loop that supports redo by restarting the event */
+  private async runEventExecution(event: VylosEvent): Promise<void> {
+    while (true) {
+      try {
+        const state = this.callbacks.getState();
+        await event.execute(this, state);
+        return; // success — event completed normally
+      } catch (error) {
+        if (error instanceof InterruptSignal) {
+          if (this.pendingRedo) {
+            this.setupRedo();
+            continue; // retry with redo setup
+          }
+          logger.debug('Event interrupted:', error.reason);
+          return;
+        }
+        if (error instanceof JumpSignal) throw error;
+        if (error instanceof EventEndError) {
+          logger.debug('Event ended normally');
+          return;
+        }
+        throw error;
+      }
+    }
+  }
+
+  /** Prepare for redo: inject new choice, set replay, restore initial state */
+  private setupRedo(): void {
+    const redo = this.pendingRedo!;
+    this.pendingRedo = null;
+
+    // Inject the new choice at the target step
+    this.checkpoints.updateChoiceAt(redo.step, redo.choice);
+    // Replay from beginning through the target step (inclusive), then live
+    this.checkpoints.setReplayTo(redo.step + 1);
+
+    // Restore game state to before the event started
+    this.callbacks.setState(structuredClone(this.initialState!));
+
+    // Reset execution state
+    this.currentStep = 0;
+    this.browseIndex = -1;
+    this.liveDialogue = null;
+    this.interrupted = false;
   }
 
   /** Check if execution should be interrupted */

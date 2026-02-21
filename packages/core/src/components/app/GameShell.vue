@@ -32,6 +32,7 @@ import { computed, inject, onMounted, onUnmounted } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { EnginePhase, MenuType } from '../../engine/types';
 import type { Engine } from '../../engine/core/Engine';
+import type { HistoryStep } from '../../engine/core/EventRunner';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
 import { CONFIG_INJECT_KEY } from '../../composables/useConfig';
 import { InputManager } from '../../engine/managers/InputManager';
@@ -87,10 +88,52 @@ const isRunning = computed(() =>
   engineState.phase === EnginePhase.Paused
 );
 
+// --- History step helpers ---
+
+function applyHistoryStep(step: HistoryStep): void {
+  if (step.type === 'say' && step.dialogue) {
+    engineState.setDialogue(step.dialogue);
+    engineState.setChoices(null);
+  } else if (step.type === 'choice' && step.choiceOptions) {
+    engineState.setDialogue(null);
+    engineState.setChoices({
+      prompt: null,
+      options: step.choiceOptions,
+      historyStepIndex: step.stepIndex,
+      historySelectedValue: step.choiceResult,
+    });
+  }
+}
+
+function restoreLiveDisplay(): void {
+  const live = engine!.eventRunner.getLiveDialogue();
+  if (live) {
+    engineState.setDialogue({
+      text: live.text,
+      speaker: live.speaker,
+      isNarration: !live.speaker,
+    });
+  }
+  engineState.setChoices(null);
+}
+
 // --- Keyboard continue (Space/Enter) ---
 
 function handleKeyboardContinue(): void {
   if (!engine) return;
+
+  // If browsing history, forward exits history first
+  if (engine.eventRunner.isBrowsingHistory) {
+    const step = engine.eventRunner.historyForward();
+    if (step) {
+      applyHistoryStep(step);
+    } else if (!engine.eventRunner.isBrowsingHistory) {
+      engineState.historyBrowsing = false;
+      restoreLiveDisplay();
+    }
+    return;
+  }
+
   if (engineState.dialogue) {
     // Inside a say() call — resolve the wait to advance dialogue
     engine.eventRunner.resolveWait();
@@ -99,6 +142,41 @@ function handleKeyboardContinue(): void {
     engine.navigationManager.continue();
   }
   // If choices are showing, ignore continue (player must click a choice)
+}
+
+function handleBack(): void {
+  if (!engine) return;
+
+  if (engineState.dialogue || engine.eventRunner.isBrowsingHistory) {
+    // During dialogue or already browsing — browse text history
+    const step = engine.eventRunner.historyBack();
+    if (step) {
+      engineState.historyBrowsing = true;
+      applyHistoryStep(step);
+    }
+  } else {
+    engine.navigationManager.goBack();
+  }
+}
+
+function handleForward(): void {
+  if (!engine) return;
+
+  if (engine.eventRunner.isBrowsingHistory) {
+    // In history mode — advance through history
+    const step = engine.eventRunner.historyForward();
+    if (step) {
+      applyHistoryStep(step);
+    } else if (!engine.eventRunner.isBrowsingHistory) {
+      engineState.historyBrowsing = false;
+      restoreLiveDisplay();
+    }
+  } else if (engineState.dialogue) {
+    // At live dialogue — same as continue
+    engine.eventRunner.resolveWait();
+  } else {
+    engine.navigationManager.goForward();
+  }
 }
 
 // --- Keyboard input ---
@@ -119,10 +197,10 @@ onMounted(() => {
         engineState.openMenu(MenuType.PauseMenu);
         break;
       case 'back':
-        engine?.navigationManager.goBack();
+        handleBack();
         break;
       case 'forward':
-        engine?.navigationManager.goForward();
+        handleForward();
         break;
       case 'skip-toggle':
         inputManager.toggleSkip();

@@ -1,5 +1,12 @@
 import { toRaw } from 'vue';
-import type { BaseGameState, Checkpoint, CheckpointType } from '../types';
+import type { BaseGameState, Checkpoint, CheckpointType, ChoiceOption } from '../types';
+import type { DialogueState } from '../types/engine';
+
+export interface CaptureDisplayData {
+  dialogue?: DialogueState | null;
+  background?: string | null;
+  choiceOptions?: ChoiceOption[];
+}
 
 /**
  * Manages checkpoints for event execution and rollback.
@@ -25,13 +32,21 @@ export class CheckpointManager {
     return this.checkpoints.length;
   }
 
+  /** Get checkpoint at a specific index */
+  getAt(index: number): Checkpoint | undefined {
+    return this.checkpoints[index];
+  }
+
   /** Record a checkpoint at the current interaction point */
-  capture(gameState: BaseGameState, type: CheckpointType, choiceResult?: string): void {
+  capture(gameState: BaseGameState, type: CheckpointType, choiceResult?: string, display?: CaptureDisplayData): void {
     const checkpoint: Checkpoint = {
       step: this.checkpoints.length,
       gameState: structuredClone(toRaw(gameState)),
       type,
       choiceResult,
+      dialogue: display?.dialogue ? structuredClone(toRaw(display.dialogue)) : undefined,
+      background: display?.background,
+      choiceOptions: display?.choiceOptions ? structuredClone(toRaw(display.choiceOptions)) : undefined,
     };
 
     // If replaying past the current index, trim future checkpoints
@@ -76,6 +91,21 @@ export class CheckpointManager {
     const targetState = structuredClone(this.checkpoints[targetStep].gameState);
     this.checkpoints.length = targetStep;
     return targetState;
+  }
+
+  /** Update the stored choice result at a specific step */
+  updateChoiceAt(step: number, newChoice: string): void {
+    if (step >= 0 && step < this.checkpoints.length) {
+      this.checkpoints[step].choiceResult = newChoice;
+    }
+  }
+
+  /** Set replay from beginning, trimming checkpoints after endStep */
+  setReplayTo(endStep: number): void {
+    this.replayIndex = 0;
+    if (endStep < this.checkpoints.length) {
+      this.checkpoints.length = endStep;
+    }
   }
 
   /** Clear all checkpoints (new event or new game) */

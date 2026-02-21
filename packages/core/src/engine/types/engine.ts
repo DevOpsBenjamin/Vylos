@@ -36,6 +36,10 @@ export interface DialogueState {
 export interface ChoiceState {
   prompt: string | null;
   options: ChoiceOption[];
+  /** Checkpoint step index (present when displaying a history choice for redo) */
+  historyStepIndex?: number;
+  /** Previously chosen value (for highlighting in redo mode) */
+  historySelectedValue?: string;
 }
 
 export interface ChoiceOption {
