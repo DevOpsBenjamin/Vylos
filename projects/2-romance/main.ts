@@ -28,6 +28,7 @@ import neighbor from './locations/neighbor/location';
 
 // Global events
 import intro from './global/events/intro';
+import actionFeedback from './global/events/action_feedback';
 
 // Apartment events
 import morningRoutine from './locations/apartment/events/morning_routine';
@@ -155,6 +156,7 @@ async function startGame() {
 
   const events = [
     intro,
+    actionFeedback,
     morningRoutine,
     findLetter,
     meetLena,

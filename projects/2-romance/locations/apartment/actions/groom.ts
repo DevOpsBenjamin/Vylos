@@ -12,6 +12,7 @@ const groom: VylosAction = {
   execute(state: BaseGameState) {
     (state as any).charm = Math.min(100, ((state as any).charm ?? 20) + 5);
     state.gameTime += 0.5;
+    state.flags['freshened_up'] = true;
   },
 };
 

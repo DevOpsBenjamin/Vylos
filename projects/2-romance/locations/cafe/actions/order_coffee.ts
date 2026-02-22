@@ -12,6 +12,7 @@ const orderCoffee: VylosAction = {
   execute(state: BaseGameState) {
     (state as any).energy = Math.min(100, ((state as any).energy ?? 100) + 5);
     state.gameTime += 0.5;
+    state.flags['ordered_coffee'] = true;
   },
 };
 

@@ -11,6 +11,7 @@ const intro: VylosEvent = {
     await engine.say('Moving vans, cardboard boxes, and the scent of a city you barely know.');
     await engine.say(`You've arrived in the heart of the city, chasing something — a fresh start, maybe love, maybe both.`);
     await engine.say('Your new apartment is small but full of possibility. The neighbors? Completely unknown.');
+    await engine.say('But first — who are you, exactly?');
 
     const name = await engine.choice([
       { text: 'Alex', value: 'Alex' },

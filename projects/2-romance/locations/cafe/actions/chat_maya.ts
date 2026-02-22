@@ -12,6 +12,7 @@ const chatMaya: VylosAction = {
   execute(state: BaseGameState) {
     (state as any).npcs.maya.affection = Math.min(100, ((state as any).npcs.maya.affection ?? 0) + 3);
     state.gameTime += 0.5;
+    state.flags['chatted_maya'] = true;
   },
 };
 

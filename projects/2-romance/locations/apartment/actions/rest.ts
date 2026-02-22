@@ -12,6 +12,7 @@ const rest: VylosAction = {
   execute(state: BaseGameState) {
     (state as any).energy = Math.min(100, ((state as any).energy ?? 0) + 30);
     state.gameTime += 2;
+    state.flags['rested'] = true;
   },
 };
 
