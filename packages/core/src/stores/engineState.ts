@@ -21,6 +21,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
   const menuOpen = ref<MenuType | null>(null);
   const skipMode = ref(false);
   const autoMode = ref(false);
+  const historyBrowsing = ref(false);
   const overlayId = ref<string | null>(null);
   const overlayProps = ref<Record<string, unknown> | null>(null);
 
@@ -81,6 +82,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     menuOpen.value = null;
     skipMode.value = false;
     autoMode.value = false;
+    historyBrowsing.value = false;
     overlayId.value = null;
     overlayProps.value = null;
   }
@@ -97,6 +99,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     menuOpen,
     skipMode,
     autoMode,
+    historyBrowsing,
     overlayId,
     overlayProps,
     setDialogue,
