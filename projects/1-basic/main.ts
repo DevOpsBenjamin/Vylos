@@ -121,6 +121,10 @@ function startGame() {
         locationId: a.locationId ?? '',
       })));
 
+      const resolveText = (t: string | Record<string, string>) =>
+        typeof t === 'string' ? t : t['en'] ?? Object.values(t)[0] ?? '';
+      engineState.setDrawableEvents(engine.eventManager.getDrawableEvents(state, resolveText));
+
       const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
       if (bg) engineState.setBackground(bg);
     },

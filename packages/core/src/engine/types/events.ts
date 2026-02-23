@@ -62,6 +62,24 @@ export interface VylosAPI {
   stopMusic(): void;
 }
 
+/** Configuration for drawable events — clickable characters/objects in a location */
+export interface DrawableEventConfig {
+  /** Display text for the clickable element */
+  label: string | TextEntry;
+  /** Placement hint on screen */
+  position?: 'left' | 'center' | 'right';
+  /** Emoji/unicode icon */
+  icon?: string;
+}
+
+/** A drawable event entry for UI rendering */
+export interface DrawableEventEntry {
+  id: string;
+  label: string;
+  position: 'left' | 'center' | 'right';
+  icon?: string;
+}
+
 /** A visual novel event definition */
 export interface VylosEvent<TState extends BaseGameState = BaseGameState> {
   /** Unique event ID (derived from file path if not specified) */
@@ -69,6 +87,9 @@ export interface VylosEvent<TState extends BaseGameState = BaseGameState> {
 
   /** Location this event belongs to (null for global events) */
   locationId?: string;
+
+  /** Make this event drawable — a clickable element the player interacts with instead of auto-triggering */
+  draw?: DrawableEventConfig;
 
   /** Whether this event should trigger — checked each game loop tick */
   conditions?(state: TState): boolean;

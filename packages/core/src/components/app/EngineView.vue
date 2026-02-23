@@ -6,6 +6,9 @@
     <!-- z-10: Foreground / character sprites -->
     <ForegroundLayer />
 
+    <!-- z-15: Drawable events (clickable characters/objects) -->
+    <DrawableOverlay />
+
     <!-- z-20: Location + Action overlays (left / right panels) -->
     <LocationOverlay />
     <ActionOverlay />
@@ -27,6 +30,7 @@
 <script setup lang="ts">
 import BackgroundLayer from '../core/BackgroundLayer.vue';
 import ForegroundLayer from '../core/ForegroundLayer.vue';
+import DrawableOverlay from '../core/DrawableOverlay.vue';
 import DialogueBox from '../core/DialogueBox.vue';
 import ChoicePanel from '../core/ChoicePanel.vue';
 import CustomOverlay from '../core/CustomOverlay.vue';

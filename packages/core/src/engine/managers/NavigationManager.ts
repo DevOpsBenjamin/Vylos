@@ -7,6 +7,7 @@ export enum NavigationAction {
   Forward = 'forward',
   Action = 'action',
   Location = 'location',
+  DrawableEvent = 'drawable_event',
 }
 
 export interface NavigationResult {
@@ -59,6 +60,12 @@ export class NavigationManager {
   selectLocation(locationId: string): void {
     logger.debug('Navigation: location', locationId);
     this.waitManager.resolve({ action: NavigationAction.Location, payload: locationId });
+  }
+
+  /** Player clicked a drawable event */
+  selectDrawableEvent(eventId: string): void {
+    logger.debug('Navigation: drawable event', eventId);
+    this.waitManager.resolve({ action: NavigationAction.DrawableEvent, payload: eventId });
   }
 
   /** Cancel waiting (e.g., on game reset). Resolves the wait with Continue to unblock. */

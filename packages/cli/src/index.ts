@@ -27,6 +27,13 @@ async function main() {
       break;
     }
 
+    case 'verify': {
+      const projectRoot = resolve(args[1] ?? process.cwd());
+      const { verify } = await import('./commands/verify');
+      await verify(projectRoot);
+      break;
+    }
+
     case 'create': {
       const name = args[1];
       if (!name) {
@@ -46,6 +53,7 @@ async function main() {
     vylos dev [project-dir]     Start dev server
     vylos build [project-dir]   Build for production
     vylos editor [project-dir]  Open visual editor
+    vylos verify [project-dir]  Type-check project
     vylos create <name>         Create new project
 `);
   }

@@ -5,7 +5,7 @@
     <div class="game-shell__bg" :style="shellBgStyle"></div>
 
     <!-- Inner: ratio-locked viewport, container-query root -->
-    <div class="game-viewport" :style="viewportStyle">
+    <div class="game-viewport" :style="viewportStyle" @click="handleViewportClick">
       <!-- Loading -->
       <LoadingScreen v-if="isLoading" />
 
@@ -176,6 +176,27 @@ function handleForward(): void {
     engine.eventRunner.resolveWait();
   } else {
     engine.navigationManager.goForward();
+  }
+}
+
+// --- Mouse click navigation (left half = back, right half = forward) ---
+
+function handleViewportClick(e: MouseEvent): void {
+  if (!engine) return;
+  // Only during Running phase, no menu open, no choices showing
+  if (!isRunning.value || engineState.menuOpen || engineState.choices) return;
+
+  const target = e.target as HTMLElement;
+  // Don't intercept clicks on interactive elements (buttons, overlays, etc.)
+  if (target.closest('button, a, [role="button"]')) return;
+
+  const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+  const midpoint = rect.left + rect.width / 2;
+
+  if (e.clientX >= midpoint) {
+    handleKeyboardContinue();
+  } else {
+    handleBack();
   }
 }
 

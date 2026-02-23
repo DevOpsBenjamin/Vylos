@@ -1,4 +1,4 @@
-import type { VylosEvent, BaseGameState } from '../types';
+import type { VylosEvent, BaseGameState, DrawableEventEntry } from '../types';
 import { EventStatus } from '../types';
 import { logger } from '../utils/logger';
 
@@ -67,14 +67,36 @@ export class EventManager {
     return unlocked;
   }
 
-  /** Get the next unlocked event matching the current location (first registered wins) */
+  /** Get the next unlocked event matching the current location (first registered wins). Skips drawable events. */
   getNextUnlocked(state: BaseGameState): VylosEvent | undefined {
     for (const entry of this.events.values()) {
       if (entry.status !== EventStatus.Unlocked) continue;
+      if (entry.event.draw) continue; // Drawable events don't auto-trigger
       if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
       return entry.event;
     }
     return undefined;
+  }
+
+  /** Get all unlocked drawable events at the current location */
+  getDrawableEvents(state: BaseGameState, resolveText?: (text: string | Record<string, string>) => string): DrawableEventEntry[] {
+    const result: DrawableEventEntry[] = [];
+    for (const entry of this.events.values()) {
+      if (entry.status !== EventStatus.Unlocked) continue;
+      if (!entry.event.draw) continue;
+      if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
+      const draw = entry.event.draw;
+      const label = typeof draw.label === 'string'
+        ? draw.label
+        : resolveText?.(draw.label) ?? Object.values(draw.label)[0] ?? entry.event.id;
+      result.push({
+        id: entry.event.id,
+        label,
+        position: draw.position ?? 'center',
+        icon: draw.icon,
+      });
+    }
+    return result;
   }
 
   /** Mark event as running */

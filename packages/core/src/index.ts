@@ -64,6 +64,7 @@ export { default as ForegroundLayer } from './components/core/ForegroundLayer.vu
 export { default as DialogueBox } from './components/core/DialogueBox.vue';
 export { default as ChoicePanel } from './components/core/ChoicePanel.vue';
 export { default as CustomOverlay } from './components/core/CustomOverlay.vue';
+export { default as DrawableOverlay } from './components/core/DrawableOverlay.vue';
 
 // Components — menu
 export { default as ActionOverlay } from './components/menu/ActionOverlay.vue';

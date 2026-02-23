@@ -113,6 +113,14 @@ export class Engine {
             loop?.onAction?.(nav.payload, getState());
           }
           break;
+        case NavigationAction.DrawableEvent:
+          if (nav.payload) {
+            const drawableEvent = this.eventManager.get(nav.payload);
+            if (drawableEvent) {
+              await this.executeEvent(drawableEvent, getState);
+            }
+          }
+          break;
       }
     }
 

@@ -186,6 +186,9 @@ async function startGame() {
         locationId: a.locationId ?? '',
       })));
 
+      const resolveText = (t: string | Record<string, string>) => languageManager.resolve(t);
+      engineState.setDrawableEvents(engine.eventManager.getDrawableEvents(state, resolveText));
+
       const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
       if (bg) engineState.setBackground(bg);
     },

@@ -7,6 +7,7 @@ import {
   type ChoiceState,
   type ActionEntry,
   type LocationEntry,
+  type DrawableEventEntry,
 } from '../engine/types';
 
 export const useEngineStateStore = defineStore('engineState', () => {
@@ -22,6 +23,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
   const skipMode = ref(false);
   const autoMode = ref(false);
   const historyBrowsing = ref(false);
+  const drawableEvents = ref<DrawableEventEntry[]>([]);
   const overlayId = ref<string | null>(null);
   const overlayProps = ref<Record<string, unknown> | null>(null);
 
@@ -65,6 +67,10 @@ export const useEngineStateStore = defineStore('engineState', () => {
     menuOpen.value = null;
   }
 
+  function setDrawableEvents(events: DrawableEventEntry[]) {
+    drawableEvents.value = events;
+  }
+
   function setOverlay(id: string | null, props?: Record<string, unknown>) {
     overlayId.value = id;
     overlayProps.value = props ?? null;
@@ -83,6 +89,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     skipMode.value = false;
     autoMode.value = false;
     historyBrowsing.value = false;
+    drawableEvents.value = [];
     overlayId.value = null;
     overlayProps.value = null;
   }
@@ -100,6 +107,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     skipMode,
     autoMode,
     historyBrowsing,
+    drawableEvents,
     overlayId,
     overlayProps,
     setDialogue,
@@ -112,6 +120,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     setLocations,
     openMenu,
     closeMenu,
+    setDrawableEvents,
     setOverlay,
     $reset,
   };

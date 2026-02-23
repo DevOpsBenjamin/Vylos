@@ -1,3 +1,5 @@
+import type { DrawableEventEntry } from './events';
+
 /** Engine lifecycle phases */
 export enum EnginePhase {
   /** Engine created but not initialized */
@@ -22,6 +24,7 @@ export interface EngineState {
   currentLocationId: string | null;
   availableActions: ActionEntry[];
   availableLocations: LocationEntry[];
+  drawableEvents: DrawableEventEntry[];
   menuOpen: MenuType | null;
   skipMode: boolean;
   autoMode: boolean;
