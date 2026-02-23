@@ -13,4 +13,6 @@ yarn-error.log*
 pnpm-debug.log*
 .idea/
 .vscode/
+.claude/
 *.tsbuildinfo
+.generated/

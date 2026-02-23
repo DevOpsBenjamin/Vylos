@@ -1,12 +1,19 @@
 {
   "name": "vylos-monorepo",
   "private": true,
+  "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev": "pnpm -r dev",
-    "build": "pnpm -r build"
+    "test": "pnpm --filter @vylos/core test",
+    "type-check": "pnpm --filter @vylos/core type-check",
+    "dev:basic": "pnpm --filter 1-basic dev",
+    "dev:romance": "pnpm --filter 2-romance dev",
+    "dev:phone": "pnpm --filter 3-phone dev",
+    "dev": "pnpm --filter 2-romance dev",
+    "build:basic": "pnpm --filter 1-basic build",
+    "build:romance": "pnpm --filter 2-romance build",
+    "build:phone": "pnpm --filter 3-phone build"
   },
-  "devDependencies": {
-    "typescript": "^5.6.3",
-    "vite": "^5.4.11"
+  "engines": {
+    "node": ">=22.0.0"
   }
 }
