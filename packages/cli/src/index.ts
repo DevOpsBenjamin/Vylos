@@ -4,6 +4,13 @@ import { resolve } from 'path';
 const args = process.argv.slice(2);
 const command = args[0];
 
+function parseFlag(flag: string): string | undefined {
+  const idx = args.indexOf(flag);
+  if (idx !== -1 && idx + 1 < args.length) {
+    return args[idx + 1];
+  }
+}
+
 async function main() {
   switch (command) {
     case 'dev': {
@@ -14,9 +21,11 @@ async function main() {
     }
 
     case 'build': {
-      const projectRoot = resolve(args[1] ?? process.cwd());
+      const base = parseFlag('--base');
+      const projectArg = args.find((a, i) => i > 0 && a !== '--' && !a.startsWith('--') && args[i - 1] !== '--base');
+      const projectRoot = resolve(projectArg ?? process.cwd());
       const { build } = await import('./commands/build');
-      await build(projectRoot);
+      await build(projectRoot, base);
       break;
     }
 
@@ -50,11 +59,12 @@ async function main() {
   Vylos — Visual Novel Engine
 
   Usage:
-    vylos dev [project-dir]     Start dev server
-    vylos build [project-dir]   Build for production
-    vylos editor [project-dir]  Open visual editor
-    vylos verify [project-dir]  Type-check project
-    vylos create <name>         Create new project
+    vylos dev [project-dir]              Start dev server
+    vylos build [project-dir]            Build for production
+    vylos build [project-dir] --base /p/ Build with custom base path
+    vylos editor [project-dir]           Open visual editor
+    vylos verify [project-dir]           Type-check project
+    vylos create <name>                  Create new project
 `);
   }
 }

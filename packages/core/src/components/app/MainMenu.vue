@@ -1,5 +1,5 @@
 <template>
-  <div class="main-menu">
+  <div class="main-menu" :style="menuBgStyle">
     <div class="main-menu__inner">
       <!-- Title -->
       <div class="main-menu__title-block">
@@ -42,11 +42,16 @@ import { computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { useGameStateStore } from '../../stores/gameState';
 import { EnginePhase, MenuType } from '../../engine/types';
+import { assetUrl } from '../../utils/assetUrl';
 
 const engineState = useEngineStateStore();
 const gameState = useGameStateStore();
 
 const canContinue = computed(() => !!gameState.state.locationId);
+
+const menuBgStyle = computed(() => ({
+  backgroundImage: `url('${assetUrl('/assets/global/menu/main.png')}')`,
+}));
 
 function newGame() {
   engineState.setPhase(EnginePhase.Running);
@@ -73,7 +78,9 @@ function openSettings() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: url('/global/images/menu/main.png') center / cover no-repeat;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   container-type: size;
   overflow: hidden;
 }

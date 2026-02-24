@@ -11,19 +11,14 @@ on:
         type: boolean
         default: false
 
-# Setup:
-#   Option A — OIDC trusted publishing (recommended, no secret needed):
-#     1. Go to npmjs.com → package settings → Publishing access
-#     2. Add trusted publisher: GitHub Actions
-#     3. Enter repo owner, repo name, workflow filename (publish.yml)
-#     4. The workflow uses --provenance and id-token: write — no NPM_TOKEN needed
-#
-#   Option B — Granular access token (fallback):
-#     1. Go to npmjs.com/settings/~/tokens → Generate New Token → Granular
-#     2. Scope: read/write for @vylos/core and @vylos/cli
-#     3. Enable "Bypass 2FA" for CI usage
-#     4. Max expiry: 90 days (must rotate)
-#     5. Add as NPM_TOKEN secret in GitHub repo settings
+# Setup — OIDC trusted publishing (no token needed):
+#   1. Publish both packages manually once: npm login && pnpm --filter @vylos/core publish --access public
+#   2. On npmjs.com → @vylos/core → Settings → Trusted Publisher → GitHub Actions
+#      - Owner: <your-github-org-or-user>
+#      - Repository: <repo-name>
+#      - Workflow: publish.yml
+#   3. Repeat for @vylos/cli
+#   That's it — no NPM_TOKEN secret needed, no token rotation.
 
 jobs:
   test:
@@ -61,19 +56,17 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      - run: npm install -g npm@latest
+
       - run: pnpm install --frozen-lockfile
 
       - name: Publish @vylos/core
         if: ${{ !inputs.dry-run }}
         run: pnpm --filter @vylos/core publish --access public --no-git-checks --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish @vylos/cli
         if: ${{ !inputs.dry-run }}
         run: pnpm --filter @vylos/cli publish --access public --no-git-checks --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Dry run — @vylos/core
         if: ${{ inputs.dry-run }}

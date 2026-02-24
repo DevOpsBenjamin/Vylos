@@ -5,7 +5,7 @@ const explore: VylosEvent = {
   locationId: 'hallway',
   conditions: (state) => state.flags['intro_done'] === true && !state.flags['hallway_explored'],
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/hallway/assets/hallway.png');
+    engine.setBackground('/assets/locations/hallway/hallway.png');
 
     await engine.say('The hallway stretches ahead, dimly lit by overhead lights.');
     await engine.say('At the far end you can see a door leading outside.');

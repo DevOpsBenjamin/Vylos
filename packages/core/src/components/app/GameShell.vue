@@ -36,6 +36,7 @@ import type { HistoryStep } from '../../engine/core/EventRunner';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
 import { CONFIG_INJECT_KEY } from '../../composables/useConfig';
 import { InputManager } from '../../engine/managers/InputManager';
+import { assetUrl } from '../../utils/assetUrl';
 
 import LoadingScreen from './LoadingScreen.vue';
 import MainMenu from './MainMenu.vue';
@@ -59,12 +60,12 @@ const inputManager = new InputManager();
 
 // --- Shell blurred background ---
 
-const MENU_BG = '/global/images/menu/main.png';
+const MENU_BG = '/assets/global/menu/main.png';
 
 const shellBgStyle = computed(() => {
   const bg = engineState.background || MENU_BG;
   return {
-    backgroundImage: `url('${bg}')`,
+    backgroundImage: `url('${assetUrl(bg)}')`,
   };
 });
 

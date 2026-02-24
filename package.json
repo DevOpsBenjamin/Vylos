@@ -11,7 +11,10 @@
     "dev": "pnpm --filter 2-romance dev",
     "build:basic": "pnpm --filter 1-basic build",
     "build:romance": "pnpm --filter 2-romance build",
-    "build:phone": "pnpm --filter 3-phone build"
+    "build:phone": "pnpm --filter 3-phone build",
+    "dev:pages": "pnpm --filter vylos-pages dev",
+    "build:pages": "pnpm --filter vylos-pages build",
+    "build:all": "pnpm build:pages && pnpm build:basic && pnpm build:romance && pnpm build:phone"
   },
   "engines": {
     "node": ">=22.0.0"

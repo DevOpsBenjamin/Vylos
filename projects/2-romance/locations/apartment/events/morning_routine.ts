@@ -9,7 +9,7 @@ const morningRoutine: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/apartment/assets/apartment_day.png');
+    engine.setBackground('/assets/locations/apartment/apartment_day.png');
     await engine.say('The alarm buzzes. Pale morning light fills the room.');
     await engine.say('You lie there for a moment, listening to the city waking up outside.');
 

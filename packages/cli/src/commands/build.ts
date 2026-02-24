@@ -6,13 +6,14 @@ import { resolve } from 'path';
 import { vylosProjectPlugin } from '../vite/projectPlugin';
 import { vylosI18nPlugin } from '../vite/i18nPlugin';
 
-export async function build(projectRoot: string) {
+export async function build(projectRoot: string, base?: string) {
   console.log(`\n  Vylos building...\n  Project: ${projectRoot}\n`);
 
   const outDir = resolve(projectRoot, 'dist');
 
   await viteBuild({
     root: projectRoot,
+    base: base ?? '/',
     plugins: [
       vue(),
       tailwindcss(),
@@ -28,6 +29,7 @@ export async function build(projectRoot: string) {
     build: {
       outDir,
       emptyOutDir: true,
+      assetsInlineLimit: 0,
       rollupOptions: {
         input: resolve(projectRoot, 'index.html'),
       },

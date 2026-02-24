@@ -1,10 +1,10 @@
 import type { Plugin } from 'vite';
 import { resolve } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, cpSync } from 'fs';
 
 /**
  * Vite plugin that resolves virtual module `vylos:project` to the project's config.
- * Also serves project assets.
+ * Also serves project assets in dev and copies them in build.
  */
 export function vylosProjectPlugin(projectRoot: string): Plugin {
   const virtualModuleId = 'vylos:project';
@@ -37,24 +37,14 @@ export function vylosProjectPlugin(projectRoot: string): Plugin {
     },
 
     configureServer(server) {
-      // Serve location assets
-      const locationsDir = resolve(projectRoot, 'locations');
-      const globalDir = resolve(projectRoot, 'global');
+      const assetsDir = resolve(projectRoot, 'assets');
 
       server.middlewares.use((req, _res, next) => {
         if (!req.url) return next();
 
-        // Rewrite /locations/... to project locations dir
-        if (req.url.startsWith('/locations/')) {
-          const assetPath = resolve(locationsDir, req.url.slice('/locations/'.length));
-          if (existsSync(assetPath)) {
-            req.url = '/@fs/' + assetPath.replace(/\\/g, '/');
-          }
-        }
-
-        // Rewrite /global/... to project global dir
-        if (req.url.startsWith('/global/')) {
-          const assetPath = resolve(globalDir, req.url.slice('/global/'.length));
+        // Rewrite /assets/... to project assets dir
+        if (req.url.startsWith('/assets/')) {
+          const assetPath = resolve(assetsDir, req.url.slice('/assets/'.length));
           if (existsSync(assetPath)) {
             req.url = '/@fs/' + assetPath.replace(/\\/g, '/');
           }
@@ -62,6 +52,15 @@ export function vylosProjectPlugin(projectRoot: string): Plugin {
 
         next();
       });
+    },
+
+    writeBundle() {
+      const assetsDir = resolve(projectRoot, 'assets');
+      const outDir = resolve(projectRoot, 'dist', 'assets');
+
+      if (existsSync(assetsDir)) {
+        cpSync(assetsDir, outDir, { recursive: true });
+      }
     },
   };
 }

@@ -9,8 +9,8 @@ const mayaDate: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/cafe/assets/cafe_day.png');
-    engine.setForeground('/locations/cafe/assets/maya.png');
+    engine.setBackground('/assets/locations/cafe/cafe_day.png');
+    engine.setForeground('/assets/locations/cafe/maya.png');
 
     await engine.say('Maya flips the "Open" sign to "Closed" and stretches her arms overhead.');
     await engine.say(`"I get off in twenty minutes and I'm dying to go somewhere that isn't here."`, { from: 'Maya' });

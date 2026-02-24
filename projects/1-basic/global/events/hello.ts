@@ -4,7 +4,7 @@ const intro: VylosEvent = {
   id: 'intro',
   conditions: (state) => !state.flags['intro_done'],
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/room/assets/room_day.png');
+    engine.setBackground('/assets/locations/room/room_day.png');
 
     await engine.say('Welcome to the Vylos Engine demo!');
 

@@ -11,8 +11,8 @@ const lenaPainting: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/neighbor/assets/lena_apartment.png');
-    engine.setForeground('/locations/neighbor/assets/lena_artist.png');
+    engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
+    engine.setForeground('/assets/locations/neighbor/lena_artist.png');
 
     await engine.say('You find Lena surrounded by fresh canvases, a brush in her hand, a question in her eyes.');
     await engine.say(`"I've been thinking about a portrait series," she says carefully.`, { from: 'Lena' });

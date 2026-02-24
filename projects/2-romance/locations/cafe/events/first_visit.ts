@@ -9,11 +9,11 @@ const firstVisit: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/cafe/assets/cafe_day.png');
+    engine.setBackground('/assets/locations/cafe/cafe_day.png');
     await engine.say('The Rosebud Cafe is a small corner place with warm lighting and mismatched chairs.');
     await engine.say(`The smell of fresh espresso hits you at the door — rich, inviting, like a hug you didn't know you needed.`);
 
-    engine.setForeground('/locations/cafe/assets/maya.png');
+    engine.setForeground('/assets/locations/cafe/maya.png');
     await engine.say('Behind the counter, a woman with flour on her sleeve glances up and breaks into a grin.', { from: 'Maya' });
     await engine.say(`"New face! Don't be shy — I don't bite. Usually."`, { from: 'Maya' });
 
