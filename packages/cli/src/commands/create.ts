@@ -1,5 +1,5 @@
 import { resolve, dirname } from 'path';
-import { existsSync, mkdirSync, cpSync } from 'fs';
+import { existsSync, mkdirSync, cpSync, readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 
 export async function create(name: string, targetDir?: string) {
@@ -23,6 +23,13 @@ export async function create(name: string, targetDir?: string) {
 
   mkdirSync(dest, { recursive: true });
   cpSync(templateDir, dest, { recursive: true });
+
+  // Replace project name in package.json
+  const pkgPath = resolve(dest, 'package.json');
+  if (existsSync(pkgPath)) {
+    const pkg = readFileSync(pkgPath, 'utf-8');
+    writeFileSync(pkgPath, pkg.replace('"my-vylos-game"', `"${name}"`));
+  }
 
   console.log(`  Project created at: ${dest}`);
   console.log(`\n  Next steps:`);
