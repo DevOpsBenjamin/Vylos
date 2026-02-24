@@ -1,6 +1,10 @@
 {
   "name": "@vylos/core",
-  "version": "0.2.0",
+  "version": "0.2.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DevOpsBenjamin/Vylos"
+  },
   "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
