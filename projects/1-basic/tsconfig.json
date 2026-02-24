@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@vylos/core": ["../../packages/core/src"]
+    }
+  },
+  "include": ["./**/*.ts", "./**/*.vue", "./env.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "@vylos/cli",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "vylos": "./bin/vylos.mjs"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts dev",
+    "build": "tsx src/index.ts build"
+  },
+  "dependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vylos/core": "workspace:*",
+    "vue": "^3.5.13",
+    "vite": "^6.0.7",
+    "vite-plugin-singlefile": "^2.0.3",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0",
+    "tsx": "^4.19.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  }
+}
