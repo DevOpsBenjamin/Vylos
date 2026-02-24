@@ -1,0 +1,22 @@
+{
+  "name": "my-vylos-game",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vylos dev",
+    "build": "vylos build"
+  },
+  "dependencies": {
+    "@vylos/core": "^0.2.1",
+    "@vylos/cli": "^0.2.1",
+    "vue": "^3.5.13",
+    "pinia": "^2.3.0",
+    "reflect-metadata": "^0.2.2",
+    "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7"
+  }
+}
