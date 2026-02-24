@@ -4,8 +4,8 @@ const apartment: VylosLocation = {
   id: 'apartment',
   name: { en: 'Your Apartment', fr: 'Votre Appartement' },
   backgrounds: [
-    { path: '/locations/apartment/assets/apartment_day.png', timeRange: [6, 20] },
-    { path: '/locations/apartment/assets/apartment_night.png', timeRange: [20, 6] },
+    { path: '/assets/locations/apartment/apartment_day.png', timeRange: [6, 20] },
+    { path: '/assets/locations/apartment/apartment_night.png', timeRange: [20, 6] },
   ],
 };
 

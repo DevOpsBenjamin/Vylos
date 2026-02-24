@@ -11,10 +11,10 @@ const lenaInvite: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/hallway/assets/hallway.png');
+    engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`You're halfway out the door when you hear your name from down the hall.`);
 
-    engine.setForeground('/locations/hallway/assets/lena.png');
+    engine.setForeground('/assets/locations/hallway/lena.png');
     await engine.say('"Hey! Do you have plans this week?"', { from: 'Lena' });
     await engine.say(`She's leaning against her doorframe, apron still on, paint-stained fingers curled around a mug.`);
     await engine.say('"I make dinner on Thursdays. Nothing fancy — just good food and better company. You should come."', { from: 'Lena' });

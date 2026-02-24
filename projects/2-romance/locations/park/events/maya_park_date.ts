@@ -9,8 +9,8 @@ const mayaParkDate: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/park/assets/park_sunset.jpg');
-    engine.setForeground('/locations/park/assets/maya_casual.png');
+    engine.setBackground('/assets/locations/park/park_sunset.jpg');
+    engine.setForeground('/assets/locations/park/maya_casual.png');
 
     await engine.say('Maya walks beside you along the river path, jacket over her arm, shoulders finally relaxed.');
     await engine.say('The sunset turns everything gold. She tilts her face toward the light and closes her eyes for a moment.');

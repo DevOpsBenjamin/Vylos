@@ -18,6 +18,7 @@ export { StateValidationError } from './engine/errors/StateValidationError';
 // Utils
 export { logger, LogLevel } from './engine/utils/logger';
 export { resolveBackground, formatGameTime, interpolate } from './engine/utils/TimeHelper';
+export { assetUrl } from './utils/assetUrl';
 
 // Stores
 export { useEngineStateStore } from './stores/engineState';

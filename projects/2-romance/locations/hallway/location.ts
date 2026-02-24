@@ -4,7 +4,7 @@ const hallway: VylosLocation = {
   id: 'hallway',
   name: { en: 'Hallway', fr: 'Couloir' },
   backgrounds: [
-    { path: '/locations/hallway/assets/hallway.png' },
+    { path: '/assets/locations/hallway/hallway.png' },
   ],
 };
 

@@ -4,7 +4,7 @@ const cafe: VylosLocation = {
   id: 'cafe',
   name: { en: 'Rosebud Cafe', fr: 'Cafe Rosebud' },
   backgrounds: [
-    { path: '/locations/cafe/assets/cafe_day.png' },
+    { path: '/assets/locations/cafe/cafe_day.png' },
   ],
 };
 

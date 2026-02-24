@@ -7,7 +7,7 @@ const trySleep: VylosEvent = {
   async execute(engine: VylosAPI, state: BaseGameState) {
     state.flags['try_sleep'] = false;
 
-    engine.setBackground('/locations/room/assets/room_night.png');
+    engine.setBackground('/assets/locations/room/room_night.png');
 
     await engine.say('You lie down on your bed and close your eyes.');
     await engine.say('...');

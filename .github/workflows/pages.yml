@@ -1,0 +1,65 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # Build showcase landing page
+      - name: Build pages
+        run: pnpm build:pages
+
+      # Build each project with subpath base
+      - name: Build 1-basic
+        run: pnpm --filter 1-basic build -- --base /vylos/1-basic/
+
+      - name: Build 2-romance
+        run: pnpm --filter 2-romance build -- --base /vylos/2-romance/
+
+      - name: Build 3-phone
+        run: pnpm --filter 3-phone build -- --base /vylos/3-phone/
+
+      # Assemble _site/
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp -r pages/dist/* _site/
+          cp -r projects/1-basic/dist _site/1-basic
+          cp -r projects/2-romance/dist _site/2-romance
+          cp -r projects/3-phone/dist _site/3-phone
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -4,8 +4,8 @@ const room: VylosLocation = {
   id: 'room',
   name: 'A Simple Room',
   backgrounds: [
-    { path: '/locations/room/assets/room_day.png', timeRange: [6, 20] },
-    { path: '/locations/room/assets/room_night.png', timeRange: [20, 6] },
+    { path: '/assets/locations/room/room_day.png', timeRange: [6, 20] },
+    { path: '/assets/locations/room/room_night.png', timeRange: [20, 6] },
   ],
 };
 

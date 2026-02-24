@@ -5,7 +5,7 @@
       class="absolute inset-0 flex items-end justify-center z-10 pointer-events-none"
     >
       <img
-        :src="engineState.foreground"
+        :src="fgUrl"
         class="max-h-full object-contain"
         alt=""
       />
@@ -14,9 +14,13 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
+import { assetUrl } from '../../utils/assetUrl';
 
 const engineState = useEngineStateStore();
+
+const fgUrl = computed(() => engineState.foreground ? assetUrl(engineState.foreground) : '');
 </script>
 
 <style scoped>

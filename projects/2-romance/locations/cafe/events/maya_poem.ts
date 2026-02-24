@@ -9,8 +9,8 @@ const mayaPoem: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/cafe/assets/cafe_day.png');
-    engine.setForeground('/locations/cafe/assets/maya.png');
+    engine.setBackground('/assets/locations/cafe/cafe_day.png');
+    engine.setForeground('/assets/locations/cafe/maya.png');
 
     await engine.say('The afternoon crowd has thinned. Maya leans on the counter with a folded piece of paper.');
     await engine.say(`"Okay, don't laugh — I write sometimes. And I want an honest opinion."`, { from: 'Maya' });

@@ -9,8 +9,8 @@ const dinnerAtLena: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/neighbor/assets/lena_apartment.png');
-    engine.setForeground('/locations/neighbor/assets/lena.png');
+    engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
+    engine.setForeground('/assets/locations/neighbor/lena.png');
 
     await engine.say(`Lena's apartment smells like garlic, rosemary, and something with wine in it.`);
     await engine.say(`Canvases line the walls — unfinished, overlapping, all slightly wild. It's beautiful chaos.`);

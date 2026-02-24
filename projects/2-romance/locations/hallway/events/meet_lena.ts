@@ -9,11 +9,11 @@ const meetLena: VylosEvent = {
   },
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    engine.setBackground('/locations/hallway/assets/hallway.png');
+    engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`The hallway is narrow and warmly lit. You've barely stepped out when you hear a thud.`);
     await engine.say(`A paper bag has toppled from someone's arms — groceries scattered across the floor.`);
 
-    engine.setForeground('/locations/hallway/assets/lena.png');
+    engine.setForeground('/assets/locations/hallway/lena.png');
     await engine.say(`"Oh no, not the eggs..."`, { from: 'Lena' });
     await engine.say(`She's crouching to gather things up — dark hair falling over her face, cheeks flushed.`);
 
