@@ -1,0 +1,23 @@
+
+> vylos-example-phone@0.0.0 dev C:\GIT\DevOps\VN\vylos\examples\phone
+> vylos dev
+
+Starting Vylos Dev Server...
+file:///C:/GIT/DevOps/VN/vylos/package/dist/bin/vylos.js:41
+  const t = process.cwd(), o = v(__dirname, "../..");
+                                 ^
+
+ReferenceError: __dirname is not defined
+    at Command.<anonymous> (file:///C:/GIT/DevOps/VN/vylos/package/dist/bin/vylos.js:41:34)
+    at Command.listener [as _actionHandler] (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:542:17)
+    at C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1502:14
+    at Command._chainOrCall (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1386:12)
+    at Command._parseCommand (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1501:27)
+    at C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1265:27
+    at Command._chainOrCall (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1386:12)
+    at Command._dispatchSubcommand (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1261:25)
+    at Command._parseCommand (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1457:19)
+    at Command.parse (C:\GIT\DevOps\VN\vylos\node_modules\.pnpm\commander@12.1.0\node_modules\commander\lib\command.js:1064:10)
+
+Node.js v25.1.0
+ÔÇëELIFECYCLEÔÇë Command failed with exit code 1.

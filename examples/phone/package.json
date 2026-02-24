@@ -1,0 +1,13 @@
+{
+    "name": "vylos-example-phone",
+    "private": true,
+    "version": "0.0.0",
+    "scripts": {
+        "dev": "vylos dev",
+        "build": "vylos build"
+    },
+    "dependencies": {
+        "@vylos/core": "workspace:*",
+        "vue": "^3.5.25"
+    }
+}
