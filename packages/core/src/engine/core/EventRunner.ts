@@ -9,6 +9,7 @@ import type {
   CheckpointType,
   ChoiceOption,
   DialogueState,
+  Character,
 } from '../types';
 import { CheckpointManager } from './CheckpointManager';
 import { WaitManager } from '../managers/WaitManager';
@@ -20,7 +21,7 @@ import { interpolate } from '../utils/TimeHelper';
 
 export interface EventRunnerCallbacks {
   /** Called when dialogue should be displayed */
-  onSay(text: string, speaker: string | null): void;
+  onSay(text: string, speaker: Character | null): void;
   /** Called when choices should be displayed */
   onChoice(options: Array<{ text: string; value: string; disabled?: boolean }>): void;
   /** Called to update background */
@@ -71,7 +72,7 @@ export class EventRunner implements VylosAPI {
   /** History browsing index (-1 = live, not browsing) */
   private browseIndex = -1;
   /** The live dialogue being displayed when history browsing started */
-  private liveDialogue: { text: string; speaker: string | null } | null = null;
+  private liveDialogue: { text: string; speaker: Character | null } | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
 
@@ -103,7 +104,7 @@ export class EventRunner implements VylosAPI {
   }
 
   /** Get the live dialogue for restoring display after exiting history */
-  getLiveDialogue(): { text: string; speaker: string | null } | null {
+  getLiveDialogue(): { text: string; speaker: Character | null } | null {
     return this.liveDialogue;
   }
 
@@ -248,10 +249,7 @@ export class EventRunner implements VylosAPI {
     }
 
     // Resolve speaker
-    let speaker: string | null = null;
-    if (options?.from) {
-      speaker = this.callbacks.resolveText(options.from);
-    }
+    const speaker: Character | null = options?.from ?? null;
 
     // If replaying, fast-forward: capture checkpoint and resolve immediately
     if (this.checkpoints.isReplaying) {

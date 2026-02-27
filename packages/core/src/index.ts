@@ -18,6 +18,7 @@ export { StateValidationError } from './engine/errors/StateValidationError';
 // Utils
 export { logger, LogLevel } from './engine/utils/logger';
 export { resolveBackground, formatGameTime, interpolate } from './engine/utils/TimeHelper';
+export { deepMerge } from './engine/utils/deepMerge';
 export { assetUrl } from './utils/assetUrl';
 
 // Stores
@@ -33,6 +34,7 @@ export { CheckpointManager } from './engine/core/CheckpointManager';
 export { createEngine, getComponentOverride, clearComponentOverrides, DI_TOKENS } from './engine/core/EngineFactory';
 
 // Managers
+export { InventoryManager } from './engine/managers/InventoryManager';
 export { EventManager } from './engine/managers/EventManager';
 export { HistoryManager } from './engine/managers/HistoryManager';
 export { NavigationManager, NavigationAction } from './engine/managers/NavigationManager';

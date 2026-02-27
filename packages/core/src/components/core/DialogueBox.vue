@@ -7,8 +7,12 @@
     >
       <div class="dlg-box" :class="{ 'dlg-box--history': engineState.historyBrowsing }">
         <!-- Speaker name -->
-        <div v-if="engineState.dialogue.speaker" class="dlg-speaker">
-          {{ engineState.dialogue.speaker }}
+        <div
+          v-if="engineState.dialogue.speaker"
+          class="dlg-speaker"
+          :style="engineState.dialogue.speaker.color ? { color: engineState.dialogue.speaker.color } : undefined"
+        >
+          {{ speakerName }}
         </div>
 
         <!-- Dialogue text -->
@@ -31,13 +35,21 @@
 </template>
 
 <script setup lang="ts">
-import { inject } from 'vue';
+import { inject, computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { useLanguage } from '../../composables/useLanguage';
 import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const { resolveText } = useLanguage();
+
+const speakerName = computed(() => {
+  const speaker = engineState.dialogue?.speaker;
+  if (!speaker) return '';
+  return resolveText(speaker.name);
+});
 
 function handleClick(): void {
   if (!engine) return;
@@ -115,7 +127,7 @@ function handleClick(): void {
 }
 
 .dlg-speaker {
-  color: #fde047;
+  color: #fde047; /* default — overridden by Character.color via :style */
   font-weight: 700;
   font-size: 1.8cqw;
   margin-bottom: 1cqh;

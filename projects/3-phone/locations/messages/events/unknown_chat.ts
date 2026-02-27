@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { system, unknown } from '../../../../characters';
 
 /**
  * First conversation with the unknown number.
@@ -11,10 +12,10 @@ const unknownChat: VylosEvent = {
   conditions: (state) => state.flags['first_notif_done'] && !state.flags['unknown_chat_done'],
 
   async execute(engine: VylosAPI, state: BaseGameState) {
-    await engine.say('You open the conversation with Unknown Number.', { from: 'System' });
+    await engine.say('You open the conversation with Unknown Number.', { from: system });
 
-    await engine.say("So you found the phone.", { from: 'Unknown' });
-    await engine.say("I was hoping someone curious would pick it up.", { from: 'Unknown' });
+    await engine.say("So you found the phone.", { from: unknown });
+    await engine.say("I was hoping someone curious would pick it up.", { from: unknown });
 
     const reply = await engine.choice([
       { text: 'Who are you?', value: 'who' },
@@ -23,20 +24,20 @@ const unknownChat: VylosEvent = {
     ]);
 
     if (reply === 'who') {
-      await engine.say("Names don't matter. Not yet.", { from: 'Unknown' });
-      await engine.say("What matters is what's on this phone.", { from: 'Unknown' });
+      await engine.say("Names don't matter. Not yet.", { from: unknown });
+      await engine.say("What matters is what's on this phone.", { from: unknown });
     } else if (reply === 'what') {
-      await engine.say("I want you to look. Really look.", { from: 'Unknown' });
-      await engine.say("There are things here the previous owner hid.", { from: 'Unknown' });
+      await engine.say("I want you to look. Really look.", { from: unknown });
+      await engine.say("There are things here the previous owner hid.", { from: unknown });
     } else {
-      await engine.say("Go ahead. They won't find anything.", { from: 'Unknown' });
-      await engine.say("This phone doesn't exist in any database.", { from: 'Unknown' });
-      await engine.say("But it exists for you. Right now.", { from: 'Unknown' });
+      await engine.say("Go ahead. They won't find anything.", { from: unknown });
+      await engine.say("This phone doesn't exist in any database.", { from: unknown });
+      await engine.say("But it exists for you. Right now.", { from: unknown });
     }
 
-    await engine.say("Check the gallery when you're ready.", { from: 'Unknown' });
-    await engine.say("And... be careful with the other apps.", { from: 'Unknown' });
-    await engine.say("Not everything here is what it seems.", { from: 'Unknown' });
+    await engine.say("Check the gallery when you're ready.", { from: unknown });
+    await engine.say("And... be careful with the other apps.", { from: unknown });
+    await engine.say("Not everything here is what it seems.", { from: unknown });
 
     state.flags['unknown_chat_done'] = true;
     (state as Record<string, unknown>).story = {

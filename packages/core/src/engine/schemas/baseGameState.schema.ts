@@ -9,6 +9,7 @@ export const baseGameStateSchema = z.object({
   player: z.object({
     name: z.string().min(1),
   }),
+  inventories: z.record(z.string(), z.record(z.string(), z.number().int().nonnegative())).default({}),
 });
 
 export type BaseGameStateFromSchema = z.infer<typeof baseGameStateSchema>;

@@ -9,6 +9,7 @@ function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
     flags: {},
     counters: {},
     player: { name: 'Alice' },
+    inventories: {},
     ...overrides,
   };
 }

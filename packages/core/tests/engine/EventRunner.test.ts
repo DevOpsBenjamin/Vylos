@@ -11,6 +11,7 @@ function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
     flags: {},
     counters: {},
     player: { name: 'Alice' },
+    inventories: {},
     ...overrides,
   };
 }
@@ -66,18 +67,19 @@ describe('EventRunner', () => {
       expect(callbacks.onClear).toHaveBeenCalled();
     });
 
-    it('resolves speaker text', async () => {
+    it('passes Character object as speaker', async () => {
+      const barista = { id: 'barista', name: 'Barista' };
       const event: VylosEvent = {
         id: 'test-speaker',
         async execute(engine: VylosAPI) {
-          await engine.say('Hi!', { from: 'Barista' });
+          await engine.say('Hi!', { from: barista });
         },
       };
 
       const promise = runner.executeEvent(event);
 
       await vi.waitFor(() => {
-        expect(callbacks.onSay).toHaveBeenCalledWith('Hi!', 'Barista');
+        expect(callbacks.onSay).toHaveBeenCalledWith('Hi!', barista);
       });
 
       runner.resolveWait();

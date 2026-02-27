@@ -14,6 +14,7 @@ import {
   ActionManager,
   type EventRunnerCallbacks,
   type TextEntry,
+  type Character,
 } from '@vylos/core';
 import config from './vylos.config';
 
@@ -42,7 +43,7 @@ const actionManager = new ActionManager();
 actionManager.registerAll([wait]);
 
 const callbacks: EventRunnerCallbacks = {
-  onSay(text, speaker) {
+  onSay(text: string, speaker: Character | null) {
     engineState.setDialogue({ text, speaker, isNarration: !speaker });
   },
   onChoice(options) {

@@ -3,6 +3,7 @@ import { EventRunner, type EventRunnerCallbacks } from '../../src/engine/core/Ev
 import { EventManager } from '../../src/engine/managers/EventManager';
 import { HistoryManager } from '../../src/engine/managers/HistoryManager';
 import { NavigationManager } from '../../src/engine/managers/NavigationManager';
+import { InventoryManager } from '../../src/engine/managers/InventoryManager';
 import { SaveManager } from '../../src/engine/managers/SaveManager';
 import { SettingsManager } from '../../src/engine/managers/SettingsManager';
 import { VylosStorage } from '../../src/engine/storage/VylosStorage';
@@ -19,6 +20,7 @@ function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
     flags: {},
     counters: {},
     player: { name: 'Alice' },
+    inventories: {},
     ...overrides,
   };
 }
@@ -53,9 +55,12 @@ describe('Game loop integration', () => {
     const saveManager = new SaveManager(storage);
     const settingsManager = new SettingsManager(storage);
 
+    const inventoryManager = new InventoryManager();
+
     const engine = new Engine({
       eventManager,
       historyManager,
+      inventoryManager,
       navigationManager,
       eventRunner,
       saveManager,
@@ -107,9 +112,12 @@ describe('Game loop integration', () => {
     const saveManager = new SaveManager(storage);
     const settingsManager = new SettingsManager(storage);
 
+    const inventoryManager = new InventoryManager();
+
     const engine = new Engine({
       eventManager,
       historyManager,
+      inventoryManager,
       navigationManager,
       eventRunner,
       saveManager,

@@ -12,6 +12,7 @@ describe('baseGameStateSchema', () => {
     flags: { intro_done: true },
     counters: { coffee_count: 2 },
     player: { name: 'Alice' },
+    inventories: {},
   };
 
   it('validates a correct base game state', () => {
@@ -103,7 +104,7 @@ describe('engineStateSchema', () => {
     const result = engineStateSchema.safeParse({
       ...validEngineState,
       phase: 'running',
-      dialogue: { text: 'Hello', speaker: 'Alice', isNarration: false },
+      dialogue: { text: 'Hello', speaker: { id: 'alice', name: 'Alice' }, isNarration: false },
     });
     expect(result.success).toBe(true);
   });

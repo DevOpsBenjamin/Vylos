@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { maya } from '../../../characters';
 
 const mayaParkDate: VylosEvent = {
   id: 'maya_park_date',
@@ -14,8 +15,8 @@ const mayaParkDate: VylosEvent = {
 
     await engine.say('Maya walks beside you along the river path, jacket over her arm, shoulders finally relaxed.');
     await engine.say('The sunset turns everything gold. She tilts her face toward the light and closes her eyes for a moment.');
-    await engine.say('"I used to want to travel. Open a cafe in Portugal or somewhere ridiculous like that."', { from: 'Maya' });
-    await engine.say(`"Now I'm not sure. Maybe what I want is already here and I just haven't found the right angle on it."`, { from: 'Maya' });
+    await engine.say('"I used to want to travel. Open a cafe in Portugal or somewhere ridiculous like that."', { from: maya });
+    await engine.say(`"Now I'm not sure. Maybe what I want is already here and I just haven't found the right angle on it."`, { from: maya });
     await engine.say('She glances at you — quick, a little vulnerable.');
 
     const pick = await engine.choice([
@@ -26,13 +27,13 @@ const mayaParkDate: VylosEvent = {
     if (pick === 'share') {
       await engine.say('You tell her what you came here chasing. The real version, not the polished one.');
       await engine.say('She listens. Actually listens — not waiting for her turn, just... present.');
-      await engine.say(`"That's the most honest thing anyone's said to me in a long time."`, { from: 'Maya' });
+      await engine.say(`"That's the most honest thing anyone's said to me in a long time."`, { from: maya });
       await engine.say('She bumps your shoulder gently. The river keeps moving beneath you both.');
       (state as any).npcs.maya.affection = Math.min(100, ((state as any).npcs.maya.affection ?? 0) + 20);
     } else {
       await engine.say('"Portugal has good tiles," you offer. "Terrible for espresso quality control though."');
-      await engine.say('She snorts — caught off guard — then laughs properly, leaning into your arm for a second.', { from: 'Maya' });
-      await engine.say(`"You're a terrible person," she says, grinning. "I mean that fondly."`, { from: 'Maya' });
+      await engine.say('She snorts — caught off guard — then laughs properly, leaning into your arm for a second.', { from: maya });
+      await engine.say(`"You're a terrible person," she says, grinning. "I mean that fondly."`, { from: maya });
       (state as any).npcs.maya.affection = Math.min(100, ((state as any).npcs.maya.affection ?? 0) + 10);
     }
 

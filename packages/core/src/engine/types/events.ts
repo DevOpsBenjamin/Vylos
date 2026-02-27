@@ -1,11 +1,12 @@
 import type { BaseGameState } from './game-state';
+import type { Character } from './dialogue';
 
 /** A text entry with per-language strings */
 export type TextEntry = Record<string, string>;
 
 /** Options for engine.say() */
 export interface SayOptions {
-  from?: string | TextEntry;
+  from?: Character;
   variables?: Record<string, string | number>;
 }
 

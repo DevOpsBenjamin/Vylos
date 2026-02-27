@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
+const characterSchema = z.object({
+  id: z.string(),
+  name: z.union([z.string(), z.record(z.string(), z.string())]),
+}).passthrough();
+
 const dialogueStateSchema = z.object({
   text: z.string(),
-  speaker: z.string().nullable(),
+  speaker: characterSchema.nullable(),
   isNarration: z.boolean(),
 });
 

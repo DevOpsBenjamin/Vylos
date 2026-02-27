@@ -16,6 +16,7 @@ import {
   type EventRunnerCallbacks,
   type BaseGameState,
   type TextEntry,
+  type Character,
 } from '@vylos/core';
 import config from './vylos.config';
 
@@ -89,7 +90,7 @@ actionManager.registerAll([rest, groom, orderCoffee, chatMaya]);
 
 // Engine callbacks bridging engine ↔ UI stores
 const callbacks: EventRunnerCallbacks = {
-  onSay(text: string, speaker: string | null) {
+  onSay(text: string, speaker: Character | null) {
     engineState.setDialogue({ text, speaker, isNarration: speaker === null });
   },
   onChoice(options) {

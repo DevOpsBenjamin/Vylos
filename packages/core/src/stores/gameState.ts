@@ -12,6 +12,7 @@ function createDefaultState(): BaseGameState {
     player: {
       name: 'Player',
     },
+    inventories: {},
   };
 }
 
