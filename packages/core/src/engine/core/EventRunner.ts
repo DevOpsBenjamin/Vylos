@@ -1,6 +1,7 @@
 import { toRaw } from 'vue';
 import type {
   VylosAPI,
+  InventoryAPI,
   VylosEvent,
   BaseGameState,
   TextEntry,
@@ -11,6 +12,7 @@ import type {
   DialogueState,
   Character,
 } from '../types';
+import { InventoryManager } from '../managers/InventoryManager';
 import { CheckpointManager } from './CheckpointManager';
 import { WaitManager } from '../managers/WaitManager';
 import { JumpSignal } from '../errors/JumpSignal';
@@ -83,9 +85,26 @@ export class EventRunner implements VylosAPI {
   /** Pending redo request (set by UI, consumed by redo loop) */
   private pendingRedo: { step: number; choice: string } | null = null;
 
-  constructor(callbacks: EventRunnerCallbacks) {
+  private inventoryManager: InventoryManager;
+
+  constructor(callbacks: EventRunnerCallbacks, inventoryManager: InventoryManager) {
     this.callbacks = callbacks;
+    this.inventoryManager = inventoryManager;
     this.checkpoints = new CheckpointManager();
+  }
+
+  get inventory(): InventoryAPI {
+    const inv = () => this.callbacks.getState().inventories;
+    const im = this.inventoryManager;
+    return {
+      add: (bag, itemId, qty) => im.add(inv(), bag, itemId, qty),
+      remove: (bag, itemId, qty) => im.remove(inv(), bag, itemId, qty),
+      has: (bag, itemId, qty) => im.has(inv(), bag, itemId, qty),
+      hasAll: (bag, items) => im.hasAll(inv(), bag, items),
+      count: (bag, itemId) => im.count(inv(), bag, itemId),
+      list: (bag) => im.list(inv(), bag),
+      clear: (bag) => im.clearBag(inv(), bag),
+    };
   }
 
   /** Whether the player is browsing text history */

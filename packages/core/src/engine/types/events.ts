@@ -18,6 +18,17 @@ export interface ChoiceItem<T extends string = string> {
   condition?: () => boolean;
 }
 
+/** Inventory operations available to event authors via engine.inventory */
+export interface InventoryAPI {
+  add(bag: string, itemId: string, qty?: number): number;
+  remove(bag: string, itemId: string, qty?: number): number;
+  has(bag: string, itemId: string, qty?: number): boolean;
+  hasAll(bag: string, items: Record<string, number>): boolean;
+  count(bag: string, itemId: string): number;
+  list(bag: string): Array<[string, number]>;
+  clear(bag: string): void;
+}
+
 /**
  * The API available to event execute() functions.
  * This is what visual novel authors interact with.
@@ -46,6 +57,9 @@ export interface VylosAPI {
 
   /** End the current event */
   end(): never;
+
+  /** Inventory operations (add, remove, has, count, etc.) */
+  readonly inventory: InventoryAPI;
 
   /** Wait for a specified duration (ms) */
   wait(ms: number): Promise<void>;

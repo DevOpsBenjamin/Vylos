@@ -77,8 +77,8 @@ export function createEngine(options: CreateEngineOptions): Engine {
   const navigationManager = childContainer.resolve<NavigationManager>(DI_TOKENS.NavigationManager);
   const inventoryManager = childContainer.resolve<InventoryManager>(DI_TOKENS.InventoryManager);
 
-  // EventRunner needs callbacks, so we construct it directly
-  const eventRunner = new EventRunner(options.callbacks);
+  // EventRunner needs callbacks + inventoryManager, so we construct it directly
+  const eventRunner = new EventRunner(options.callbacks, inventoryManager);
 
   // Storage + persistence managers
   const storage = new VylosStorage(options.projectId ?? 'default');

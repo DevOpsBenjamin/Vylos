@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EventRunner, type EventRunnerCallbacks } from '../../src/engine/core/EventRunner';
+import { InventoryManager } from '../../src/engine/managers/InventoryManager';
 import type { VylosEvent, VylosAPI, BaseGameState } from '../../src/engine/types';
 import { JumpSignal } from '../../src/engine/errors/JumpSignal';
 import { EventEndError } from '../../src/engine/errors/EventEndError';
@@ -40,7 +41,7 @@ describe('EventRunner', () => {
 
   beforeEach(() => {
     callbacks = makeCallbacks();
-    runner = new EventRunner(callbacks);
+    runner = new EventRunner(callbacks, new InventoryManager());
   });
 
   describe('say()', () => {
@@ -272,6 +273,93 @@ describe('EventRunner', () => {
       await runner.executeEvent(event);
       expect(callbacks.onSetBackground).toHaveBeenCalledWith('/bg.jpg');
       expect(callbacks.onSetForeground).toHaveBeenCalledWith('/fg.png');
+    });
+  });
+
+  describe('inventory API', () => {
+    it('add() delegates to InventoryManager with current state', async () => {
+      const event: VylosEvent = {
+        id: 'test-inv-add',
+        async execute(engine: VylosAPI) {
+          engine.inventory.add('backpack', 'potion', 3);
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(callbacks.state.inventories['backpack']?.['potion']).toBe(3);
+    });
+
+    it('has() reads current state', async () => {
+      callbacks.state.inventories = { backpack: { potion: 5 } };
+      let result = false;
+
+      const event: VylosEvent = {
+        id: 'test-inv-has',
+        async execute(engine: VylosAPI) {
+          result = engine.inventory.has('backpack', 'potion', 3);
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(result).toBe(true);
+    });
+
+    it('remove() mutates state', async () => {
+      callbacks.state.inventories = { backpack: { potion: 5 } };
+
+      const event: VylosEvent = {
+        id: 'test-inv-remove',
+        async execute(engine: VylosAPI) {
+          engine.inventory.remove('backpack', 'potion', 2);
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(callbacks.state.inventories['backpack']?.['potion']).toBe(3);
+    });
+
+    it('count() returns correct value', async () => {
+      callbacks.state.inventories = { backpack: { potion: 7 } };
+      let result = 0;
+
+      const event: VylosEvent = {
+        id: 'test-inv-count',
+        async execute(engine: VylosAPI) {
+          result = engine.inventory.count('backpack', 'potion');
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(result).toBe(7);
+    });
+
+    it('list() returns bag contents', async () => {
+      callbacks.state.inventories = { backpack: { potion: 3, sword: 1 } };
+      let result: Array<[string, number]> = [];
+
+      const event: VylosEvent = {
+        id: 'test-inv-list',
+        async execute(engine: VylosAPI) {
+          result = engine.inventory.list('backpack');
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(result).toEqual([['potion', 3], ['sword', 1]]);
+    });
+
+    it('clear() empties a bag', async () => {
+      callbacks.state.inventories = { backpack: { potion: 3, sword: 1 } };
+
+      const event: VylosEvent = {
+        id: 'test-inv-clear',
+        async execute(engine: VylosAPI) {
+          engine.inventory.clear('backpack');
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(callbacks.state.inventories['backpack']).toBeUndefined();
     });
   });
 
