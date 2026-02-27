@@ -15,7 +15,13 @@ pnpm dev:basic                  # Dev server: 1-basic
 pnpm dev:romance                # Dev server: 2-romance
 pnpm dev:phone                  # Dev server: 3-phone
 pnpm dev                        # Shortcut → 2-romance
+pnpm dev:pages                  # Dev server: GitHub Pages showcase
 pnpm build:basic                # Production single-HTML build
+pnpm build:romance              # Production single-HTML build
+pnpm build:phone                # Production single-HTML build
+pnpm build:pages                # Build GitHub Pages showcase
+pnpm build:all                  # Build pages + all projects
+npx vylos create <name>         # Scaffold a new Vylos project
 ```
 
 Node.js >= 22.0.0, pnpm 9.15+ required.
@@ -23,11 +29,12 @@ Node.js >= 22.0.0, pnpm 9.15+ required.
 ## Monorepo Structure
 
 ```
-packages/core/         @vylos/core — engine, types, schemas, stores, components, managers
-packages/cli/          @vylos/cli — Vite dev/build/create commands
+packages/core/         @vylos/core (0.3.0) — engine, types, schemas, stores, components, managers
+packages/cli/          @vylos/cli (0.3.0) — Vite dev/build/create commands + project templates
 projects/1-basic/      Feature showcase (3 locations, day/night, sleep cycle, intro tutorial)
 projects/2-romance/    Dating sim (5 locations, Maya/Lena routes, i18n en/fr)
 projects/3-phone/      Phone game with plugin UI override
+pages/                 GitHub Pages showcase site
 ```
 
 ## Architecture
@@ -68,9 +75,9 @@ engine.run(events, () => gameState.state, {
 });
 ```
 
-### DI (tsyringe)
+### Engine Creation (callbacks-based)
 
-`createEngine()` uses child containers. Projects provide a `VylosPlugin` with `setup(container)` to override any manager. Component overrides are separate from DI.
+`createEngine({ callbacks, projectId })` takes an `EventRunnerCallbacks` object that wires the engine to stores and managers. Projects define callbacks for `onSay`, `onChoice`, `onSetBackground`, `onSetForeground`, `onSetLocation`, `onClear`, `resolveText`, `getState`, `setState`. DI via tsyringe is available — projects can provide a `VylosPlugin` with `setup(container)` to override managers.
 
 ### State (Pinia)
 
@@ -156,20 +163,24 @@ GameShell (keyboard handler via InputManager, phase routing)
 
 ## Project Structure (for game authors)
 
+Assets are flat — separated from code in a top-level `assets/` directory. Background paths in `location.ts` use `/assets/locations/<id>/...` (resolved via `assetUrl()`).
+
 ```
 projects/<name>/
 ├── index.html          # Vite entry
-├── main.ts             # Bootstrap: createApp, createEngine, managers, provide, run
+├── main.ts             # Bootstrap: createApp, createEngine, callbacks, managers, provide, run
 ├── style.css           # Tailwind + @source
-├── vylos.config.ts     # Project metadata
+├── vylos.config.ts     # Project metadata (id, name, version, languages, resolution)
 ├── setup.ts            # VylosPlugin (optional)
+├── assets/
+│   ├── global/
+│   │   └── menu/       # Menu background (titleimage, etc.)
+│   └── locations/<id>/ # Background images per location (time-of-day variants)
 ├── locations/<id>/
-│   ├── location.ts     # VylosLocation: id, name, backgrounds (with timeRange)
+│   ├── location.ts     # VylosLocation: id, name, backgrounds (path + timeRange)
 │   ├── events/         # VylosEvent files (locationId, conditions, execute)
-│   ├── actions/        # VylosAction files (locationId, unlocked, execute)
-│   └── assets/         # Images for this location
+│   └── actions/        # VylosAction files (locationId, unlocked, execute)
 └── global/
     ├── events/         # Global events (no locationId, trigger anywhere)
-    ├── actions/        # Global actions (no locationId, always available)
-    └── images/menu/    # Menu background
+    └── actions/        # Global actions (no locationId, always available)
 ```
