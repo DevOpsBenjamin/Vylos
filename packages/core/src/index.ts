@@ -3,17 +3,10 @@ import 'reflect-metadata';
 // Types
 export * from './engine/types';
 
-// Schemas
-export { baseGameStateSchema, extendGameStateSchema } from './engine/schemas/baseGameState.schema';
-export { engineStateSchema, engineSettingsSchema } from './engine/schemas/engineState.schema';
-export { checkpointSchema } from './engine/schemas/checkpoint.schema';
-export { locationSchema, locationLinkSchema } from './engine/schemas/location.schema';
-
 // Errors
 export { JumpSignal } from './engine/errors/JumpSignal';
 export { EventEndError } from './engine/errors/EventEndError';
 export { InterruptSignal } from './engine/errors/InterruptSignal';
-export { StateValidationError } from './engine/errors/StateValidationError';
 
 // Utils
 export { logger, LogLevel } from './engine/utils/logger';
