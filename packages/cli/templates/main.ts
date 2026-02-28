@@ -62,6 +62,8 @@ const callbacks: EventRunnerCallbacks = {
   onClear() {
     engineState.setDialogue(null);
     engineState.setChoices(null);
+    engineState.setForeground(null);
+    engineState.setOverlay(null);
   },
   resolveText(entry: string | TextEntry) {
     return typeof entry === 'string' ? entry : entry['en'] ?? Object.values(entry)[0] ?? '';
