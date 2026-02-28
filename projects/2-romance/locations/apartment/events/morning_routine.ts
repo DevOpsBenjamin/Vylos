@@ -1,14 +1,14 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const morningRoutine: VylosEvent = {
   id: 'morning_routine',
   locationId: 'apartment',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return state.flags['intro_done'] === true && !state.flags['woke_up'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/apartment/apartment_day.png');
     await engine.say('The alarm buzzes. Pale morning light fills the room.');
     await engine.say('You lie there for a moment, listening to the city waking up outside.');

@@ -1,10 +1,10 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const explore: VylosEvent = {
   id: 'explore_hallway',
   locationId: 'hallway',
   conditions: (state) => state.flags['intro_done'] === true && !state.flags['hallway_explored'],
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
 
     await engine.say('The hallway stretches ahead, dimly lit by overhead lights.');

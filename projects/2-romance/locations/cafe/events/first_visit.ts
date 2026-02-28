@@ -1,15 +1,15 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { maya } from '../../../characters';
 
 const firstVisit: VylosEvent = {
   id: 'first_visit',
   locationId: 'cafe',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return state.flags['woke_up'] === true && !state.flags['visited_cafe'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     await engine.say('The Rosebud Cafe is a small corner place with warm lighting and mismatched chairs.');
     await engine.say(`The smell of fresh espresso hits you at the door — rich, inviting, like a hug you didn't know you needed.`);

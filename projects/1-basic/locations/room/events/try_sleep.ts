@@ -1,10 +1,10 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const trySleep: VylosEvent = {
   id: 'try_sleep',
   locationId: 'room',
   conditions: (state) => state.flags['try_sleep'] === true,
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     state.flags['try_sleep'] = false;
 
     engine.setBackground('/assets/locations/room/room_night.png');

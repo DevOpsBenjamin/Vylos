@@ -1,13 +1,13 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const intro: VylosEvent = {
   id: 'intro',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return !state.flags['intro_done'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('Moving vans, cardboard boxes, and the scent of a city you barely know.');
     await engine.say(`You've arrived in the heart of the city, chasing something — a fresh start, maybe love, maybe both.`);
     await engine.say('Your new apartment is small but full of possibility. The neighbors? Completely unknown.');

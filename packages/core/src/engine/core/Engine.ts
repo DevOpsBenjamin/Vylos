@@ -1,4 +1,4 @@
-import type { VylosEvent, BaseGameState, Checkpoint, SaveSlot } from '../types';
+import type { VylosEvent, VylosGameState, Checkpoint, SaveSlot } from '../types';
 import { EventManager } from '../managers/EventManager';
 import { HistoryManager } from '../managers/HistoryManager';
 import { InventoryManager } from '../managers/InventoryManager';
@@ -12,9 +12,9 @@ import { attachDevConsole } from '../utils/devConsole';
 
 export interface EngineLoopCallbacks {
   /** Called each loop iteration (update UI: available locations, actions, background) */
-  onTick?(state: BaseGameState): void;
+  onTick?(state: VylosGameState): void;
   /** Called when player selects an action */
-  onAction?(actionId: string, state: BaseGameState): void;
+  onAction?(actionId: string, state: VylosGameState): void;
 }
 
 export interface EngineDeps {
@@ -45,7 +45,7 @@ export class Engine {
   private pendingResume: {
     eventId: string;
     checkpoints: Checkpoint[];
-    initialState: BaseGameState;
+    initialState: VylosGameState;
   } | null = null;
 
   /** Flag to skip event lock/push when interrupted by a load */
@@ -62,7 +62,7 @@ export class Engine {
   }
 
   /** Register events and start the game loop */
-  async run(events: VylosEvent[], getState: () => BaseGameState, loop?: EngineLoopCallbacks): Promise<void> {
+  async run(events: VylosEvent[], getState: () => VylosGameState, loop?: EngineLoopCallbacks): Promise<void> {
     this.eventManager.registerAll(events);
     this.running = true;
     attachDevConsole(this, getState);
@@ -137,7 +137,7 @@ export class Engine {
    * Load a save and resume execution.
    * Restores game state, history, event lock state, and sets up mid-event resume if needed.
    */
-  loadSave(saveData: SaveSlot, setState: (state: BaseGameState) => void): void {
+  loadSave(saveData: SaveSlot, setState: (state: VylosGameState) => void): void {
     // Restore game state
     setState(JSON.parse(JSON.stringify(saveData.gameState)));
 
@@ -170,7 +170,7 @@ export class Engine {
   }
 
   /** Execute a single event, handling jumps */
-  private async executeEvent(event: VylosEvent, getState: () => BaseGameState): Promise<void> {
+  private async executeEvent(event: VylosEvent, getState: () => VylosGameState): Promise<void> {
     let currentEvent: VylosEvent | undefined = event;
 
     while (currentEvent) {
@@ -214,7 +214,7 @@ export class Engine {
   }
 
   /** Handle resuming a mid-event save */
-  private async handleResume(getState: () => BaseGameState): Promise<void> {
+  private async handleResume(getState: () => VylosGameState): Promise<void> {
     const resume = this.pendingResume!;
     this.pendingResume = null;
 

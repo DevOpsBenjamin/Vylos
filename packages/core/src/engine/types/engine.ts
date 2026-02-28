@@ -1,5 +1,5 @@
 import type { DrawableEventEntry } from './events';
-import type { Character } from './dialogue';
+import type { VylosCharacter } from './dialogue';
 
 /** Engine lifecycle phases */
 export enum EnginePhase {
@@ -33,7 +33,7 @@ export interface EngineState {
 
 export interface DialogueState {
   text: string;
-  speaker: Character | null;
+  speaker: VylosCharacter | null;
   isNarration: boolean;
 }
 

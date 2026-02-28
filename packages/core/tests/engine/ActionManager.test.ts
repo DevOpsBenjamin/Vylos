@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ActionManager } from '../../src/engine/managers/ActionManager';
-import type { VylosAction, BaseGameState } from '../../src/engine/types';
+import type { VylosAction, VylosGameState } from '../../src/engine/types';
 
-function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 12,
     flags: {},
     counters: {},
-    player: { name: 'Alice' },
+    player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
   };

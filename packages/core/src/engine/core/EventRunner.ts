@@ -3,14 +3,14 @@ import type {
   VylosAPI,
   InventoryAPI,
   VylosEvent,
-  BaseGameState,
+  VylosGameState,
   TextEntry,
   SayOptions,
   ChoiceItem,
   CheckpointType,
   ChoiceOption,
   DialogueState,
-  Character,
+  VylosCharacter,
 } from '../types';
 import { InventoryManager } from '../managers/InventoryManager';
 import { CheckpointManager } from './CheckpointManager';
@@ -23,7 +23,7 @@ import { interpolate } from '../utils/TimeHelper';
 
 export interface EventRunnerCallbacks {
   /** Called when dialogue should be displayed */
-  onSay(text: string, speaker: Character | null): void;
+  onSay(text: string, speaker: VylosCharacter | null): void;
   /** Called when choices should be displayed */
   onChoice(options: Array<{ text: string; value: string; disabled?: boolean }>): void;
   /** Called to update background */
@@ -41,9 +41,9 @@ export interface EventRunnerCallbacks {
   /** Resolve a TextEntry to a string using current language */
   resolveText(entry: string | TextEntry): string;
   /** Get current game state */
-  getState(): BaseGameState;
+  getState(): VylosGameState;
   /** Set game state (after rollback) */
-  setState(state: BaseGameState): void;
+  setState(state: VylosGameState): void;
 }
 
 /** Data returned when browsing history steps */
@@ -74,12 +74,12 @@ export class EventRunner implements VylosAPI {
   /** History browsing index (-1 = live, not browsing) */
   private browseIndex = -1;
   /** The live dialogue being displayed when history browsing started */
-  private liveDialogue: { text: string; speaker: Character | null } | null = null;
+  private liveDialogue: { text: string; speaker: VylosCharacter | null } | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
 
   /** Snapshot of game state before event started (for redo) */
-  private initialState: BaseGameState | null = null;
+  private initialState: VylosGameState | null = null;
   /** Reference to the currently executing event (for redo) */
   private currentEvent: VylosEvent | null = null;
   /** Pending redo request (set by UI, consumed by redo loop) */
@@ -118,12 +118,12 @@ export class EventRunner implements VylosAPI {
   }
 
   /** Get initial state snapshot for save (deep clone) */
-  getInitialState(): BaseGameState | null {
+  getInitialState(): VylosGameState | null {
     return this.initialState ? structuredClone(this.initialState) : null;
   }
 
   /** Get the live dialogue for restoring display after exiting history */
-  getLiveDialogue(): { text: string; speaker: Character | null } | null {
+  getLiveDialogue(): { text: string; speaker: VylosCharacter | null } | null {
     return this.liveDialogue;
   }
 
@@ -227,7 +227,7 @@ export class EventRunner implements VylosAPI {
   }
 
   /** Resume a saved mid-event execution (for load). Checkpoints must be restored externally first. */
-  async resumeEvent(event: VylosEvent, savedInitialState: BaseGameState): Promise<void> {
+  async resumeEvent(event: VylosEvent, savedInitialState: VylosGameState): Promise<void> {
     this.initialState = structuredClone(savedInitialState);
     this.currentEvent = event;
     this.currentStep = 0;
@@ -268,7 +268,7 @@ export class EventRunner implements VylosAPI {
     }
 
     // Resolve speaker
-    const speaker: Character | null = options?.from ?? null;
+    const speaker: VylosCharacter | null = options?.from ?? null;
 
     // If replaying, fast-forward: capture checkpoint and resolve immediately
     if (this.checkpoints.isReplaying) {

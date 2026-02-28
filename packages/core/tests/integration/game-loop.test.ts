@@ -8,24 +8,24 @@ import { SaveManager } from '../../src/engine/managers/SaveManager';
 import { SettingsManager } from '../../src/engine/managers/SettingsManager';
 import { VylosStorage } from '../../src/engine/storage/VylosStorage';
 import { Engine } from '../../src/engine/core/Engine';
-import type { VylosAPI, VylosEvent, BaseGameState } from '../../src/engine/types';
+import type { VylosAPI, VylosEvent, VylosGameState } from '../../src/engine/types';
 import { createEngine, clearComponentOverrides, getComponentOverride } from '../../src/engine/core/EngineFactory';
 import type { VylosPlugin } from '../../src/engine/types';
 import { defineComponent } from 'vue';
 
-function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 8,
     flags: {},
     counters: {},
-    player: { name: 'Alice' },
+    player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
   };
 }
 
-function makeCallbacks(state?: BaseGameState): EventRunnerCallbacks & { state: BaseGameState } {
+function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: VylosGameState } {
   const s = state ?? makeState();
   return {
     state: s,
@@ -39,7 +39,7 @@ function makeCallbacks(state?: BaseGameState): EventRunnerCallbacks & { state: B
     onClear: vi.fn(),
     resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
     getState: vi.fn(() => s),
-    setState: vi.fn((newState: BaseGameState) => { Object.assign(s, newState); }),
+    setState: vi.fn((newState: VylosGameState) => { Object.assign(s, newState); }),
   };
 }
 

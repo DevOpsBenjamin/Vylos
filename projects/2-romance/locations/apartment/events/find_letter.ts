@@ -1,16 +1,16 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const findLetter: VylosEvent = {
   id: 'find_letter',
   locationId: 'apartment',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return (state as any).day === 1
       && state.flags['woke_up'] === true
       && !state.flags['found_letter'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say(`As you're getting ready to head out, something catches your eye by the door.`);
     await engine.say('A small envelope, slipped under the gap. No stamp — handwritten, warm cursive.');
     await engine.say(`"Welcome to the building! I'm in 4B if you ever need anything. — Lena"`);

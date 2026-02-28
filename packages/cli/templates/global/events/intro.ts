@@ -1,10 +1,12 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI } from '@vylos/core';
+import type { GameState } from '../../state';
+import { narrator } from '../../characters';
 
-const intro: VylosEvent = {
+const intro: VylosEvent<GameState> = {
   id: 'intro',
   conditions: (state) => !state.flags['intro_done'],
-  async execute(engine: VylosAPI, state: BaseGameState) {
-    await engine.say('Welcome to your Vylos game!');
+  async execute(engine: VylosAPI, state: GameState) {
+    await engine.say('Welcome to your Vylos game!', { from: narrator });
     await engine.say('This is a starter template. Edit the events to build your story.');
 
     const pick = await engine.choice([

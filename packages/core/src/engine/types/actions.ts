@@ -1,8 +1,8 @@
-import type { BaseGameState } from './game-state';
+import type { VylosGameState } from './game-state';
 import type { TextEntry } from './events';
 
 /** An action available to the player at a location */
-export interface VylosAction<TState extends BaseGameState = BaseGameState> {
+export interface VylosAction<TState extends VylosGameState = VylosGameState> {
   /** Unique action ID */
   id: string;
 

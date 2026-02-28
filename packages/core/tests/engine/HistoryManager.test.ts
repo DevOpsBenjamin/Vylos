@@ -11,7 +11,7 @@ function makeCheckpoints(count: number): Checkpoint[] {
       gameTime: 8 + i,
       flags: {},
       counters: {},
-      player: { name: 'Alice' },
+      player: { id: 'alice', name: 'Alice' },
     },
     type: CheckpointType.Say,
   }));

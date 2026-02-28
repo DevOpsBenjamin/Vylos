@@ -1,10 +1,10 @@
 import type { Engine } from '../core/Engine';
-import type { BaseGameState } from '../types';
+import type { VylosGameState } from '../types';
 import { logger } from './logger';
 
 export interface VylosConsole {
   /** Current game state (read/write — changes are live) */
-  readonly state: BaseGameState;
+  readonly state: VylosGameState;
   /** Inventory shorthand */
   readonly inventory: {
     add(bag: string, itemId: string, qty?: number): number;
@@ -25,7 +25,7 @@ declare global {
 }
 
 /** Attach `window.Vylos` for console cheating/debugging */
-export function attachDevConsole(engine: Engine, getState: () => BaseGameState): void {
+export function attachDevConsole(engine: Engine, getState: () => VylosGameState): void {
   const im = engine.inventoryManager;
 
   Object.defineProperty(window, 'Vylos', {

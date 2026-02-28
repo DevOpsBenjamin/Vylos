@@ -1,4 +1,4 @@
-import type { BaseGameState } from '@vylos/core';
+import type { VylosGameState } from '@vylos/core';
 
 interface MessageChoice {
   text: string;
@@ -49,7 +49,7 @@ interface StoryState {
   sideQuests: Record<string, boolean>;
 }
 
-export interface GameState extends BaseGameState {
+export interface GameState extends VylosGameState {
   phone: PhoneState;
   story: StoryState;
 }

@@ -1,10 +1,10 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { maya } from '../../characters';
 
 const actionFeedback: VylosEvent = {
   id: 'action_feedback',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return (
       state.flags['freshened_up'] === true ||
       state.flags['rested'] === true ||
@@ -13,7 +13,7 @@ const actionFeedback: VylosEvent = {
     );
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     if (state.flags['freshened_up']) {
       state.flags['freshened_up'] = false;
       await engine.say('A quick splash of water, a fresh shirt. You feel a bit more confident.');

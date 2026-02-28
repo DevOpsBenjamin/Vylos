@@ -1,12 +1,8 @@
+import type { VylosCharacter } from './dialogue';
 import type { InventoryData } from './inventory';
 
-/** Base player data that all projects extend */
-export interface BasePlayer {
-  name: string;
-}
-
-/** Base game state that all projects extend via Zod schema */
-export interface BaseGameState {
+/** Base game state — projects extend this into their own GameState */
+export interface VylosGameState {
   /** Current location ID */
   locationId: string;
   /** In-game time (hours since game start, e.g. 14.5 = 2:30 PM) */
@@ -15,8 +11,8 @@ export interface BaseGameState {
   flags: Record<string, boolean>;
   /** Generic counters */
   counters: Record<string, number>;
-  /** Player data */
-  player: BasePlayer;
+  /** Player character */
+  player: VylosCharacter;
   /** Inventory data: bag/category ID -> item ID -> quantity */
   inventories: InventoryData;
 }

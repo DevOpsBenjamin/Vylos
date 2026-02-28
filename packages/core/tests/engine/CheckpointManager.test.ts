@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { CheckpointManager } from '../../src/engine/core/CheckpointManager';
-import type { BaseGameState } from '../../src/engine/types';
+import type { VylosGameState } from '../../src/engine/types';
 import { CheckpointType } from '../../src/engine/types';
 
-function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 8,
     flags: {},
     counters: {},
-    player: { name: 'Alice' },
+    player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
   };

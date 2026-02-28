@@ -1,17 +1,17 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { lena } from '../../../characters';
 
 const lenaPainting: VylosEvent = {
   id: 'lena_painting',
   locationId: 'neighbor',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return state.flags['dinner_done'] === true
       && (state as any).npcs?.lena?.affection >= 50
       && !state.flags['lena_painting'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
     engine.setForeground('/assets/locations/neighbor/lena_artist.png');
 

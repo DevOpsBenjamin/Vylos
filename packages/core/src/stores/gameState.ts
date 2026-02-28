@@ -1,15 +1,16 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { BaseGameState } from '../engine/types';
+import type { VylosGameState } from '../engine/types';
 
 /** Default initial game state */
-function createDefaultState(): BaseGameState {
+function createDefaultState(): VylosGameState {
   return {
     locationId: '',
     gameTime: 8,
     flags: {},
     counters: {},
     player: {
+      id: 'player',
       name: 'Player',
     },
     inventories: {},
@@ -17,21 +18,21 @@ function createDefaultState(): BaseGameState {
 }
 
 export const useGameStateStore = defineStore('gameState', () => {
-  const state = ref<BaseGameState>(createDefaultState());
+  const state = ref<VylosGameState>(createDefaultState());
 
-  function getState(): BaseGameState {
+  function getState(): VylosGameState {
     return state.value;
   }
 
-  function setState(newState: BaseGameState) {
+  function setState(newState: VylosGameState) {
     state.value = newState;
   }
 
-  function getSnapshot(): BaseGameState {
+  function getSnapshot(): VylosGameState {
     return structuredClone(state.value);
   }
 
-  function restoreSnapshot(snapshot: BaseGameState) {
+  function restoreSnapshot(snapshot: VylosGameState) {
     state.value = structuredClone(snapshot);
   }
 

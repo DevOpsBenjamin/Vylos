@@ -1,14 +1,14 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { LocationManager } from '../../src/engine/managers/LocationManager';
-import type { VylosLocation, LocationLink, BaseGameState } from '../../src/engine/types';
+import type { VylosLocation, LocationLink, VylosGameState } from '../../src/engine/types';
 
-function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'bedroom',
     gameTime: 12,
     flags: {},
     counters: {},
-    player: { name: 'Alice' },
+    player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
   };

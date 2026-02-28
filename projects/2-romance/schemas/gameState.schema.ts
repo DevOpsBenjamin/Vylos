@@ -1,4 +1,4 @@
-import type { BaseGameState } from '@vylos/core';
+import type { VylosGameState } from '@vylos/core';
 
 interface NpcState {
   affection: number;
@@ -7,7 +7,7 @@ interface NpcState {
   events: string[];
 }
 
-export interface GameState extends BaseGameState {
+export interface GameState extends VylosGameState {
   energy: number;
   charm: number;
   day: number;
