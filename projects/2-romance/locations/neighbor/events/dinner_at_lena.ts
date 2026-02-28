@@ -1,5 +1,5 @@
 import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
-import { lena } from '../../../characters';
+import { lena } from '@game';
 
 const dinnerAtLena: VylosEvent = {
   id: 'dinner_at_lena',

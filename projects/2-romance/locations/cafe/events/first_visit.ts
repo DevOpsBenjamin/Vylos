@@ -1,5 +1,5 @@
 import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
-import { maya } from '../../../characters';
+import { maya } from '@game';
 
 const firstVisit: VylosEvent = {
   id: 'first_visit',
