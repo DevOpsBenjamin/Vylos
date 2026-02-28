@@ -16,7 +16,7 @@ import {
   type VylosCharacter,
 } from '@vylos/core';
 import config from './vylos.config';
-import { useGameStore } from './state';
+import { useGameStore } from './gameState';
 
 // Locations
 import home from './locations/home/location';

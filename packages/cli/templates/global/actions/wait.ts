@@ -1,5 +1,5 @@
 import type { VylosAction } from '@vylos/core';
-import type { GameState } from '../../state';
+import type { GameState } from '../../gameState';
 
 const wait: VylosAction<GameState> = {
   id: 'wait',
