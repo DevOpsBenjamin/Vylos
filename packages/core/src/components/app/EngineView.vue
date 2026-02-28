@@ -8,15 +8,13 @@
 
     <!-- UI layer — hidden with H key (Ren'Py style) -->
     <template v-if="!engineState.uiHidden">
-      <!-- z-15: Drawable events (clickable characters/objects) -->
-      <DrawableOverlay />
-
-      <!-- z-20: Location + Action overlays (left / right panels) -->
-      <LocationOverlay />
-      <ActionOverlay />
-
-      <!-- z-25: Top bar -->
-      <TopBar />
+      <!-- z-15–25: HUD (hidden during dialogue/choices) -->
+      <template v-if="!hideHud">
+        <DrawableOverlay />
+        <LocationOverlay />
+        <ActionOverlay />
+        <TopBar />
+      </template>
 
       <!-- z-30: Dialogue box -->
       <DialogueBox />
@@ -31,6 +29,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import BackgroundLayer from '../core/BackgroundLayer.vue';
 import ForegroundLayer from '../core/ForegroundLayer.vue';
@@ -43,4 +42,5 @@ import LocationOverlay from '../menu/LocationOverlay.vue';
 import TopBar from '../menu/TopBar.vue';
 
 const engineState = useEngineStateStore();
+const hideHud = computed(() => !!engineState.dialogue || !!engineState.choices);
 </script>
