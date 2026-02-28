@@ -1,11 +1,12 @@
 import type { BaseGameState } from './game-state';
+import type { Character } from './dialogue';
 
 /** A text entry with per-language strings */
 export type TextEntry = Record<string, string>;
 
 /** Options for engine.say() */
 export interface SayOptions {
-  from?: string | TextEntry;
+  from?: Character;
   variables?: Record<string, string | number>;
 }
 
@@ -15,6 +16,17 @@ export interface ChoiceItem<T extends string = string> {
   value: T;
   disabled?: boolean;
   condition?: () => boolean;
+}
+
+/** Inventory operations available to event authors via engine.inventory */
+export interface InventoryAPI {
+  add(bag: string, itemId: string, qty?: number): number;
+  remove(bag: string, itemId: string, qty?: number): number;
+  has(bag: string, itemId: string, qty?: number): boolean;
+  hasAll(bag: string, items: Record<string, number>): boolean;
+  count(bag: string, itemId: string): number;
+  list(bag: string): Array<[string, number]>;
+  clear(bag: string): void;
 }
 
 /**
@@ -45,6 +57,9 @@ export interface VylosAPI {
 
   /** End the current event */
   end(): never;
+
+  /** Inventory operations (add, remove, has, count, etc.) */
+  readonly inventory: InventoryAPI;
 
   /** Wait for a specified duration (ms) */
   wait(ms: number): Promise<void>;

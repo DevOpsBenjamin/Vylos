@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { maya } from '../../../characters';
 
 const mayaPoem: VylosEvent = {
   id: 'maya_poem',
@@ -13,7 +14,7 @@ const mayaPoem: VylosEvent = {
     engine.setForeground('/assets/locations/cafe/maya.png');
 
     await engine.say('The afternoon crowd has thinned. Maya leans on the counter with a folded piece of paper.');
-    await engine.say(`"Okay, don't laugh — I write sometimes. And I want an honest opinion."`, { from: 'Maya' });
+    await engine.say(`"Okay, don't laugh — I write sometimes. And I want an honest opinion."`, { from: maya });
     await engine.say(`She slides the page toward you. It's a poem about rainstorms and waiting for something unnamed.`);
 
     const pick = await engine.choice([
@@ -23,16 +24,16 @@ const mayaPoem: VylosEvent = {
     ]);
 
     if (pick === 'beautiful') {
-      await engine.say('Her expression softens. Something in her eyes shifts — like a wall quietly coming down.', { from: 'Maya' });
-      await engine.say(`"Thank you. I wasn't sure anyone would get it."`, { from: 'Maya' });
+      await engine.say('Her expression softens. Something in her eyes shifts — like a wall quietly coming down.', { from: maya });
+      await engine.say(`"Thank you. I wasn't sure anyone would get it."`, { from: maya });
       (state as any).npcs.maya.affection = Math.min(100, ((state as any).npcs.maya.affection ?? 0) + 15);
     } else if (pick === 'interesting') {
-      await engine.say(`"Imagery. Ha. That's a careful word."`, { from: 'Maya' });
-      await engine.say(`She smiles, a little wry. "I'll take it."`, { from: 'Maya' });
+      await engine.say(`"Imagery. Ha. That's a careful word."`, { from: maya });
+      await engine.say(`She smiles, a little wry. "I'll take it."`, { from: maya });
       (state as any).npcs.maya.affection = Math.min(100, ((state as any).npcs.maya.affection ?? 0) + 5);
     } else {
-      await engine.say('"Fair enough." She folds it back up, expression unreadable for a beat.', { from: 'Maya' });
-      await engine.say('"I asked for honest."', { from: 'Maya' });
+      await engine.say('"Fair enough." She folds it back up, expression unreadable for a beat.', { from: maya });
+      await engine.say('"I asked for honest."', { from: maya });
       (state as any).npcs.maya.affection = Math.max(0, ((state as any).npcs.maya.affection ?? 0) - 5);
     }
 

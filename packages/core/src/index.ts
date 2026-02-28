@@ -3,21 +3,17 @@ import 'reflect-metadata';
 // Types
 export * from './engine/types';
 
-// Schemas
-export { baseGameStateSchema, extendGameStateSchema } from './engine/schemas/baseGameState.schema';
-export { engineStateSchema, engineSettingsSchema } from './engine/schemas/engineState.schema';
-export { checkpointSchema } from './engine/schemas/checkpoint.schema';
-export { locationSchema, locationLinkSchema } from './engine/schemas/location.schema';
-
 // Errors
 export { JumpSignal } from './engine/errors/JumpSignal';
 export { EventEndError } from './engine/errors/EventEndError';
 export { InterruptSignal } from './engine/errors/InterruptSignal';
-export { StateValidationError } from './engine/errors/StateValidationError';
 
 // Utils
 export { logger, LogLevel } from './engine/utils/logger';
 export { resolveBackground, formatGameTime, interpolate } from './engine/utils/TimeHelper';
+export { deepMerge } from './engine/utils/deepMerge';
+export { attachDevConsole } from './engine/utils/devConsole';
+export type { VylosConsole } from './engine/utils/devConsole';
 export { assetUrl } from './utils/assetUrl';
 
 // Stores
@@ -29,10 +25,12 @@ export { Engine } from './engine/core/Engine';
 export type { EngineLoopCallbacks } from './engine/core/Engine';
 export { EventRunner } from './engine/core/EventRunner';
 export type { EventRunnerCallbacks, HistoryStep } from './engine/core/EventRunner';
+export type { InventoryAPI } from './engine/types/events';
 export { CheckpointManager } from './engine/core/CheckpointManager';
 export { createEngine, getComponentOverride, clearComponentOverrides, DI_TOKENS } from './engine/core/EngineFactory';
 
 // Managers
+export { InventoryManager } from './engine/managers/InventoryManager';
 export { EventManager } from './engine/managers/EventManager';
 export { HistoryManager } from './engine/managers/HistoryManager';
 export { NavigationManager, NavigationAction } from './engine/managers/NavigationManager';

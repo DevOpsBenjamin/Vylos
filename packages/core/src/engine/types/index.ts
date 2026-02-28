@@ -5,6 +5,7 @@ export * from './locations';
 export * from './dialogue';
 export * from './save';
 export * from './game-state';
+export * from './inventory';
 export * from './plugin';
 export * from './checkpoint';
 export * from './config';

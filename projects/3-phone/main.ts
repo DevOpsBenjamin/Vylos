@@ -13,6 +13,7 @@ import {
   type EventRunnerCallbacks,
   type BaseGameState,
   type TextEntry,
+  type Character,
 } from '@vylos/core';
 
 // Use PhoneShell as root component (plugin override)
@@ -54,7 +55,7 @@ locationManager.setLinks([
 
 // EventRunner callbacks
 const callbacks: EventRunnerCallbacks = {
-  onSay(text, speaker) {
+  onSay(text: string, speaker: Character | null) {
     engineState.setDialogue({ text, speaker, isNarration: !speaker });
   },
   onChoice(options) {

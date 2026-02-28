@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { maya } from '../../characters';
 
 const actionFeedback: VylosEvent = {
   id: 'action_feedback',
@@ -30,7 +31,7 @@ const actionFeedback: VylosEvent = {
 
     if (state.flags['chatted_maya']) {
       state.flags['chatted_maya'] = false;
-      await engine.say('You exchange a few words with Maya. Her smile lingers as you walk away.', { from: 'Maya' });
+      await engine.say('You exchange a few words with Maya. Her smile lingers as you walk away.', { from: maya });
     }
   },
 };

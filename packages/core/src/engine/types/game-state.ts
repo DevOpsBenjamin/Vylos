@@ -1,3 +1,10 @@
+import type { InventoryData } from './inventory';
+
+/** Base player data that all projects extend */
+export interface BasePlayer {
+  name: string;
+}
+
 /** Base game state that all projects extend via Zod schema */
 export interface BaseGameState {
   /** Current location ID */
@@ -9,7 +16,7 @@ export interface BaseGameState {
   /** Generic counters */
   counters: Record<string, number>;
   /** Player data */
-  player: {
-    name: string;
-  };
+  player: BasePlayer;
+  /** Inventory data: bag/category ID -> item ID -> quantity */
+  inventories: InventoryData;
 }

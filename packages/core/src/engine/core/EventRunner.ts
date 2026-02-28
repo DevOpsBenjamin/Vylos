@@ -1,6 +1,7 @@
 import { toRaw } from 'vue';
 import type {
   VylosAPI,
+  InventoryAPI,
   VylosEvent,
   BaseGameState,
   TextEntry,
@@ -9,7 +10,9 @@ import type {
   CheckpointType,
   ChoiceOption,
   DialogueState,
+  Character,
 } from '../types';
+import { InventoryManager } from '../managers/InventoryManager';
 import { CheckpointManager } from './CheckpointManager';
 import { WaitManager } from '../managers/WaitManager';
 import { JumpSignal } from '../errors/JumpSignal';
@@ -20,7 +23,7 @@ import { interpolate } from '../utils/TimeHelper';
 
 export interface EventRunnerCallbacks {
   /** Called when dialogue should be displayed */
-  onSay(text: string, speaker: string | null): void;
+  onSay(text: string, speaker: Character | null): void;
   /** Called when choices should be displayed */
   onChoice(options: Array<{ text: string; value: string; disabled?: boolean }>): void;
   /** Called to update background */
@@ -71,7 +74,7 @@ export class EventRunner implements VylosAPI {
   /** History browsing index (-1 = live, not browsing) */
   private browseIndex = -1;
   /** The live dialogue being displayed when history browsing started */
-  private liveDialogue: { text: string; speaker: string | null } | null = null;
+  private liveDialogue: { text: string; speaker: Character | null } | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
 
@@ -82,9 +85,26 @@ export class EventRunner implements VylosAPI {
   /** Pending redo request (set by UI, consumed by redo loop) */
   private pendingRedo: { step: number; choice: string } | null = null;
 
-  constructor(callbacks: EventRunnerCallbacks) {
+  private inventoryManager: InventoryManager;
+
+  constructor(callbacks: EventRunnerCallbacks, inventoryManager: InventoryManager) {
     this.callbacks = callbacks;
+    this.inventoryManager = inventoryManager;
     this.checkpoints = new CheckpointManager();
+  }
+
+  get inventory(): InventoryAPI {
+    const inv = () => this.callbacks.getState().inventories;
+    const im = this.inventoryManager;
+    return {
+      add: (bag, itemId, qty) => im.add(inv(), bag, itemId, qty),
+      remove: (bag, itemId, qty) => im.remove(inv(), bag, itemId, qty),
+      has: (bag, itemId, qty) => im.has(inv(), bag, itemId, qty),
+      hasAll: (bag, items) => im.hasAll(inv(), bag, items),
+      count: (bag, itemId) => im.count(inv(), bag, itemId),
+      list: (bag) => im.list(inv(), bag),
+      clear: (bag) => im.clearBag(inv(), bag),
+    };
   }
 
   /** Whether the player is browsing text history */
@@ -103,7 +123,7 @@ export class EventRunner implements VylosAPI {
   }
 
   /** Get the live dialogue for restoring display after exiting history */
-  getLiveDialogue(): { text: string; speaker: string | null } | null {
+  getLiveDialogue(): { text: string; speaker: Character | null } | null {
     return this.liveDialogue;
   }
 
@@ -248,10 +268,7 @@ export class EventRunner implements VylosAPI {
     }
 
     // Resolve speaker
-    let speaker: string | null = null;
-    if (options?.from) {
-      speaker = this.callbacks.resolveText(options.from);
-    }
+    const speaker: Character | null = options?.from ?? null;
 
     // If replaying, fast-forward: capture checkpoint and resolve immediately
     if (this.checkpoints.isReplaying) {

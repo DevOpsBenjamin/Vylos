@@ -1,4 +1,5 @@
 import type { DrawableEventEntry } from './events';
+import type { Character } from './dialogue';
 
 /** Engine lifecycle phases */
 export enum EnginePhase {
@@ -32,7 +33,7 @@ export interface EngineState {
 
 export interface DialogueState {
   text: string;
-  speaker: string | null;
+  speaker: Character | null;
   isNarration: boolean;
 }
 

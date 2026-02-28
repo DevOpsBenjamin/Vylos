@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { system } from '../../characters';
 
 const intro: VylosEvent = {
   id: 'intro',
@@ -17,9 +18,9 @@ const intro: VylosEvent = {
       await engine.say('Vylos is a TypeScript visual novel engine built with Vue 3.');
       await engine.say('It supports backgrounds, choices, locations, actions, and save/load.');
 
-      await engine.say('Backgrounds change with the time of day. Right now it\'s daytime — use "Wait 1 Hour" to advance time past 20h and see the night version.', { from: 'System' });
-      await engine.say('Locations are linked together. You\'ll see circles at the bottom-right to travel: Room ↔ Hallway ↔ Outside.', { from: 'System' });
-      await engine.say('Actions appear at the bottom-left. Some are always available, others unlock based on conditions (like "Rest" only at night).', { from: 'System' });
+      await engine.say('Backgrounds change with the time of day. Right now it\'s daytime — use "Wait 1 Hour" to advance time past 20h and see the night version.', { from: system });
+      await engine.say('Locations are linked together. You\'ll see circles at the bottom-right to travel: Room ↔ Hallway ↔ Outside.', { from: system });
+      await engine.say('Actions appear at the bottom-left. Some are always available, others unlock based on conditions (like "Rest" only at night).', { from: system });
 
       const keys = await engine.choice([
         { text: 'Got it, let\'s go!', value: 'start' },
@@ -27,10 +28,10 @@ const intro: VylosEvent = {
       ]);
 
       if (keys === 'keys') {
-        await engine.say('Space / Enter / Click — advance dialogue.', { from: 'System' });
-        await engine.say('Arrow Left / Right — navigate text history.', { from: 'System' });
-        await engine.say('Escape — pause menu (save, load, settings).', { from: 'System' });
-        await engine.say('Hold Ctrl — skip text quickly (stops at choices).', { from: 'System' });
+        await engine.say('Space / Enter / Click — advance dialogue.', { from: system });
+        await engine.say('Arrow Left / Right — navigate text history.', { from: system });
+        await engine.say('Escape — pause menu (save, load, settings).', { from: system });
+        await engine.say('Hold Ctrl — skip text quickly (stops at choices).', { from: system });
       }
     }
 

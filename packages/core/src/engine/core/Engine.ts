@@ -1,12 +1,14 @@
 import type { VylosEvent, BaseGameState, Checkpoint, SaveSlot } from '../types';
 import { EventManager } from '../managers/EventManager';
 import { HistoryManager } from '../managers/HistoryManager';
+import { InventoryManager } from '../managers/InventoryManager';
 import { NavigationManager, NavigationAction } from '../managers/NavigationManager';
 import { SaveManager } from '../managers/SaveManager';
 import { SettingsManager } from '../managers/SettingsManager';
 import { EventRunner } from './EventRunner';
 import { JumpSignal } from '../errors/JumpSignal';
 import { logger } from '../utils/logger';
+import { attachDevConsole } from '../utils/devConsole';
 
 export interface EngineLoopCallbacks {
   /** Called each loop iteration (update UI: available locations, actions, background) */
@@ -18,6 +20,7 @@ export interface EngineLoopCallbacks {
 export interface EngineDeps {
   eventManager: EventManager;
   historyManager: HistoryManager;
+  inventoryManager: InventoryManager;
   navigationManager: NavigationManager;
   eventRunner: EventRunner;
   saveManager: SaveManager;
@@ -31,6 +34,7 @@ export interface EngineDeps {
 export class Engine {
   readonly eventManager: EventManager;
   readonly historyManager: HistoryManager;
+  readonly inventoryManager: InventoryManager;
   readonly navigationManager: NavigationManager;
   readonly eventRunner: EventRunner;
   readonly saveManager: SaveManager;
@@ -50,6 +54,7 @@ export class Engine {
   constructor(deps: EngineDeps) {
     this.eventManager = deps.eventManager;
     this.historyManager = deps.historyManager;
+    this.inventoryManager = deps.inventoryManager;
     this.navigationManager = deps.navigationManager;
     this.eventRunner = deps.eventRunner;
     this.saveManager = deps.saveManager;
@@ -60,6 +65,7 @@ export class Engine {
   async run(events: VylosEvent[], getState: () => BaseGameState, loop?: EngineLoopCallbacks): Promise<void> {
     this.eventManager.registerAll(events);
     this.running = true;
+    attachDevConsole(this, getState);
 
     logger.info('Engine started');
 

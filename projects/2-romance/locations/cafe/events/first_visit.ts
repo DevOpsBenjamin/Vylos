@@ -1,4 +1,5 @@
 import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import { maya } from '../../../characters';
 
 const firstVisit: VylosEvent = {
   id: 'first_visit',
@@ -14,8 +15,8 @@ const firstVisit: VylosEvent = {
     await engine.say(`The smell of fresh espresso hits you at the door — rich, inviting, like a hug you didn't know you needed.`);
 
     engine.setForeground('/assets/locations/cafe/maya.png');
-    await engine.say('Behind the counter, a woman with flour on her sleeve glances up and breaks into a grin.', { from: 'Maya' });
-    await engine.say(`"New face! Don't be shy — I don't bite. Usually."`, { from: 'Maya' });
+    await engine.say('Behind the counter, a woman with flour on her sleeve glances up and breaks into a grin.', { from: maya });
+    await engine.say(`"New face! Don't be shy — I don't bite. Usually."`, { from: maya });
 
     const pick = await engine.choice([
       { text: `Flirt: "Good to know. I like to take my chances."`, value: 'flirt' },
@@ -24,13 +25,13 @@ const firstVisit: VylosEvent = {
     ]);
 
     if (pick === 'flirt') {
-      await engine.say(`She laughs — a real one, surprised out of her. "I like you already. Name's Maya."`, { from: 'Maya' });
+      await engine.say(`She laughs — a real one, surprised out of her. "I like you already. Name's Maya."`, { from: maya });
       (state as any).npcs.maya.affection = ((state as any).npcs.maya.affection ?? 0) + 15;
     } else if (pick === 'friendly') {
-      await engine.say(`"Oh perfect timing — we just started doing weekday specials. I'm Maya."`, { from: 'Maya' });
+      await engine.say(`"Oh perfect timing — we just started doing weekday specials. I'm Maya."`, { from: maya });
       (state as any).npcs.maya.affection = ((state as any).npcs.maya.affection ?? 0) + 10;
     } else {
-      await engine.say(`She softens instantly. "Of course! Coming right up. I'm Maya — welcome."`, { from: 'Maya' });
+      await engine.say(`She softens instantly. "Of course! Coming right up. I'm Maya — welcome."`, { from: maya });
       (state as any).npcs.maya.affection = ((state as any).npcs.maya.affection ?? 0) + 5;
     }
 

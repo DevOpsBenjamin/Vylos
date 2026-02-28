@@ -10,6 +10,7 @@ import { SaveManager } from '../managers/SaveManager';
 import { SettingsManager } from '../managers/SettingsManager';
 import { EventRunner, type EventRunnerCallbacks } from './EventRunner';
 import { CheckpointManager } from './CheckpointManager';
+import { InventoryManager } from '../managers/InventoryManager';
 import { VylosStorage } from '../storage/VylosStorage';
 import { Engine } from './Engine';
 
@@ -20,6 +21,7 @@ export const DI_TOKENS = {
   NavigationManager: 'NavigationManager',
   WaitManager: 'WaitManager',
   CheckpointManager: 'CheckpointManager',
+  InventoryManager: 'InventoryManager',
   EventRunner: 'EventRunner',
   Engine: 'Engine',
 } as const;
@@ -34,6 +36,7 @@ function registerDefaults(c: DependencyContainer): void {
   c.register(DI_TOKENS.NavigationManager, { useClass: NavigationManager });
   c.register(DI_TOKENS.WaitManager, { useClass: WaitManager });
   c.register(DI_TOKENS.CheckpointManager, { useClass: CheckpointManager });
+  c.register(DI_TOKENS.InventoryManager, { useClass: InventoryManager });
 }
 
 export interface CreateEngineOptions {
@@ -72,9 +75,10 @@ export function createEngine(options: CreateEngineOptions): Engine {
   const eventManager = childContainer.resolve<EventManager>(DI_TOKENS.EventManager);
   const historyManager = childContainer.resolve<HistoryManager>(DI_TOKENS.HistoryManager);
   const navigationManager = childContainer.resolve<NavigationManager>(DI_TOKENS.NavigationManager);
+  const inventoryManager = childContainer.resolve<InventoryManager>(DI_TOKENS.InventoryManager);
 
-  // EventRunner needs callbacks, so we construct it directly
-  const eventRunner = new EventRunner(options.callbacks);
+  // EventRunner needs callbacks + inventoryManager, so we construct it directly
+  const eventRunner = new EventRunner(options.callbacks, inventoryManager);
 
   // Storage + persistence managers
   const storage = new VylosStorage(options.projectId ?? 'default');
@@ -88,6 +92,7 @@ export function createEngine(options: CreateEngineOptions): Engine {
     eventRunner,
     saveManager,
     settingsManager,
+    inventoryManager,
   });
 }
 
