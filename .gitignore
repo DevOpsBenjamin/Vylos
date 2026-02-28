@@ -14,5 +14,6 @@ pnpm-debug.log*
 .idea/
 .vscode/
 .claude/
+.docs/
 *.tsbuildinfo
 .generated/
