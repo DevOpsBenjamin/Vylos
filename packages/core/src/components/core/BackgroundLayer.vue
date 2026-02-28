@@ -1,10 +1,11 @@
 <template>
   <Transition name="bg-fade">
-    <div
+    <img
       v-if="engineState.background"
       :key="engineState.background"
-      class="absolute inset-0 bg-cover bg-center z-0"
-      :style="{ backgroundImage: `url('${bgUrl}')` }"
+      :src="bgUrl"
+      alt=""
+      class="absolute inset-0 w-full h-full object-contain z-0"
     />
   </Transition>
 </template>
