@@ -106,6 +106,8 @@ export function setupVylos(options: SetupOptions): void {
 
     const loopCallbacks: EngineLoopCallbacks = {
       onTick(state) {
+        engineState.setLocation(state.locationId);
+
         const locs = locationManager.getAccessibleFrom(state.locationId, state);
         engineState.setLocations(locs.map(l => ({
           id: l.id,
