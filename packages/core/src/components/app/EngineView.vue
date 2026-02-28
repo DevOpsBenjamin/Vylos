@@ -1,10 +1,10 @@
 <template>
   <div class="relative w-full h-full overflow-hidden bg-black" style="container-type: size">
     <!-- z-0: Background -->
-    <BackgroundLayer />
+    <component :is="backgroundLayerComponent" />
 
     <!-- z-10: Foreground / character sprites -->
-    <ForegroundLayer />
+    <component :is="foregroundLayerComponent" />
 
     <!-- UI layer — hidden with H key (Ren'Py style) -->
     <template v-if="!engineState.uiHidden">
@@ -35,8 +35,8 @@
 import { computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { getComponentOverride } from '../../engine/core/EngineFactory';
-import BackgroundLayer from '../core/BackgroundLayer.vue';
-import ForegroundLayer from '../core/ForegroundLayer.vue';
+import DefaultBackgroundLayer from '../core/BackgroundLayer.vue';
+import DefaultForegroundLayer from '../core/ForegroundLayer.vue';
 import DefaultDrawableOverlay from '../core/DrawableOverlay.vue';
 import DefaultDialogueBox from '../core/DialogueBox.vue';
 import DefaultChoicePanel from '../core/ChoicePanel.vue';
@@ -48,6 +48,8 @@ import DefaultTopBar from '../menu/TopBar.vue';
 const engineState = useEngineStateStore();
 const hideHud = computed(() => !!engineState.dialogue || !!engineState.choices);
 
+const backgroundLayerComponent = computed(() => getComponentOverride('BackgroundLayer') ?? DefaultBackgroundLayer);
+const foregroundLayerComponent = computed(() => getComponentOverride('ForegroundLayer') ?? DefaultForegroundLayer);
 const topBarComponent = computed(() => getComponentOverride('TopBar') ?? DefaultTopBar);
 const actionOverlayComponent = computed(() => getComponentOverride('ActionOverlay') ?? DefaultActionOverlay);
 const locationOverlayComponent = computed(() => getComponentOverride('LocationOverlay') ?? DefaultLocationOverlay);
