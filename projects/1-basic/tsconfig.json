@@ -4,7 +4,9 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@vylos/core": ["../../packages/core/src"]
+      "@vylos/core": ["../../packages/core/src"],
+      "@game": ["./plugins/basic"],
+      "@game/*": ["./plugins/basic/*"]
     }
   },
   "include": ["./**/*.ts", "./**/*.vue", "./env.d.ts"],

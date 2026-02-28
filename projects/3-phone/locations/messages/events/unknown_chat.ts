@@ -1,5 +1,5 @@
 import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
-import { system, unknown } from '../../../characters';
+import { system, unknown } from '@game';
 
 /**
  * First conversation with the unknown number.

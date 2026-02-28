@@ -1,6 +1,6 @@
 import type { VylosEvent, VylosAPI } from '@vylos/core';
-import type { GameState } from '../../state';
-import { narrator } from '../../characters';
+import type { GameState } from '@game';
+import { narrator } from '@game';
 
 const intro: VylosEvent<GameState> = {
   id: 'intro',

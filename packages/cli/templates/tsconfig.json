@@ -13,7 +13,11 @@
     "jsx": "preserve",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "."
+    "baseUrl": ".",
+    "paths": {
+      "@game": ["./plugins/my-vylos-game"],
+      "@game/*": ["./plugins/my-vylos-game/*"]
+    }
   },
   "include": ["./**/*.ts", "./**/*.vue", "./env.d.ts"],
   "exclude": ["node_modules", "dist"]

@@ -5,11 +5,16 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 import { resolve } from 'path';
 import { vylosProjectPlugin } from '../vite/projectPlugin';
 import { vylosI18nPlugin } from '../vite/i18nPlugin';
+import { resolveGameAlias } from '../utils/resolveGameAlias';
 
 export async function build(projectRoot: string, base?: string) {
   console.log(`\n  Vylos building...\n  Project: ${projectRoot}\n`);
 
   const outDir = resolve(projectRoot, 'dist');
+
+  const alias: Record<string, string> = { '@project': projectRoot };
+  const gamePlugin = resolveGameAlias(projectRoot);
+  if (gamePlugin) alias['@game'] = gamePlugin;
 
   await viteBuild({
     root: projectRoot,
@@ -22,9 +27,7 @@ export async function build(projectRoot: string, base?: string) {
       viteSingleFile(),
     ],
     resolve: {
-      alias: {
-        '@project': projectRoot,
-      },
+      alias,
     },
     build: {
       outDir,

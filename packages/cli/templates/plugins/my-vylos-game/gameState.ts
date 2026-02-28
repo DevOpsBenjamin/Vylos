@@ -2,37 +2,37 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { VylosGameState } from '@vylos/core';
 import { deepMerge } from '@vylos/core';
-import { type Player, createDefaultPlayer } from './player';
+import { type Player, createPlayer } from './player';
 
 /** Your game state — extends VylosGameState with your own fields */
 export interface GameState extends VylosGameState {
   player: Player;
 }
 
-export function createDefaultState(): GameState {
+export function createState(): GameState {
   return {
     locationId: '',
     gameTime: 8,
     flags: {},
     counters: {},
-    player: createDefaultPlayer(),
+    player: createPlayer(),
     inventories: {},
   };
 }
 
 export const useGameStore = defineStore('gameState', () => {
-  const state = ref<GameState>(createDefaultState());
+  const state = ref<GameState>(createState());
 
   function getState(): GameState {
     return state.value;
   }
 
   function setState(newState: Partial<GameState>) {
-    state.value = deepMerge(createDefaultState(), newState) as GameState;
+    state.value = deepMerge(createState(), newState) as GameState;
   }
 
   function $reset() {
-    state.value = createDefaultState();
+    state.value = createState();
   }
 
   return { state, getState, setState, $reset };

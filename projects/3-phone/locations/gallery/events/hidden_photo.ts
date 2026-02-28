@@ -1,5 +1,5 @@
 import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
-import { system } from '../../../characters';
+import { system } from '@game';
 
 /**
  * Discover a hidden photo in the gallery — deepens the mystery.
