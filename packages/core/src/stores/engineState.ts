@@ -23,6 +23,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
   const skipMode = ref(false);
   const autoMode = ref(false);
   const historyBrowsing = ref(false);
+  const uiHidden = ref(false);
   const drawableEvents = ref<DrawableEventEntry[]>([]);
   const overlayId = ref<string | null>(null);
   const overlayProps = ref<Record<string, unknown> | null>(null);
@@ -89,6 +90,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     skipMode.value = false;
     autoMode.value = false;
     historyBrowsing.value = false;
+    uiHidden.value = false;
     drawableEvents.value = [];
     overlayId.value = null;
     overlayProps.value = null;
@@ -107,6 +109,7 @@ export const useEngineStateStore = defineStore('engineState', () => {
     skipMode,
     autoMode,
     historyBrowsing,
+    uiHidden,
     drawableEvents,
     overlayId,
     overlayProps,
