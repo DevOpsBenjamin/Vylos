@@ -89,10 +89,14 @@ export class InputManager {
     if (key === 'ArrowRight') return 'forward';
     if (key === 'ArrowLeft') return 'back';
 
+    // Hide UI toggle (Ren'Py style)
+    if (key === 'h' || key === 'H') return 'hide-ui';
+
     // Skip toggle — same key on both layouts
     if (key === 's' || key === 'S') return 'skip-toggle';
 
-    // Forward key: E on both layouts
+    // Forward / continue: D on both layouts, E on both layouts
+    if (key === 'd' || key === 'D') return 'forward';
     if (key === 'e' || key === 'E') return 'continue';
 
     // Layout-dependent back key

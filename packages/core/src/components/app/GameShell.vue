@@ -184,6 +184,13 @@ function handleForward(): void {
 
 function handleViewportClick(e: MouseEvent): void {
   if (!engine) return;
+
+  // Any click unhides UI
+  if (engineState.uiHidden) {
+    engineState.uiHidden = false;
+    return;
+  }
+
   // Only during Running phase, no menu open, no choices showing
   if (!isRunning.value || engineState.menuOpen || engineState.choices) return;
 
@@ -208,6 +215,18 @@ onMounted(() => {
     // Don't process keyboard when a menu is open
     if (engineState.menuOpen) {
       if (action === 'menu') engineState.closeMenu();
+      return;
+    }
+
+    // H toggles UI visibility
+    if (action === 'hide-ui') {
+      engineState.uiHidden = !engineState.uiHidden;
+      return;
+    }
+
+    // Any other key unhides UI first
+    if (engineState.uiHidden) {
+      engineState.uiHidden = false;
       return;
     }
 
