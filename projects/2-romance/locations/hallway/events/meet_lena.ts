@@ -1,15 +1,15 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { lena } from '../../../characters';
 
 const meetLena: VylosEvent = {
   id: 'meet_lena',
   locationId: 'hallway',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return state.flags['found_letter'] === true && !state.flags['met_lena'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`The hallway is narrow and warmly lit. You've barely stepped out when you hear a thud.`);
     await engine.say(`A paper bag has toppled from someone's arms — groceries scattered across the floor.`);

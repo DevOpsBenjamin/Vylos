@@ -1,10 +1,10 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 const nightFalls: VylosEvent = {
   id: 'night_falls',
   locationId: 'room',
   conditions: (state) => state.flags['intro_done'] === true && !state.flags['night_seen'] && state.gameTime >= 20,
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/room/room_night.png');
 
     await engine.say('The sun has set. Your room is bathed in moonlight.');

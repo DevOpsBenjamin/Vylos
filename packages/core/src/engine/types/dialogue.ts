@@ -1,9 +1,8 @@
 import type { TextEntry } from './events';
 
-/** Character definition for speaker resolution */
-export interface Character {
+/** Base character — projects extend this into their own Character */
+export interface VylosCharacter {
   id: string;
   name: string | TextEntry;
   color?: string;
-  [key: string]: unknown;
 }

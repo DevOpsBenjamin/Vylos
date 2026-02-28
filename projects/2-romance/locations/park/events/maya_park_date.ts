@@ -1,15 +1,15 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { maya } from '../../../characters';
 
 const mayaParkDate: VylosEvent = {
   id: 'maya_park_date',
   locationId: 'park',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return state.flags['maya_date_1'] === true && !state.flags['maya_park_done'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/park/park_sunset.jpg');
     engine.setForeground('/assets/locations/park/maya_casual.png');
 

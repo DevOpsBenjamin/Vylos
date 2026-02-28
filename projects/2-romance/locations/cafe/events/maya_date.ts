@@ -1,15 +1,15 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { maya } from '../../../characters';
 
 const mayaDate: VylosEvent = {
   id: 'maya_date',
   locationId: 'cafe',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return (state as any).npcs?.maya?.affection >= 60 && !state.flags['maya_date_1'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     engine.setForeground('/assets/locations/cafe/maya.png');
 

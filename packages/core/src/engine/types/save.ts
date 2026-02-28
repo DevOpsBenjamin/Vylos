@@ -1,4 +1,4 @@
-import type { BaseGameState } from './game-state';
+import type { VylosGameState } from './game-state';
 import type { Checkpoint } from './checkpoint';
 
 /** A single save slot */
@@ -10,7 +10,7 @@ export interface SaveSlot {
   /** Save format version for migration */
   version: number;
   /** Game state snapshot */
-  gameState: BaseGameState;
+  gameState: VylosGameState;
   /** Current event ID (if mid-event) */
   eventId: string | null;
   /** Checkpoint step number (if mid-event) */
@@ -22,7 +22,7 @@ export interface SaveSlot {
   /** Checkpoints for mid-event resume */
   checkpoints?: Checkpoint[];
   /** Game state before event started (for redo support after load) */
-  initialState?: BaseGameState;
+  initialState?: VylosGameState;
   /** Completed event history */
   history?: Array<{ eventId: string; checkpoints: Checkpoint[] }>;
   /** Current history navigation index */

@@ -1,4 +1,4 @@
-import type { BaseGameState } from './game-state';
+import type { VylosGameState } from './game-state';
 import type { DialogueState, ChoiceOption } from './engine';
 
 /** A checkpoint captured at each interaction point */
@@ -6,7 +6,7 @@ export interface Checkpoint {
   /** Sequential step number within the event */
   step: number;
   /** Deep clone of game state at this point */
-  gameState: BaseGameState;
+  gameState: VylosGameState;
   /** Type of interaction at this step */
   type: CheckpointType;
   /** Stored choice result (for replay during rollback) */

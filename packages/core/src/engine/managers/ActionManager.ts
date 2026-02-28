@@ -1,4 +1,4 @@
-import type { VylosAction, BaseGameState, TextEntry } from '../types';
+import type { VylosAction, VylosGameState, TextEntry } from '../types';
 import { logger } from '../utils/logger';
 
 /**
@@ -26,7 +26,7 @@ export class ActionManager {
   }
 
   /** Get all available actions for a location, filtered by unlock conditions */
-  getAvailable(locationId: string, state: BaseGameState): VylosAction[] {
+  getAvailable(locationId: string, state: VylosGameState): VylosAction[] {
     const available: VylosAction[] = [];
 
     for (const action of this.actions.values()) {
@@ -43,7 +43,7 @@ export class ActionManager {
   }
 
   /** Execute an action by ID */
-  execute(id: string, state: BaseGameState): boolean {
+  execute(id: string, state: VylosGameState): boolean {
     const action = this.actions.get(id);
     if (!action) {
       logger.warn(`Action not found: ${id}`);

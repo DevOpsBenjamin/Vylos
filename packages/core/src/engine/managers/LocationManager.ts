@@ -1,4 +1,4 @@
-import type { VylosLocation, LocationLink, BaseGameState, BackgroundEntry } from '../types';
+import type { VylosLocation, LocationLink, VylosGameState, BackgroundEntry } from '../types';
 import { resolveBackground } from '../utils/TimeHelper';
 import { logger } from '../utils/logger';
 
@@ -38,7 +38,7 @@ export class LocationManager {
   }
 
   /** Get locations accessible from a given location, considering state conditions */
-  getAccessibleFrom(locationId: string, state: BaseGameState): VylosLocation[] {
+  getAccessibleFrom(locationId: string, state: VylosGameState): VylosLocation[] {
     const linkedIds = this.links
       .filter(link => {
         if (link.from !== locationId) return false;

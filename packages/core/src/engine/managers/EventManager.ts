@@ -1,4 +1,4 @@
-import type { VylosEvent, BaseGameState, DrawableEventEntry } from '../types';
+import type { VylosEvent, VylosGameState, DrawableEventEntry } from '../types';
 import { EventStatus } from '../types';
 import { logger } from '../utils/logger';
 
@@ -46,7 +46,7 @@ export class EventManager {
   }
 
   /** Evaluate conditions and update statuses. Returns newly unlocked events. */
-  evaluate(state: BaseGameState): VylosEvent[] {
+  evaluate(state: VylosGameState): VylosEvent[] {
     const unlocked: VylosEvent[] = [];
 
     for (const [id, entry] of this.events) {
@@ -68,7 +68,7 @@ export class EventManager {
   }
 
   /** Get the next unlocked event matching the current location (first registered wins). Skips drawable events. */
-  getNextUnlocked(state: BaseGameState): VylosEvent | undefined {
+  getNextUnlocked(state: VylosGameState): VylosEvent | undefined {
     for (const entry of this.events.values()) {
       if (entry.status !== EventStatus.Unlocked) continue;
       if (entry.event.draw) continue; // Drawable events don't auto-trigger
@@ -79,7 +79,7 @@ export class EventManager {
   }
 
   /** Get all unlocked drawable events at the current location */
-  getDrawableEvents(state: BaseGameState, resolveText?: (text: string | Record<string, string>) => string): DrawableEventEntry[] {
+  getDrawableEvents(state: VylosGameState, resolveText?: (text: string | Record<string, string>) => string): DrawableEventEntry[] {
     const result: DrawableEventEntry[] = [];
     for (const entry of this.events.values()) {
       if (entry.status !== EventStatus.Unlocked) continue;
@@ -108,7 +108,7 @@ export class EventManager {
   }
 
   /** Mark event as locked (completed) */
-  setLocked(id: string, state: BaseGameState): void {
+  setLocked(id: string, state: VylosGameState): void {
     const entry = this.events.get(id);
     if (entry) {
       entry.status = EventStatus.Locked;

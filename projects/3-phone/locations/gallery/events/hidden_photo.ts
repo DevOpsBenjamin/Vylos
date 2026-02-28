@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { system } from '../../../characters';
 
 /**
@@ -11,7 +11,7 @@ const hiddenPhoto: VylosEvent = {
 
   conditions: (state) => state.flags['gallery_hint'] && !state.flags['found_photo'],
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('You scroll through the gallery...', { from: system });
     await engine.say('Mostly generic wallpapers and stock photos.');
     await engine.say('But then you notice something.');

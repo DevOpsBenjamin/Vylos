@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
 /**
  * First real notification after boot — draws player into the mystery.
@@ -9,7 +9,7 @@ const firstNotification: VylosEvent = {
 
   conditions: (state) => state.flags['booted'] && !state.flags['first_notif_done'],
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('The phone buzzes.');
     await engine.say('[Messages] Unknown: "I know you can see this."');
     await engine.say('[Messages] Unknown: "The previous owner left something for you."');

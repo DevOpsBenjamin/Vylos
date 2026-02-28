@@ -6,7 +6,6 @@ import {
   GameShell,
   createEngine,
   useEngineStateStore,
-  useGameStateStore,
   ENGINE_INJECT_KEY,
   CONFIG_INJECT_KEY,
   EnginePhase,
@@ -14,9 +13,10 @@ import {
   ActionManager,
   type EventRunnerCallbacks,
   type TextEntry,
-  type Character,
+  type VylosCharacter,
 } from '@vylos/core';
 import config from './vylos.config';
+import { useGameStore } from './state';
 
 // Locations
 import home from './locations/home/location';
@@ -32,7 +32,7 @@ const pinia = createPinia();
 app.use(pinia);
 
 const engineState = useEngineStateStore(pinia);
-const gameState = useGameStateStore(pinia);
+const gameState = useGameStore(pinia);
 
 // Location manager
 const locationManager = new LocationManager();
@@ -43,7 +43,7 @@ const actionManager = new ActionManager();
 actionManager.registerAll([wait]);
 
 const callbacks: EventRunnerCallbacks = {
-  onSay(text: string, speaker: Character | null) {
+  onSay(text: string, speaker: VylosCharacter | null) {
     engineState.setDialogue({ text, speaker, isNarration: !speaker });
   },
   onChoice(options) {

@@ -1,17 +1,17 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { lena } from '../../../characters';
 
 const lenaInvite: VylosEvent = {
   id: 'lena_invite',
   locationId: 'hallway',
 
-  conditions(state: BaseGameState) {
+  conditions(state: VylosGameState) {
     return (state as any).npcs?.maya?.affection >= 30
       && (state as any).npcs?.lena?.affection >= 30
       && !state.flags['lena_invited'];
   },
 
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`You're halfway out the door when you hear your name from down the hall.`);
 

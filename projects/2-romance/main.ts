@@ -14,9 +14,9 @@ import {
   ActionManager,
   LanguageManager,
   type EventRunnerCallbacks,
-  type BaseGameState,
+  type VylosGameState,
   type TextEntry,
-  type Character,
+  type VylosCharacter,
 } from '@vylos/core';
 import config from './vylos.config';
 
@@ -80,7 +80,7 @@ locationManager.setLinks([
   { from: 'cafe', to: 'hallway' },
   { from: 'hallway', to: 'park' },
   { from: 'park', to: 'hallway' },
-  { from: 'hallway', to: 'neighbor', condition: (s: BaseGameState) => s.flags['knows_lena'] === true },
+  { from: 'hallway', to: 'neighbor', condition: (s: VylosGameState) => s.flags['knows_lena'] === true },
   { from: 'neighbor', to: 'hallway' },
 ]);
 
@@ -90,7 +90,7 @@ actionManager.registerAll([rest, groom, orderCoffee, chatMaya]);
 
 // Engine callbacks bridging engine ↔ UI stores
 const callbacks: EventRunnerCallbacks = {
-  onSay(text: string, speaker: Character | null) {
+  onSay(text: string, speaker: VylosCharacter | null) {
     engineState.setDialogue({ text, speaker, isNarration: speaker === null });
   },
   onChoice(options) {
@@ -117,10 +117,10 @@ const callbacks: EventRunnerCallbacks = {
   resolveText(entry: string | TextEntry): string {
     return languageManager.resolve(entry);
   },
-  getState(): BaseGameState {
+  getState(): VylosGameState {
     return gameState.state;
   },
-  setState(newState: BaseGameState) {
+  setState(newState: VylosGameState) {
     gameState.setState(newState);
   },
 };

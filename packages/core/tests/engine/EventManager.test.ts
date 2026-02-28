@@ -1,15 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EventManager } from '../../src/engine/managers/EventManager';
-import type { VylosEvent, VylosAPI, BaseGameState } from '../../src/engine/types';
+import type { VylosEvent, VylosAPI, VylosGameState } from '../../src/engine/types';
 import { EventStatus } from '../../src/engine/types';
 
-function makeState(overrides: Partial<BaseGameState> = {}): BaseGameState {
+function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 8,
     flags: {},
     counters: {},
-    player: { name: 'Alice' },
+    player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
   };

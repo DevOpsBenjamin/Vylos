@@ -1,12 +1,12 @@
-import type { BaseGameState } from './game-state';
-import type { Character } from './dialogue';
+import type { VylosGameState } from './game-state';
+import type { VylosCharacter } from './dialogue';
 
 /** A text entry with per-language strings */
 export type TextEntry = Record<string, string>;
 
 /** Options for engine.say() */
 export interface SayOptions {
-  from?: Character;
+  from?: VylosCharacter;
   variables?: Record<string, string | number>;
 }
 
@@ -96,7 +96,7 @@ export interface DrawableEventEntry {
 }
 
 /** A visual novel event definition */
-export interface VylosEvent<TState extends BaseGameState = BaseGameState> {
+export interface VylosEvent<TState extends VylosGameState = VylosGameState> {
   /** Unique event ID (derived from file path if not specified) */
   id: string;
 

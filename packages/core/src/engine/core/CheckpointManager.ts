@@ -1,5 +1,5 @@
 import { toRaw } from 'vue';
-import type { BaseGameState, Checkpoint, CheckpointType, ChoiceOption } from '../types';
+import type { VylosGameState, Checkpoint, CheckpointType, ChoiceOption } from '../types';
 import type { DialogueState } from '../types/engine';
 
 export interface CaptureDisplayData {
@@ -38,7 +38,7 @@ export class CheckpointManager {
   }
 
   /** Record a checkpoint at the current interaction point */
-  capture(gameState: BaseGameState, type: CheckpointType, choiceResult?: string, display?: CaptureDisplayData): void {
+  capture(gameState: VylosGameState, type: CheckpointType, choiceResult?: string, display?: CaptureDisplayData): void {
     const checkpoint: Checkpoint = {
       step: this.checkpoints.length,
       gameState: structuredClone(toRaw(gameState)),
@@ -72,7 +72,7 @@ export class CheckpointManager {
   }
 
   /** Get game state snapshot at a specific step */
-  getStateAt(step: number): BaseGameState | undefined {
+  getStateAt(step: number): VylosGameState | undefined {
     const checkpoint = this.checkpoints[step];
     if (!checkpoint) return undefined;
     return structuredClone(checkpoint.gameState);
@@ -84,7 +84,7 @@ export class CheckpointManager {
   }
 
   /** Prepare for rollback: set replay index to target step */
-  prepareRollback(targetStep: number): BaseGameState | undefined {
+  prepareRollback(targetStep: number): VylosGameState | undefined {
     if (targetStep < 0 || targetStep >= this.checkpoints.length) return undefined;
     this.replayIndex = 0;
     // Trim checkpoints after target (re-execution will recreate them)

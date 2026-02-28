@@ -1,10 +1,10 @@
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 import { system } from '../../characters';
 
 const intro: VylosEvent = {
   id: 'intro',
   conditions: (state) => !state.flags['intro_done'],
-  async execute(engine: VylosAPI, state: BaseGameState) {
+  async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/room/room_day.png');
 
     await engine.say('Welcome to the Vylos Engine demo!');

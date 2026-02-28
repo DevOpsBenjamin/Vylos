@@ -11,9 +11,9 @@ import {
   EnginePhase,
   LocationManager,
   type EventRunnerCallbacks,
-  type BaseGameState,
+  type VylosGameState,
   type TextEntry,
-  type Character,
+  type VylosCharacter,
 } from '@vylos/core';
 
 // Use PhoneShell as root component (plugin override)
@@ -55,7 +55,7 @@ locationManager.setLinks([
 
 // EventRunner callbacks
 const callbacks: EventRunnerCallbacks = {
-  onSay(text: string, speaker: Character | null) {
+  onSay(text: string, speaker: VylosCharacter | null) {
     engineState.setDialogue({ text, speaker, isNarration: !speaker });
   },
   onChoice(options) {

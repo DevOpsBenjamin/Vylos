@@ -1,4 +1,4 @@
-import type { BaseGameState } from './game-state';
+import type { VylosGameState } from './game-state';
 import type { TextEntry } from './events';
 
 /** Background resolution entry — time-based or default */
@@ -20,7 +20,7 @@ export interface VylosLocation {
   backgrounds: BackgroundEntry[];
 
   /** Whether this location is accessible — defaults to true */
-  accessible?<TState extends BaseGameState>(state: TState): boolean;
+  accessible?<TState extends VylosGameState>(state: TState): boolean;
 }
 
 /** Location link (navigation graph edge) */
@@ -28,5 +28,5 @@ export interface LocationLink {
   from: string;
   to: string;
   /** Whether this link is currently traversable */
-  condition?<TState extends BaseGameState>(state: TState): boolean;
+  condition?<TState extends VylosGameState>(state: TState): boolean;
 }
