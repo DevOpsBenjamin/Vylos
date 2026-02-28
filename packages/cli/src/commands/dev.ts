@@ -25,7 +25,7 @@ export async function dev(projectRoot: string) {
     ],
     resolve: {
       alias,
-      dedupe: ['vue', 'pinia'],
+      dedupe: ['vue', 'pinia', '@vylos/core'],
     },
     optimizeDeps: {
       include: ['vue', 'pinia', 'reflect-metadata'],
