@@ -12,6 +12,8 @@ export { InterruptSignal } from './engine/errors/InterruptSignal';
 export { logger, LogLevel } from './engine/utils/logger';
 export { resolveBackground, formatGameTime, interpolate } from './engine/utils/TimeHelper';
 export { deepMerge } from './engine/utils/deepMerge';
+export { attachDevConsole } from './engine/utils/devConsole';
+export type { VylosConsole } from './engine/utils/devConsole';
 export { assetUrl } from './utils/assetUrl';
 
 // Stores
