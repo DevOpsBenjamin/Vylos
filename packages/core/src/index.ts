@@ -20,9 +20,9 @@ export { assetUrl } from './utils/assetUrl';
 export { useEngineStateStore } from './stores/engineState';
 export { useGameStateStore } from './stores/gameState';
 
-// Bootstrap
-export { setupVylos } from './bootstrap';
-export type { SetupOptions } from './bootstrap';
+// Setup
+export { setupVylos } from './setup';
+export type { SetupOptions } from './setup';
 
 // Core engine
 export { Engine } from './engine/core/Engine';

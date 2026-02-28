@@ -1,11 +1,20 @@
 <template>
   <Transition name="fg-fade">
-    <img
+    <div
       v-if="engineState.foreground"
-      :src="fgUrl"
-      alt=""
-      class="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none"
-    />
+      class="absolute inset-0 z-10 pointer-events-none"
+    >
+      <img
+        :src="fgUrl"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover blur-2xl scale-110"
+      />
+      <img
+        :src="fgUrl"
+        alt=""
+        class="absolute inset-0 w-full h-full object-contain"
+      />
+    </div>
   </Transition>
 </template>
 

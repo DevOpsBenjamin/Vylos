@@ -5,6 +5,7 @@ import type { DialogueState } from '../types/engine';
 export interface CaptureDisplayData {
   dialogue?: DialogueState | null;
   background?: string | null;
+  foreground?: string | null;
   choiceOptions?: ChoiceOption[];
 }
 
@@ -46,6 +47,7 @@ export class CheckpointManager {
       choiceResult,
       dialogue: display?.dialogue ? structuredClone(toRaw(display.dialogue)) : undefined,
       background: display?.background,
+      foreground: display?.foreground,
       choiceOptions: display?.choiceOptions ? structuredClone(toRaw(display.choiceOptions)) : undefined,
     };
 

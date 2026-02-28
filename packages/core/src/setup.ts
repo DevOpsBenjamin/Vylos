@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { createApp, watch } from 'vue';
+import { createApp, watch, toRaw } from 'vue';
 import { createPinia } from 'pinia';
 import GameShell from './components/app/GameShell.vue';
 import { createEngine } from './engine/core/EngineFactory';
@@ -197,14 +197,12 @@ function buildCallbacks(
     onClear() {
       engineState.setDialogue(null);
       engineState.setChoices(null);
-      engineState.setForeground(null);
-      engineState.setOverlay(null);
     },
     resolveText(entry) {
       return resolveText(entry);
     },
     getState() {
-      return gameStore.getState();
+      return JSON.parse(JSON.stringify(gameStore.getState()));
     },
     setState(newState) {
       gameStore.setState(newState);

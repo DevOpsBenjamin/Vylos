@@ -50,6 +50,7 @@ export interface EventRunnerCallbacks {
 export interface HistoryStep {
   type: 'say' | 'choice';
   dialogue?: DialogueState | null;
+  foreground?: string | null;
   choiceOptions?: ChoiceOption[];
   choiceResult?: string;
   stepIndex: number;
@@ -77,6 +78,8 @@ export class EventRunner implements VylosAPI {
   private liveDialogue: { text: string; speaker: VylosCharacter | null } | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
+  /** Current foreground path (tracked for checkpoint storage) */
+  private currentForeground: string | null = null;
 
   /** Snapshot of game state before event started (for redo) */
   private initialState: VylosGameState | null = null;
@@ -196,6 +199,8 @@ export class EventRunner implements VylosAPI {
       await this.runEventExecution(event);
     } finally {
       this.callbacks.onClear();
+      logger.debug(`Event ended — clearing foreground`);
+      this.callbacks.onSetForeground(null);
       this.initialState = null;
       this.currentEvent = null;
     }
@@ -223,6 +228,8 @@ export class EventRunner implements VylosAPI {
       throw error;
     } finally {
       this.callbacks.onClear();
+      logger.debug(`Rollback ended — clearing foreground`);
+      this.callbacks.onSetForeground(null);
     }
   }
 
@@ -244,6 +251,8 @@ export class EventRunner implements VylosAPI {
       await this.runEventExecution(event);
     } finally {
       this.callbacks.onClear();
+      logger.debug(`Resume ended — clearing foreground`);
+      this.callbacks.onSetForeground(null);
       this.initialState = null;
       this.currentEvent = null;
     }
@@ -297,6 +306,7 @@ export class EventRunner implements VylosAPI {
       {
         dialogue: { text: resolvedText, speaker, isNarration: !speaker },
         background: this.currentBackground,
+        foreground: this.currentForeground,
       },
     );
 
@@ -342,7 +352,7 @@ export class EventRunner implements VylosAPI {
       this.callbacks.getState(),
       'choice' as CheckpointType,
       result,
-      { choiceOptions: resolvedOptions },
+      { choiceOptions: resolvedOptions, foreground: this.currentForeground },
     );
 
     this.callbacks.onClear();
@@ -356,6 +366,7 @@ export class EventRunner implements VylosAPI {
   }
 
   setForeground(path: string | null): void {
+    this.currentForeground = path;
     this.callbacks.onSetForeground(path);
   }
 
@@ -438,6 +449,7 @@ export class EventRunner implements VylosAPI {
     if (cp.choiceOptions) {
       return {
         type: 'choice',
+        foreground: cp.foreground,
         choiceOptions: cp.choiceOptions,
         choiceResult: cp.choiceResult,
         stepIndex: idx,
@@ -446,6 +458,7 @@ export class EventRunner implements VylosAPI {
     return {
       type: 'say',
       dialogue: cp.dialogue,
+      foreground: cp.foreground,
       stepIndex: idx,
     };
   }
