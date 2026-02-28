@@ -20,6 +20,10 @@ export { assetUrl } from './utils/assetUrl';
 export { useEngineStateStore } from './stores/engineState';
 export { useGameStateStore } from './stores/gameState';
 
+// Setup
+export { setupVylos } from './setup';
+export type { SetupOptions } from './setup';
+
 // Core engine
 export { Engine } from './engine/core/Engine';
 export type { EngineLoopCallbacks } from './engine/core/Engine';

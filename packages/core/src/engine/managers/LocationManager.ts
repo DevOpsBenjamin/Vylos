@@ -1,4 +1,4 @@
-import type { VylosLocation, LocationLink, VylosGameState, BackgroundEntry } from '../types';
+import type { VylosLocation, LocationLink, VylosGameState } from '../types';
 import { resolveBackground } from '../utils/TimeHelper';
 import { logger } from '../utils/logger';
 
@@ -22,9 +22,21 @@ export class LocationManager {
     }
   }
 
-  /** Set the location link graph */
+  /** Set the location link graph (replaces all existing links) */
   setLinks(links: LocationLink[]): void {
     this.links = links;
+  }
+
+  /** Add directed links from one location to one or more others (additive) */
+  link(
+    fromId: string,
+    toIds: string | string[],
+    options?: { condition?: (state: VylosGameState) => boolean },
+  ): void {
+    const targets = Array.isArray(toIds) ? toIds : [toIds];
+    for (const toId of targets) {
+      this.links.push({ from: fromId, to: toId, ...options });
+    }
   }
 
   /** Get a location by ID */

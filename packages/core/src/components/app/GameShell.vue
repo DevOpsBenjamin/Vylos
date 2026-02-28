@@ -92,6 +92,7 @@ const isRunning = computed(() =>
 // --- History step helpers ---
 
 function applyHistoryStep(step: HistoryStep): void {
+  engineState.setForeground(step.foreground ?? null);
   if (step.type === 'say' && step.dialogue) {
     engineState.setDialogue(step.dialogue);
     engineState.setChoices(null);

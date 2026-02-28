@@ -1,11 +1,20 @@
 <template>
   <Transition name="fg-fade">
-    <img
+    <div
       v-if="engineState.foreground"
-      :src="fgUrl"
-      alt=""
-      class="absolute inset-0 w-full h-full object-contain z-10 pointer-events-none"
-    />
+      class="absolute inset-0 z-10 pointer-events-none overflow-hidden"
+    >
+      <img
+        :src="fgUrl"
+        alt=""
+        class="fg-blur absolute inset-0 w-full h-full object-cover"
+      />
+      <img
+        :src="fgUrl"
+        alt=""
+        class="absolute inset-0 w-full h-full object-contain"
+      />
+    </div>
   </Transition>
 </template>
 
@@ -20,6 +29,11 @@ const fgUrl = computed(() => engineState.foreground ? assetUrl(engineState.foreg
 </script>
 
 <style scoped>
+.fg-blur {
+  filter: blur(80px);
+  transform: scale(1.2);
+}
+
 .fg-fade-enter-active,
 .fg-fade-leave-active {
   transition: opacity 0.3s ease;

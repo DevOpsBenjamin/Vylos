@@ -15,6 +15,8 @@ export interface Checkpoint {
   dialogue?: DialogueState | null;
   /** Background path at this point */
   background?: string | null;
+  /** Foreground path at this point */
+  foreground?: string | null;
   /** Available choice options at this step (for history redo) */
   choiceOptions?: ChoiceOption[];
 }
