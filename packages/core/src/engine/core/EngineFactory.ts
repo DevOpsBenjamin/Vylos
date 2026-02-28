@@ -13,6 +13,7 @@ import { CheckpointManager } from './CheckpointManager';
 import { InventoryManager } from '../managers/InventoryManager';
 import { VylosStorage } from '../storage/VylosStorage';
 import { Engine } from './Engine';
+import { logger } from '../utils/logger';
 
 /** Tokens used for DI registration */
 export const DI_TOKENS = {
@@ -68,6 +69,7 @@ export function createEngine(options: CreateEngineOptions): Engine {
   if (options.plugin?.components) {
     for (const [id, component] of Object.entries(options.plugin.components)) {
       componentOverrides[id] = component;
+      logger.debug(`Component override registered: ${id}`);
     }
   }
 
