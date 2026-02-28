@@ -28,6 +28,7 @@ export async function build(projectRoot: string, base?: string) {
     ],
     resolve: {
       alias,
+      dedupe: ['vue', 'pinia', '@vylos/core'],
     },
     build: {
       outDir,
