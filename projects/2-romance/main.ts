@@ -113,6 +113,8 @@ const callbacks: EventRunnerCallbacks = {
   onClear() {
     engineState.setDialogue(null);
     engineState.setChoices(null);
+    engineState.setForeground(null);
+    engineState.setOverlay(null);
   },
   resolveText(entry: string | TextEntry): string {
     return languageManager.resolve(entry);
