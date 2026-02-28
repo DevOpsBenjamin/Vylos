@@ -7,5 +7,6 @@ export default {
   languages: ['en', 'fr'],
   defaultLanguage: 'en',
   defaultLocation: 'apartment',
+  startGameTime: 8,
   resolution: { width: 1920, height: 1080 },
 } satisfies VylosConfig;
