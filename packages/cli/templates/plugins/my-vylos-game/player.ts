@@ -6,7 +6,7 @@ export interface Player extends Character {
   // gold: number;
 }
 
-export function createDefaultPlayer(): Player {
+export function createPlayer(): Player {
   return {
     id: 'player',
     name: 'Player',
