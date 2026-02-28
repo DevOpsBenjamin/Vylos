@@ -1,7 +1,7 @@
 <template>
   <Transition name="dlg-slide">
     <div
-      v-if="engineState.dialogue"
+      v-if="engineState.dialogue && !engineState.overlayId"
       class="absolute bottom-0 left-0 right-0 z-30 p-[2cqh_2cqw] pointer-events-none select-none"
     >
       <div
