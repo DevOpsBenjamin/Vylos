@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { container as globalContainer, type DependencyContainer } from 'tsyringe';
 import type { VylosPlugin } from '../types';
-import type { Component } from 'vue';
+import { type Component, shallowReactive } from 'vue';
 import { EventManager } from '../managers/EventManager';
 import { HistoryManager } from '../managers/HistoryManager';
 import { NavigationManager } from '../managers/NavigationManager';
@@ -13,6 +13,7 @@ import { CheckpointManager } from './CheckpointManager';
 import { InventoryManager } from '../managers/InventoryManager';
 import { VylosStorage } from '../storage/VylosStorage';
 import { Engine } from './Engine';
+import { logger } from '../utils/logger';
 
 /** Tokens used for DI registration */
 export const DI_TOKENS = {
@@ -26,8 +27,8 @@ export const DI_TOKENS = {
   Engine: 'Engine',
 } as const;
 
-/** Component override map (separate from DI) */
-const componentOverrides = new Map<string, Component>();
+/** Component override map — shallowReactive so Vue computeds track changes */
+const componentOverrides = shallowReactive<Record<string, Component>>({});
 
 /** Register all default managers in a DI container */
 function registerDefaults(c: DependencyContainer): void {
@@ -67,7 +68,8 @@ export function createEngine(options: CreateEngineOptions): Engine {
   // Register component overrides
   if (options.plugin?.components) {
     for (const [id, component] of Object.entries(options.plugin.components)) {
-      componentOverrides.set(id, component);
+      componentOverrides[id] = component;
+      logger.debug(`Component override registered: ${id}`);
     }
   }
 
@@ -98,10 +100,12 @@ export function createEngine(options: CreateEngineOptions): Engine {
 
 /** Get a component override by ID (returns undefined if no override) */
 export function getComponentOverride(id: string): Component | undefined {
-  return componentOverrides.get(id);
+  return componentOverrides[id];
 }
 
 /** Clear all component overrides (for testing) */
 export function clearComponentOverrides(): void {
-  componentOverrides.clear();
+  for (const key of Object.keys(componentOverrides)) {
+    delete componentOverrides[key];
+  }
 }
