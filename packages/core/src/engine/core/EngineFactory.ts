@@ -27,8 +27,10 @@ export const DI_TOKENS = {
   Engine: 'Engine',
 } as const;
 
-/** Component override map — shallowReactive so Vue computeds track changes */
-const componentOverrides = shallowReactive<Record<string, Component>>({});
+/** Component override map — stored on globalThis to survive dual-module resolution */
+const GLOBAL_KEY = '__vylos_component_overrides__';
+const componentOverrides: Record<string, Component> =
+  (globalThis as any)[GLOBAL_KEY] ??= shallowReactive<Record<string, Component>>({});
 
 /** Register all default managers in a DI container */
 function registerDefaults(c: DependencyContainer): void {
