@@ -9,6 +9,8 @@ const firstNotification: VylosEvent = {
 
   conditions: (state) => state.flags['booted'] && !state.flags['first_notif_done'],
 
+  locked: (state) => state.flags['first_notif_done'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('The phone buzzes.');
     await engine.say('[Messages] Unknown: "I know you can see this."');

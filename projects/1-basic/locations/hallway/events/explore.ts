@@ -4,6 +4,7 @@ const explore: VylosEvent = {
   id: 'explore_hallway',
   locationId: 'hallway',
   conditions: (state) => state.flags['intro_done'] === true && !state.flags['hallway_explored'],
+  locked: (state) => state.flags['hallway_explored'] === true,
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
 

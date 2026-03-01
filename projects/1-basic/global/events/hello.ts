@@ -4,6 +4,7 @@ import { system } from '@game';
 const intro: VylosEvent = {
   id: 'intro',
   conditions: (state) => !state.flags['intro_done'],
+  locked: (state) => state.flags['intro_done'] === true,
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/room/room_day.png');
 

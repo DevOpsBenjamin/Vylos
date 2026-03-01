@@ -139,6 +139,7 @@ async function handleSlot(slot: number): Promise<void> {
       engineState.historyBrowsing = false;
       engineState.setDialogue(null);
       engineState.setChoices(null);
+      engineState.setForeground(null);
       engineState.closeMenu();
     }
   }

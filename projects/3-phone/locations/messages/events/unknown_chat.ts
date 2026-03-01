@@ -11,6 +11,8 @@ const unknownChat: VylosEvent = {
 
   conditions: (state) => state.flags['first_notif_done'] && !state.flags['unknown_chat_done'],
 
+  locked: (state) => state.flags['unknown_chat_done'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('You open the conversation with Unknown Number.', { from: system });
 

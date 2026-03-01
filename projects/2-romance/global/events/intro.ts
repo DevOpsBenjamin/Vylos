@@ -7,6 +7,8 @@ const intro: VylosEvent = {
     return !state.flags['intro_done'];
   },
 
+  locked: (state) => state.flags['intro_done'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('Moving vans, cardboard boxes, and the scent of a city you barely know.');
     await engine.say(`You've arrived in the heart of the city, chasing something — a fresh start, maybe love, maybe both.`);

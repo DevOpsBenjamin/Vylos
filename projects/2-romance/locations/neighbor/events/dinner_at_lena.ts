@@ -9,6 +9,8 @@ const dinnerAtLena: VylosEvent = {
     return state.flags['lena_invited'] === true && !state.flags['dinner_done'];
   },
 
+  locked: (state) => state.flags['dinner_done'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
     engine.setForeground('/assets/locations/neighbor/lena.png');

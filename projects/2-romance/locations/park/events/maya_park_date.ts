@@ -9,6 +9,8 @@ const mayaParkDate: VylosEvent = {
     return state.flags['maya_date_1'] === true && !state.flags['maya_park_done'];
   },
 
+  locked: (state) => state.flags['maya_park_done'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/park/park_sunset.jpg');
     engine.setForeground('/assets/locations/park/maya_casual.png');

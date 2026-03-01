@@ -109,11 +109,11 @@ export interface VylosEvent<TState extends VylosGameState = VylosGameState> {
   /** Whether this event should trigger — checked each game loop tick */
   conditions?(state: TState): boolean;
 
-  /** Called when event transitions from NotReady → Unlocked */
-  unlocked?(state: TState): void;
+  /** Gate from NotReady → Ready. Return false to stay NotReady, anything else = Ready. */
+  unlocked?(state: TState): boolean;
 
-  /** Called when event completes (Unlocked → Locked) */
-  locked?(state: TState): void;
+  /** Called after execution. Return true to permanently lock, anything else = stays Ready. */
+  locked?(state: TState): boolean;
 
   /** The event's narrative logic */
   execute(engine: VylosAPI, state: TState): Promise<void>;
@@ -121,12 +121,12 @@ export interface VylosEvent<TState extends VylosGameState = VylosGameState> {
 
 /** Event lifecycle status */
 export enum EventStatus {
-  /** Conditions not yet met */
+  /** unlocked() gate not yet passed */
   NotReady = 'not_ready',
-  /** Conditions met, ready to execute */
-  Unlocked = 'unlocked',
+  /** Ready to execute when conditions met */
+  Ready = 'ready',
   /** Currently executing */
   Running = 'running',
-  /** Completed */
+  /** Permanently locked (locked() returned true) */
   Locked = 'locked',
 }

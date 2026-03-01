@@ -43,68 +43,121 @@ describe('EventManager', () => {
     expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
   });
 
-  describe('evaluate()', () => {
-    it('unlocks events with no conditions', () => {
+  describe('evaluate() — unlocked() gate', () => {
+    it('moves events with no unlocked() to Ready', () => {
       em.register(makeEvent('ev1'));
-      const unlocked = em.evaluate(makeState());
-      expect(unlocked).toHaveLength(1);
-      expect(unlocked[0].id).toBe('ev1');
-      expect(em.getStatus('ev1')).toBe(EventStatus.Unlocked);
+      const ready = em.evaluate(makeState());
+      expect(ready).toHaveLength(1);
+      expect(ready[0].id).toBe('ev1');
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
     });
 
-    it('unlocks events when conditions are met', () => {
+    it('moves events when unlocked() returns true', () => {
       em.register(makeEvent('ev1', {
-        conditions: (state) => state.flags['intro_done'] === true,
+        unlocked: () => true,
+      }));
+      const ready = em.evaluate(makeState());
+      expect(ready).toHaveLength(1);
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
+    });
+
+    it('keeps events NotReady when unlocked() returns false', () => {
+      em.register(makeEvent('ev1', {
+        unlocked: (state) => state.flags['intro_done'] === true,
       }));
 
       expect(em.evaluate(makeState())).toHaveLength(0);
       expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
 
-      const unlocked = em.evaluate(makeState({ flags: { intro_done: true } }));
-      expect(unlocked).toHaveLength(1);
+      const ready = em.evaluate(makeState({ flags: { intro_done: true } }));
+      expect(ready).toHaveLength(1);
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
     });
 
-    it('calls unlocked() callback when transitioning', () => {
-      const unlockedFn = vi.fn();
-      em.register(makeEvent('ev1', { unlocked: unlockedFn }));
-      em.evaluate(makeState());
-      expect(unlockedFn).toHaveBeenCalledOnce();
-    });
-
-    it('does not re-evaluate already unlocked events', () => {
+    it('does not re-evaluate already Ready events', () => {
       em.register(makeEvent('ev1'));
       em.evaluate(makeState());
       const second = em.evaluate(makeState());
       expect(second).toHaveLength(0);
     });
+
+    it('does not check conditions — only unlocked() gate', () => {
+      em.register(makeEvent('ev1', {
+        conditions: () => false,
+      }));
+      // evaluate() ignores conditions — event goes Ready anyway
+      const ready = em.evaluate(makeState());
+      expect(ready).toHaveLength(1);
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
+    });
   });
 
-  it('getNextUnlocked returns first unlocked event', () => {
-    em.register(makeEvent('ev1', {
-      conditions: () => false,
-    }));
-    em.register(makeEvent('ev2'));
-    em.evaluate(makeState());
+  describe('getNextUnlocked() — conditions checked at query time', () => {
+    it('returns first Ready event with no conditions', () => {
+      em.register(makeEvent('ev1'));
+      em.evaluate(makeState());
+      const next = em.getNextUnlocked(makeState());
+      expect(next?.id).toBe('ev1');
+    });
 
-    const next = em.getNextUnlocked(makeState());
-    expect(next?.id).toBe('ev2');
+    it('skips Ready event when conditions return false', () => {
+      em.register(makeEvent('ev1', {
+        conditions: () => false,
+      }));
+      em.register(makeEvent('ev2'));
+      em.evaluate(makeState());
+
+      const next = em.getNextUnlocked(makeState());
+      expect(next?.id).toBe('ev2');
+    });
+
+    it('returns Ready event when conditions return true', () => {
+      em.register(makeEvent('ev1', {
+        conditions: (state) => state.flags['go'] === true,
+      }));
+      em.evaluate(makeState());
+
+      expect(em.getNextUnlocked(makeState())).toBeUndefined();
+      expect(em.getNextUnlocked(makeState({ flags: { go: true } }))?.id).toBe('ev1');
+    });
   });
 
-  it('lifecycle: NotReady → Unlocked → Running → Locked', () => {
-    const lockedFn = vi.fn();
-    em.register(makeEvent('ev1', { locked: lockedFn }));
+  describe('lifecycle: NotReady → Ready → Running → Ready/Locked', () => {
+    it('repeatable event: Ready → Running → Ready', () => {
+      em.register(makeEvent('ev1'));
 
-    expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
+      expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
 
-    em.evaluate(makeState());
-    expect(em.getStatus('ev1')).toBe(EventStatus.Unlocked);
+      em.evaluate(makeState());
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
 
-    em.setRunning('ev1');
-    expect(em.getStatus('ev1')).toBe(EventStatus.Running);
+      em.setRunning('ev1');
+      expect(em.getStatus('ev1')).toBe(EventStatus.Running);
 
-    em.setLocked('ev1', makeState());
-    expect(em.getStatus('ev1')).toBe(EventStatus.Locked);
-    expect(lockedFn).toHaveBeenCalledOnce();
+      em.setReady('ev1');
+      expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
+    });
+
+    it('one-shot event: Ready → Running → Locked', () => {
+      em.register(makeEvent('ev1'));
+
+      em.evaluate(makeState());
+      em.setRunning('ev1');
+      em.setLocked('ev1');
+      expect(em.getStatus('ev1')).toBe(EventStatus.Locked);
+    });
+
+    it('setLocked is a pure status setter (no callback)', () => {
+      const lockedFn = vi.fn();
+      em.register(makeEvent('ev1', { locked: lockedFn }));
+
+      em.evaluate(makeState());
+      em.setRunning('ev1');
+      em.setLocked('ev1');
+      expect(em.getStatus('ev1')).toBe(EventStatus.Locked);
+      // locked() is NOT called by setLocked — Engine calls it explicitly
+      expect(lockedFn).not.toHaveBeenCalled();
+    });
   });
 
   it('getByLocation filters events', () => {
@@ -123,8 +176,8 @@ describe('EventManager', () => {
     em.register(makeEvent('ev3'));
 
     em.evaluate(makeState());
-    em.setLocked('ev1', makeState());
-    em.setLocked('ev3', makeState());
+    em.setLocked('ev1');
+    em.setLocked('ev3');
 
     const ids = em.getLockedIds();
     expect(ids).toEqual(['ev1', 'ev3']);
@@ -139,8 +192,21 @@ describe('EventManager', () => {
   it('reset puts event back to NotReady', () => {
     em.register(makeEvent('ev1'));
     em.evaluate(makeState());
-    expect(em.getStatus('ev1')).toBe(EventStatus.Unlocked);
+    expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
     em.reset('ev1');
     expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
+  });
+
+  it('setReady puts event directly to Ready (skips gate)', () => {
+    em.register(makeEvent('ev1', {
+      unlocked: () => false,
+    }));
+    // Gate blocks it
+    em.evaluate(makeState());
+    expect(em.getStatus('ev1')).toBe(EventStatus.NotReady);
+
+    // setReady bypasses gate
+    em.setReady('ev1');
+    expect(em.getStatus('ev1')).toBe(EventStatus.Ready);
   });
 });

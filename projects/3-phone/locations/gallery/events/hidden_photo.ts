@@ -11,6 +11,8 @@ const hiddenPhoto: VylosEvent = {
 
   conditions: (state) => state.flags['gallery_hint'] && !state.flags['found_photo'],
 
+  locked: (state) => state.flags['found_photo'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('You scroll through the gallery...', { from: system });
     await engine.say('Mostly generic wallpapers and stock photos.');

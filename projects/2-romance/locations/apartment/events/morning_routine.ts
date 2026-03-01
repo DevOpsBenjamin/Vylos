@@ -8,6 +8,8 @@ const morningRoutine: VylosEvent = {
     return state.flags['intro_done'] === true && !state.flags['woke_up'];
   },
 
+  locked: (state) => state.flags['woke_up'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/apartment/apartment_day.png');
     await engine.say('The alarm buzzes. Pale morning light fills the room.');

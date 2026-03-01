@@ -11,6 +11,8 @@ const lenaInvite: VylosEvent = {
       && !state.flags['lena_invited'];
   },
 
+  locked: (state) => state.flags['lena_invited'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`You're halfway out the door when you hear your name from down the hall.`);

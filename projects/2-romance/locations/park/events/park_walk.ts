@@ -8,6 +8,8 @@ const parkWalk: VylosEvent = {
     return !state.flags['park_intro'];
   },
 
+  locked: (state) => state.flags['park_intro'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/park/park_day.jpg');
     await engine.say(`Riverside Park stretches along the water's edge, wide and unhurried.`);
