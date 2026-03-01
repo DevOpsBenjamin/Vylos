@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { container as globalContainer, type DependencyContainer } from 'tsyringe';
+import { container as globalContainer, Lifecycle, type DependencyContainer } from 'tsyringe';
 import type { VylosPlugin } from '../types';
 import { type Component, shallowReactive } from 'vue';
 import { EventManager } from '../managers/EventManager';
@@ -34,12 +34,13 @@ const componentOverrides: Record<string, Component> =
 
 /** Register all default managers in a DI container */
 function registerDefaults(c: DependencyContainer): void {
-  c.register(DI_TOKENS.EventManager, { useClass: EventManager });
-  c.register(DI_TOKENS.HistoryManager, { useClass: HistoryManager });
-  c.register(DI_TOKENS.NavigationManager, { useClass: NavigationManager });
-  c.register(DI_TOKENS.WaitManager, { useClass: WaitManager });
-  c.register(DI_TOKENS.CheckpointManager, { useClass: CheckpointManager });
-  c.register(DI_TOKENS.InventoryManager, { useClass: InventoryManager });
+  const scoped = { lifecycle: Lifecycle.ContainerScoped };
+  c.register(DI_TOKENS.EventManager, { useClass: EventManager }, scoped);
+  c.register(DI_TOKENS.HistoryManager, { useClass: HistoryManager }, scoped);
+  c.register(DI_TOKENS.NavigationManager, { useClass: NavigationManager }, scoped);
+  c.register(DI_TOKENS.WaitManager, { useClass: WaitManager }, scoped);
+  c.register(DI_TOKENS.CheckpointManager, { useClass: CheckpointManager }, scoped);
+  c.register(DI_TOKENS.InventoryManager, { useClass: InventoryManager }, scoped);
 }
 
 export interface CreateEngineOptions {
