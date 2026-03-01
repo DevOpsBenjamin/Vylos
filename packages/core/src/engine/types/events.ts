@@ -1,5 +1,6 @@
 import type { VylosGameState } from './game-state';
 import type { VylosCharacter } from './dialogue';
+import type { ForegroundInput } from './engine';
 
 /** A text entry with per-language strings */
 export type TextEntry = Record<string, string>;
@@ -43,8 +44,8 @@ export interface VylosAPI {
   /** Set the background image */
   setBackground(path: string): void;
 
-  /** Show/hide a foreground image (character sprite, etc.) */
-  setForeground(path: string | null): void;
+  /** Show/hide foreground layers (character sprites, etc.) */
+  setForeground(input: ForegroundInput): void;
 
   /** Show a custom overlay component */
   showOverlay(componentId: string, props?: Record<string, unknown>): Promise<void>;

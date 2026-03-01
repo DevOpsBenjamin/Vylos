@@ -10,6 +10,8 @@ import type {
   ChoiceOption,
   DialogueState,
   VylosCharacter,
+  ForegroundLayer,
+  ForegroundInput,
 } from '../types';
 import { InventoryManager } from '../managers/InventoryManager';
 import { CheckpointManager } from './CheckpointManager';
@@ -17,6 +19,7 @@ import { WaitManager } from '../managers/WaitManager';
 import { JumpSignal } from '../errors/JumpSignal';
 import { EventEndError } from '../errors/EventEndError';
 import { InterruptSignal } from '../errors/InterruptSignal';
+import { normalizeForeground } from '../types/engine';
 import { logger } from '../utils/logger';
 import { interpolate } from '../utils/TimeHelper';
 
@@ -28,7 +31,7 @@ export interface EventRunnerCallbacks {
   /** Called to update background */
   onSetBackground(path: string): void;
   /** Called to update foreground */
-  onSetForeground(path: string | null): void;
+  onSetForeground(layers: ForegroundLayer[] | null): void;
   /** Called to show overlay */
   onShowOverlay(componentId: string, props?: Record<string, unknown>): void;
   /** Called to hide overlay */
@@ -49,7 +52,7 @@ export interface EventRunnerCallbacks {
 export interface HistoryStep {
   type: 'say' | 'choice';
   dialogue?: DialogueState | null;
-  foreground?: string | null;
+  foreground?: ForegroundLayer[] | null;
   choiceOptions?: ChoiceOption[];
   choiceResult?: string;
   stepIndex: number;
@@ -77,8 +80,8 @@ export class EventRunner implements VylosAPI {
   private liveDialogue: { text: string; speaker: VylosCharacter | null } | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
-  /** Current foreground path (tracked for checkpoint storage) */
-  private currentForeground: string | null = null;
+  /** Current foreground layers (tracked for checkpoint storage) */
+  private currentForeground: ForegroundLayer[] | null = null;
 
   /** Snapshot of game state before event started (for redo) */
   private initialState: VylosGameState | null = null;
@@ -364,9 +367,10 @@ export class EventRunner implements VylosAPI {
     this.callbacks.onSetBackground(path);
   }
 
-  setForeground(path: string | null): void {
-    this.currentForeground = path;
-    this.callbacks.onSetForeground(path);
+  setForeground(input: ForegroundInput): void {
+    const layers = normalizeForeground(input);
+    this.currentForeground = layers;
+    this.callbacks.onSetForeground(layers);
   }
 
   async showOverlay(componentId: string, props?: Record<string, unknown>): Promise<void> {
@@ -519,7 +523,7 @@ export class EventRunner implements VylosAPI {
     checkpoints: { count: number; isReplaying: boolean; replayStep: number };
     hasPendingRedo: boolean;
     currentBackground: string | null;
-    currentForeground: string | null;
+    currentForeground: ForegroundLayer[] | null;
   } {
     return {
       currentEventId: this.currentEvent?.id ?? null,

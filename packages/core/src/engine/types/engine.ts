@@ -1,6 +1,31 @@
 import type { DrawableEventEntry } from './events';
 import type { VylosCharacter } from './dialogue';
 
+/** A single foreground layer (character sprite, object, etc.) */
+export interface ForegroundLayer {
+  /** Asset path */
+  path: string;
+  /** Horizontal offset as percentage of viewport (0 = center), rendered as cqw */
+  x?: number;
+  /** Vertical offset as percentage of viewport (0 = center), rendered as cqh */
+  y?: number;
+  /** Scale multiplier (default 1) */
+  scale?: number;
+  /** Anchor point for positioning */
+  anchor?: 'center' | 'bottom-center';
+}
+
+/** Input accepted by engine.setForeground() — backward compatible */
+export type ForegroundInput = string | ForegroundLayer | ForegroundLayer[] | null;
+
+/** Normalize any ForegroundInput to the canonical array form (or null) */
+export function normalizeForeground(input: ForegroundInput): ForegroundLayer[] | null {
+  if (input === null || input === undefined) return null;
+  if (typeof input === 'string') return [{ path: input }];
+  if (Array.isArray(input)) return input.length === 0 ? null : input;
+  return [input];
+}
+
 /** Engine lifecycle phases */
 export enum EnginePhase {
   /** Engine created but not initialized */
@@ -19,7 +44,7 @@ export enum EnginePhase {
 export interface EngineState {
   phase: EnginePhase;
   background: string | null;
-  foreground: string | null;
+  foreground: ForegroundLayer[] | null;
   dialogue: DialogueState | null;
   choices: ChoiceState | null;
   currentLocationId: string | null;

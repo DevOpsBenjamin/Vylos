@@ -203,8 +203,8 @@ function buildCallbacks(
     onSetBackground(path) {
       engineState.setBackground(path);
     },
-    onSetForeground(path) {
-      engineState.setForeground(path);
+    onSetForeground(layers) {
+      engineState.setForeground(layers);
     },
     onShowOverlay(componentId, props) {
       engineState.setOverlay(componentId, props);
