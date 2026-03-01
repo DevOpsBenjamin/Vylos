@@ -3,9 +3,8 @@
     <div class="main-menu__inner">
       <!-- Title -->
       <div class="main-menu__title-block">
-        <h1 class="main-menu__title">Vylos</h1>
+        <h1 class="main-menu__title">{{ config?.name ?? 'Vylos' }}</h1>
         <div class="main-menu__separator"></div>
-        <p class="main-menu__subtitle">Visual Novel Engine</p>
       </div>
 
       <!-- Buttons -->
@@ -42,11 +41,14 @@ import { computed, inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { useGameStateStore } from '../../stores/gameState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { CONFIG_INJECT_KEY } from '../../composables/useConfig';
 import { EnginePhase, MenuType } from '../../engine/types';
 import { assetUrl } from '../../utils/assetUrl';
 import type { Engine } from '../../engine/core/Engine';
+import type { VylosConfig } from '../../engine/types/config';
 
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const config = inject<VylosConfig>(CONFIG_INJECT_KEY);
 const engineState = useEngineStateStore();
 const gameState = useGameStateStore();
 
