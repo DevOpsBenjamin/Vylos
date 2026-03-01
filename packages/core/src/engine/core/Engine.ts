@@ -81,9 +81,14 @@ export class Engine {
     logger.info('Engine started');
 
     while (this.running) {
+      // Reset load-interrupted flag at the top of each iteration.
+      // loadSave() sets this to interrupt the current event, but once
+      // the loop resumes it must be cleared — otherwise events complete
+      // without being finalized (stuck in 'running' forever).
+      this.loadInterrupted = false;
+
       // Handle pending load resume before anything else
       if (this.pendingResume) {
-        this.loadInterrupted = false;
         await this.handleResume(getState);
         continue;
       }
