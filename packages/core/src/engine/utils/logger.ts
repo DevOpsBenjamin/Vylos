@@ -7,8 +7,8 @@ export enum LogLevel {
 }
 
 let currentLevel: LogLevel = typeof import.meta !== 'undefined' &&
-  (import.meta as Record<string, unknown>).env &&
-  (import.meta as Record<string, Record<string, unknown>>).env.DEV
+  (import.meta as unknown as Record<string, unknown>).env &&
+  (import.meta as unknown as Record<string, Record<string, unknown>>).env.DEV
   ? LogLevel.Debug
   : LogLevel.Warn;
 

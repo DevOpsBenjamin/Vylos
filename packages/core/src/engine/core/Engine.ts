@@ -217,8 +217,10 @@ export class Engine {
         if (error instanceof JumpSignal) {
           // Finish current event, find jump target
           const state = getState();
-          this.finishEvent(currentEvent, state);
-          this.historyManager.push(currentEvent.id, this.eventRunner.checkpoints.getAll());
+          if (currentEvent) {
+            this.finishEvent(currentEvent, state);
+            this.historyManager.push(currentEvent.id, this.eventRunner.checkpoints.getAll());
+          }
 
           const target = this.eventManager.get(error.targetEventId);
           if (target) {
