@@ -42,7 +42,7 @@ export class CheckpointManager {
   capture(gameState: VylosGameState, type: CheckpointType, choiceResult?: string, display?: CaptureDisplayData): void {
     const checkpoint: Checkpoint = {
       step: this.checkpoints.length,
-      gameState: structuredClone(toRaw(gameState)),
+      gameState: JSON.parse(JSON.stringify(gameState)),
       type,
       choiceResult,
       dialogue: display?.dialogue ? structuredClone(toRaw(display.dialogue)) : undefined,
