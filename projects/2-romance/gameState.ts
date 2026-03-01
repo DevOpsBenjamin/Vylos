@@ -52,5 +52,6 @@ export const useRomanceGameStore = defineStore('gameState', () => {
     state.value = createState();
   }
 
-  return { state, getState, setState, getSnapshot, restoreSnapshot, $reset } satisfies VylosGameStore;
+  const store = { state, getState, setState, getSnapshot, restoreSnapshot, $reset };
+  return store satisfies VylosGameStore;
 });
