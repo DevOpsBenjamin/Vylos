@@ -70,7 +70,7 @@ import { ref, computed, inject, onMounted, watch } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { useGameStateStore } from '../../stores/gameState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
-import { MenuType } from '../../engine/types';
+import { EnginePhase, MenuType } from '../../engine/types';
 import type { Engine } from '../../engine/core/Engine';
 import type { SaveMeta } from '../../engine/types';
 
@@ -141,6 +141,9 @@ async function handleSlot(slot: number): Promise<void> {
       engineState.setChoices(null);
       engineState.setForeground(null);
       engineState.closeMenu();
+      if (engineState.phase === EnginePhase.MainMenu) {
+        engineState.setPhase(EnginePhase.Running);
+      }
     }
   }
 }

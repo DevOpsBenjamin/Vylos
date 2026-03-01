@@ -41,6 +41,9 @@ export class Engine {
   readonly settingsManager: SettingsManager;
   private running = false;
 
+  /** Callback to reset game state for new game (set by setup) */
+  onNewGame: (() => void) | null = null;
+
   /** Pending mid-event resume after load */
   private pendingResume: {
     eventId: string;
@@ -59,6 +62,15 @@ export class Engine {
     this.eventRunner = deps.eventRunner;
     this.saveManager = deps.saveManager;
     this.settingsManager = deps.settingsManager;
+  }
+
+  /** Reset all engine state and start a fresh game */
+  startNewGame(): void {
+    this.eventManager.resetAll();
+    this.historyManager.clear();
+    this.onNewGame?.();
+    this.eventRunner.interrupt('new game');
+    this.navigationManager.cancel();
   }
 
   /** Register events and start the game loop */

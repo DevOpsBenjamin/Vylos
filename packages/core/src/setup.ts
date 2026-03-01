@@ -29,6 +29,8 @@ export interface SetupOptions {
   initLinks?: (lm: LocationManager) => void;
   /** When true, skip the MainMenu phase and go directly to Running (triggers startGame). */
   skipMainMenu?: boolean;
+  /** Called when New Game resets state — use to reinitialize custom game store fields. */
+  onNewGame?: () => void;
 }
 
 /**
@@ -77,21 +79,41 @@ export function setupVylos(options: SetupOptions): void {
     initLinks(locationManager);
   }
 
-  if (skipMainMenu) {
-    engineState.setPhase(EnginePhase.Running);
-    startGame();
-  } else {
-    engineState.setPhase(EnginePhase.MainMenu);
+  // -- Loop callbacks (shared by all engine.run starts) ----------------------
+  const loopCallbacks: EngineLoopCallbacks = {
+    onTick(state) {
+      engineState.setLocation(state.locationId);
 
-    const stopWatch = watch(() => engineState.phase, (newPhase) => {
-      if (newPhase === EnginePhase.Running) {
-        stopWatch();
-        startGame();
-      }
-    });
-  }
+      const locs = locationManager.getAccessibleFrom(state.locationId, state);
+      engineState.setLocations(locs.map(l => ({
+        id: l.id,
+        name: resolveText(l.name),
+        accessible: true,
+      })));
 
-  function startGame(): void {
+      const acts = actionManager.getAvailable(state.locationId, state);
+      engineState.setActions(acts.map(a => ({
+        id: a.id,
+        label: resolveText(a.label),
+        locationId: a.locationId ?? '',
+      })));
+
+      engineState.setDrawableEvents(
+        engine.eventManager.getDrawableEvents(state, resolveText),
+      );
+
+      const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
+      if (bg) engineState.setBackground(bg);
+    },
+    onAction(actionId, state) {
+      actionManager.execute(actionId, state);
+    },
+  };
+
+  // -- Helpers ---------------------------------------------------------------
+  let engineStarted = false;
+
+  function initializeGameState(): void {
     const startGameTime = config.startGameTime ?? 12;
     gameStore.setState({
       ...gameStore.getState(),
@@ -103,38 +125,35 @@ export function setupVylos(options: SetupOptions): void {
 
     const bg = locationManager.resolveBackground(config.defaultLocation, startGameTime);
     if (bg) engineState.setBackground(bg);
+  }
 
-    const loopCallbacks: EngineLoopCallbacks = {
-      onTick(state) {
-        engineState.setLocation(state.locationId);
-
-        const locs = locationManager.getAccessibleFrom(state.locationId, state);
-        engineState.setLocations(locs.map(l => ({
-          id: l.id,
-          name: resolveText(l.name),
-          accessible: true,
-        })));
-
-        const acts = actionManager.getAvailable(state.locationId, state);
-        engineState.setActions(acts.map(a => ({
-          id: a.id,
-          label: resolveText(a.label),
-          locationId: a.locationId ?? '',
-        })));
-
-        engineState.setDrawableEvents(
-          engine.eventManager.getDrawableEvents(state, resolveText),
-        );
-
-        const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
-        if (bg) engineState.setBackground(bg);
-      },
-      onAction(actionId, state) {
-        actionManager.execute(actionId, state);
-      },
-    };
-
+  function ensureEngineRunning(): void {
+    if (engineStarted) return;
+    engineStarted = true;
     engine.run(events, () => gameStore.getState(), loopCallbacks).catch(console.error);
+  }
+
+  // -- Wire onNewGame callback -----------------------------------------------
+  engine.onNewGame = () => {
+    gameStore.$reset();
+    initializeGameState();
+    options.onNewGame?.();
+  };
+
+  // -- Boot ------------------------------------------------------------------
+  if (skipMainMenu) {
+    initializeGameState();
+    engineState.setPhase(EnginePhase.Running);
+    ensureEngineRunning();
+  } else {
+    engineState.setPhase(EnginePhase.MainMenu);
+
+    // Persistent watcher — starts engine on first Running transition
+    watch(() => engineState.phase, (newPhase) => {
+      if (newPhase === EnginePhase.Running) {
+        ensureEngineRunning();
+      }
+    });
   }
 }
 
