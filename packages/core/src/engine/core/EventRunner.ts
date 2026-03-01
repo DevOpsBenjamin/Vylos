@@ -1,4 +1,3 @@
-import { toRaw } from 'vue';
 import type {
   VylosAPI,
   InventoryAPI,
@@ -186,7 +185,7 @@ export class EventRunner implements VylosAPI {
 
   /** Execute an event, handling jump signals, interrupts, and redo */
   async executeEvent(event: VylosEvent): Promise<void> {
-    this.initialState = structuredClone(toRaw(this.callbacks.getState()));
+    this.initialState = JSON.parse(JSON.stringify(this.callbacks.getState()));
     this.currentEvent = event;
     this.checkpoints.clear();
     this.currentStep = 0;
