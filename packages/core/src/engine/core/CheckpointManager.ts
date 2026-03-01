@@ -1,4 +1,3 @@
-import { toRaw } from 'vue';
 import type { VylosGameState, Checkpoint, CheckpointType, ChoiceOption } from '../types';
 import type { DialogueState } from '../types/engine';
 
@@ -45,10 +44,10 @@ export class CheckpointManager {
       gameState: JSON.parse(JSON.stringify(gameState)),
       type,
       choiceResult,
-      dialogue: display?.dialogue ? structuredClone(toRaw(display.dialogue)) : undefined,
+      dialogue: display?.dialogue ? JSON.parse(JSON.stringify(display.dialogue)) : undefined,
       background: display?.background,
       foreground: display?.foreground,
-      choiceOptions: display?.choiceOptions ? structuredClone(toRaw(display.choiceOptions)) : undefined,
+      choiceOptions: display?.choiceOptions ? JSON.parse(JSON.stringify(display.choiceOptions)) : undefined,
     };
 
     // If replaying past the current index, trim future checkpoints

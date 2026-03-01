@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { createApp, watch, toRaw } from 'vue';
+import { createApp, watch } from 'vue';
 import { createPinia } from 'pinia';
 import GameShell from './components/app/GameShell.vue';
 import { createEngine } from './engine/core/EngineFactory';
