@@ -1,5 +1,6 @@
 import { inject } from 'vue';
 import type { Engine } from '../engine/core/Engine';
+import { logger } from '../engine/utils/logger';
 
 export const ENGINE_INJECT_KEY = 'vylos-engine';
 
@@ -10,7 +11,7 @@ export const ENGINE_INJECT_KEY = 'vylos-engine';
 export function useEngine(): Engine {
   const engine = inject<Engine>(ENGINE_INJECT_KEY);
   if (!engine) {
-    throw new Error('[Vylos] useEngine() called outside of GameShell context. Make sure the component is a descendant of GameShell.');
+    throw new Error(`${logger.getPrefix()} useEngine() called outside of GameShell context. Make sure the component is a descendant of GameShell.`);
   }
   return engine;
 }

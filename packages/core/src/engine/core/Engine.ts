@@ -8,7 +8,7 @@ import { SettingsManager } from '../managers/SettingsManager';
 import { EventRunner } from './EventRunner';
 import { JumpSignal } from '../errors/JumpSignal';
 import { logger } from '../utils/logger';
-import { attachDevConsole } from '../utils/devConsole';
+
 
 export interface EngineLoopCallbacks {
   /** Called each loop iteration (update UI: available locations, actions, background) */
@@ -77,7 +77,6 @@ export class Engine {
   async run(events: VylosEvent[], getState: () => VylosGameState, loop?: EngineLoopCallbacks): Promise<void> {
     this.eventManager.registerAll(events);
     this.running = true;
-    attachDevConsole(this, getState);
 
     logger.info('Engine started');
 
