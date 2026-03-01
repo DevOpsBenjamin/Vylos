@@ -1,4 +1,5 @@
 import type { Checkpoint } from '../types';
+import { normalizeForeground } from '../types/engine';
 import { logger } from '../utils/logger';
 
 export interface HistoryEntry {
@@ -76,9 +77,16 @@ export class HistoryManager {
     return structuredClone(this.history);
   }
 
-  /** Restore history from save data */
+  /** Restore history from save data (migrates legacy string foregrounds) */
   restore(entries: HistoryEntry[], index: number): void {
     this.history = structuredClone(entries);
+    for (const entry of this.history) {
+      for (const cp of entry.checkpoints) {
+        if (typeof cp.foreground === 'string') {
+          cp.foreground = normalizeForeground(cp.foreground);
+        }
+      }
+    }
     this.currentIndex = Math.min(index, this.history.length - 1);
   }
 }

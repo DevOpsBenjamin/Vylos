@@ -1,5 +1,5 @@
 import type { VylosGameState } from './game-state';
-import type { DialogueState, ChoiceOption } from './engine';
+import type { DialogueState, ChoiceOption, ForegroundLayer } from './engine';
 
 /** A checkpoint captured at each interaction point */
 export interface Checkpoint {
@@ -15,8 +15,8 @@ export interface Checkpoint {
   dialogue?: DialogueState | null;
   /** Background path at this point */
   background?: string | null;
-  /** Foreground path at this point */
-  foreground?: string | null;
+  /** Foreground layers at this point */
+  foreground?: ForegroundLayer[] | null;
   /** Available choice options at this step (for history redo) */
   choiceOptions?: ChoiceOption[];
 }

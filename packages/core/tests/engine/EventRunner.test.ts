@@ -261,7 +261,7 @@ describe('EventRunner', () => {
   });
 
   describe('setBackground / setForeground', () => {
-    it('calls callbacks synchronously', async () => {
+    it('calls callbacks synchronously (string normalized to array)', async () => {
       const event: VylosEvent = {
         id: 'test-bg',
         async execute(engine: VylosAPI) {
@@ -272,7 +272,36 @@ describe('EventRunner', () => {
 
       await runner.executeEvent(event);
       expect(callbacks.onSetBackground).toHaveBeenCalledWith('/bg.jpg');
-      expect(callbacks.onSetForeground).toHaveBeenCalledWith('/fg.png');
+      expect(callbacks.onSetForeground).toHaveBeenCalledWith([{ path: '/fg.png' }]);
+    });
+
+    it('passes multi-layer array through correctly', async () => {
+      const layers = [
+        { path: '/maya.png', x: -20 },
+        { path: '/lena.png', x: 20 },
+      ];
+      const event: VylosEvent = {
+        id: 'test-multi-fg',
+        async execute(engine: VylosAPI) {
+          engine.setForeground(layers);
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(callbacks.onSetForeground).toHaveBeenCalledWith(layers);
+    });
+
+    it('null clears foreground', async () => {
+      const event: VylosEvent = {
+        id: 'test-clear-fg',
+        async execute(engine: VylosAPI) {
+          engine.setForeground('/fg.png');
+          engine.setForeground(null);
+        },
+      };
+
+      await runner.executeEvent(event);
+      expect(callbacks.onSetForeground).toHaveBeenLastCalledWith(null);
     });
   });
 

@@ -1,10 +1,11 @@
-import type { VylosGameState, Checkpoint, CheckpointType, ChoiceOption } from '../types';
+import type { VylosGameState, Checkpoint, CheckpointType, ChoiceOption, ForegroundLayer } from '../types';
 import type { DialogueState } from '../types/engine';
+import { normalizeForeground } from '../types/engine';
 
 export interface CaptureDisplayData {
   dialogue?: DialogueState | null;
   background?: string | null;
-  foreground?: string | null;
+  foreground?: ForegroundLayer[] | null;
   choiceOptions?: ChoiceOption[];
 }
 
@@ -46,7 +47,7 @@ export class CheckpointManager {
       choiceResult,
       dialogue: display?.dialogue ? JSON.parse(JSON.stringify(display.dialogue)) : undefined,
       background: display?.background,
-      foreground: display?.foreground,
+      foreground: display?.foreground ? JSON.parse(JSON.stringify(display.foreground)) : display?.foreground,
       choiceOptions: display?.choiceOptions ? JSON.parse(JSON.stringify(display.choiceOptions)) : undefined,
     };
 
@@ -115,9 +116,14 @@ export class CheckpointManager {
     this.replayIndex = -1;
   }
 
-  /** Restore checkpoints from save data */
+  /** Restore checkpoints from save data (migrates legacy string foregrounds) */
   restore(checkpoints: Checkpoint[]): void {
     this.checkpoints = structuredClone(checkpoints);
+    for (const cp of this.checkpoints) {
+      if (typeof cp.foreground === 'string') {
+        cp.foreground = normalizeForeground(cp.foreground);
+      }
+    }
     this.replayIndex = -1;
   }
 }

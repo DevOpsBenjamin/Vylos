@@ -8,12 +8,13 @@ import {
   type ActionEntry,
   type LocationEntry,
   type DrawableEventEntry,
+  type ForegroundLayer,
 } from '../engine/types';
 
 export const useEngineStateStore = defineStore('engineState', () => {
   const phase = ref<EnginePhase>(EnginePhase.Created);
   const background = ref<string | null>(null);
-  const foreground = ref<string | null>(null);
+  const foreground = ref<ForegroundLayer[] | null>(null);
   const dialogue = ref<DialogueState | null>(null);
   const choices = ref<ChoiceState | null>(null);
   const currentLocationId = ref<string | null>(null);
@@ -40,8 +41,8 @@ export const useEngineStateStore = defineStore('engineState', () => {
     background.value = path;
   }
 
-  function setForeground(path: string | null) {
-    foreground.value = path;
+  function setForeground(layers: ForegroundLayer[] | null) {
+    foreground.value = layers;
   }
 
   function setPhase(p: EnginePhase) {
