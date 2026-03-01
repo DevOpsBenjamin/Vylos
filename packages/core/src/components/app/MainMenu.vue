@@ -136,12 +136,12 @@ function openSettings() {
 }
 
 .main-menu__title {
-  font-size: 5cqw;
+  font-size: 3.2cqw;
   font-weight: 700;
   color: white;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
+  letter-spacing: 0.15em;
   margin: 0;
+  overflow-wrap: break-word;
   text-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
 }
 

@@ -30,21 +30,32 @@
           v-for="slot in pageSlots"
           :key="slot"
           class="sl-slot"
-          :class="{ 'sl-slot--empty': !slotMeta[slot] }"
+          :class="{ 'sl-slot--empty': !slotMeta[slot], 'sl-slot--confirm': confirmSlot === slot }"
           @click="handleSlot(slot)"
         >
-          <!-- Indicator -->
-          <div class="sl-slot__header">
-            <span class="sl-slot__number">Slot {{ slot }}</span>
-            <span v-if="slotMeta[slot]" class="sl-slot__dot"></span>
-          </div>
+          <!-- Confirm overwrite prompt -->
+          <template v-if="confirmSlot === slot">
+            <div class="sl-slot__confirm-text">Overwrite?</div>
+            <div class="sl-slot__confirm-actions">
+              <button class="sl-slot__confirm-btn sl-slot__confirm-btn--yes" @click.stop="confirmSave(slot)">Yes</button>
+              <button class="sl-slot__confirm-btn sl-slot__confirm-btn--no" @click.stop="confirmSlot = null">No</button>
+            </div>
+          </template>
 
-          <!-- Content -->
-          <div v-if="slotMeta[slot]" class="sl-slot__info">
-            <span class="sl-slot__label">{{ slotMeta[slot]!.label }}</span>
-            <span class="sl-slot__time">{{ formatTime(slotMeta[slot]!.timestamp) }}</span>
-          </div>
-          <div v-else class="sl-slot__empty-text">Empty</div>
+          <template v-else>
+            <!-- Indicator -->
+            <div class="sl-slot__header">
+              <span class="sl-slot__number">Slot {{ slot }}</span>
+              <span v-if="slotMeta[slot]" class="sl-slot__dot"></span>
+            </div>
+
+            <!-- Content -->
+            <div v-if="slotMeta[slot]" class="sl-slot__info">
+              <span class="sl-slot__label">{{ slotMeta[slot]!.label }}</span>
+              <span class="sl-slot__time">{{ formatTime(slotMeta[slot]!.timestamp) }}</span>
+            </div>
+            <div v-else class="sl-slot__empty-text">Empty</div>
+          </template>
         </button>
       </div>
 
@@ -86,6 +97,7 @@ const activeTab = ref<'save' | 'load'>(
 );
 const page = ref(0);
 const slotMeta = ref<Record<number, SaveMeta>>({});
+const confirmSlot = ref<number | null>(null);
 
 const totalPages = computed(() => Math.ceil(TOTAL_SLOTS / PER_PAGE));
 const pageSlots = computed(() => {
@@ -98,6 +110,9 @@ watch(() => engineState.menuOpen, (val) => {
   if (val === MenuType.Save) activeTab.value = 'save';
   else if (val === MenuType.Load) activeTab.value = 'load';
 });
+
+// Reset confirm when switching tab or page
+watch([activeTab, page], () => { confirmSlot.value = null; });
 
 async function refreshSlots(): Promise<void> {
   if (!engine) return;
@@ -114,21 +129,11 @@ onMounted(refreshSlots);
 async function handleSlot(slot: number): Promise<void> {
   if (!engine) return;
   if (activeTab.value === 'save') {
-    await engine.saveManager.save(slot, {
-      gameState: gameState.state,
-      eventId: engine.eventRunner.currentEventId,
-      stepNumber: engine.eventRunner.checkpoints.count,
-      label: `Save ${slot}`,
-      thumbnail: null,
-      checkpoints: engine.eventRunner.currentEventId
-        ? engine.eventRunner.checkpoints.getAll()
-        : undefined,
-      initialState: engine.eventRunner.getInitialState() ?? undefined,
-      history: engine.historyManager.getAll(),
-      historyIndex: engine.historyManager.index,
-      lockedEventIds: engine.eventManager.getLockedIds(),
-    });
-    await refreshSlots();
+    if (slotMeta.value[slot]) {
+      confirmSlot.value = slot;
+      return;
+    }
+    await doSave(slot);
   } else {
     const data = await engine.saveManager.load(slot);
     if (data) {
@@ -146,6 +151,30 @@ async function handleSlot(slot: number): Promise<void> {
       }
     }
   }
+}
+
+async function doSave(slot: number): Promise<void> {
+  if (!engine) return;
+  await engine.saveManager.save(slot, {
+    gameState: gameState.state,
+    eventId: engine.eventRunner.currentEventId,
+    stepNumber: engine.eventRunner.checkpoints.count,
+    label: `Save ${slot}`,
+    thumbnail: null,
+    checkpoints: engine.eventRunner.currentEventId
+      ? engine.eventRunner.checkpoints.getAll()
+      : undefined,
+    initialState: engine.eventRunner.getInitialState() ?? undefined,
+    history: engine.historyManager.getAll(),
+    historyIndex: engine.historyManager.index,
+    lockedEventIds: engine.eventManager.getLockedIds(),
+  });
+  confirmSlot.value = null;
+  await refreshSlots();
+}
+
+async function confirmSave(slot: number): Promise<void> {
+  await doSave(slot);
 }
 
 function formatTime(ts: number): string {
@@ -331,6 +360,56 @@ function formatTime(ts: number): string {
   font-size: 1.1cqw;
   color: rgba(255, 255, 255, 0.2);
   font-style: italic;
+}
+
+/* Confirm overwrite */
+.sl-slot--confirm {
+  border-color: rgba(234, 179, 8, 0.4);
+  background: rgba(234, 179, 8, 0.08);
+}
+
+.sl-slot__confirm-text {
+  font-size: 1.2cqw;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 0.8cqh;
+}
+
+.sl-slot__confirm-actions {
+  display: flex;
+  gap: 0.8cqw;
+  justify-content: center;
+}
+
+.sl-slot__confirm-btn {
+  padding: 0.5cqh 1.5cqw;
+  border-radius: 0.5cqw;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 1cqw;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.sl-slot__confirm-btn--yes {
+  background: rgba(234, 179, 8, 0.2);
+  color: #fbbf24;
+}
+
+.sl-slot__confirm-btn--yes:hover {
+  background: rgba(234, 179, 8, 0.35);
+  border-color: rgba(234, 179, 8, 0.5);
+}
+
+.sl-slot__confirm-btn--no {
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.sl-slot__confirm-btn--no:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 /* Pagination */
