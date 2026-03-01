@@ -16,6 +16,8 @@ export interface VylosConsole {
   };
   /** Raw engine reference */
   readonly engine: Engine;
+  /** Print engine debug snapshot to console */
+  debug(): void;
 }
 
 declare global {
@@ -45,6 +47,7 @@ export function attachDevConsole(engine: Engine, getState: () => VylosGameState,
           };
         },
         get engine() { return engine; },
+        debug() { engine.debugPrint(); },
       };
     },
   });

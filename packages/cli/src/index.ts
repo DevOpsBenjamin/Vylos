@@ -14,9 +14,10 @@ function parseFlag(flag: string): string | undefined {
 async function main() {
   switch (command) {
     case 'dev': {
-      const projectRoot = resolve(args[1] ?? process.cwd());
+      const noOpen = args.includes('--no-open');
+      const projectRoot = resolve(args.find((a, i) => i > 0 && !a.startsWith('--')) ?? process.cwd());
       const { dev } = await import('./commands/dev');
-      await dev(projectRoot);
+      await dev(projectRoot, { open: !noOpen });
       break;
     }
 
@@ -59,7 +60,7 @@ async function main() {
   Vylos — Visual Novel Engine
 
   Usage:
-    vylos dev [project-dir]              Start dev server
+    vylos dev [project-dir] [--no-open]  Start dev server
     vylos build [project-dir]            Build for production
     vylos build [project-dir] --base /p/ Build with custom base path
     vylos editor [project-dir]           Open visual editor
