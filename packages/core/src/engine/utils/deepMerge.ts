@@ -10,12 +10,12 @@ export function deepMerge<T extends Record<string, any>>(target: T, source: Reco
             const sourceValue = source[key];
             const targetValue = output[key];
 
-            // If both are plain objects, merge recursively
-            if (
-                isPlainObject(sourceValue) &&
-                isPlainObject(targetValue)
-            ) {
-                (output as any)[key] = deepMerge(targetValue, sourceValue);
+            // If source is a plain object, always deep-merge (against target or fresh {})
+            if (isPlainObject(sourceValue)) {
+                (output as any)[key] = deepMerge(
+                    isPlainObject(targetValue) ? targetValue : {},
+                    sourceValue,
+                );
             } else if (sourceValue !== undefined) {
                 // Otherwise grab the new value if defined
                 (output as any)[key] = sourceValue;

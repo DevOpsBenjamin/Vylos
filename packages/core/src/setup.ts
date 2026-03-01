@@ -204,7 +204,7 @@ function buildCallbacks(
       return resolveText(entry);
     },
     getState() {
-      return JSON.parse(JSON.stringify(gameStore.getState()));
+      return gameStore.getState();
     },
     setState(newState) {
       gameStore.setState(newState);
