@@ -296,6 +296,71 @@ export class Engine {
     }
   }
 
+  /** Print a debug snapshot of the entire engine state to the console */
+  debugPrint(): void {
+    const runner = this.eventRunner.getDebugInfo();
+    const eventCounts = this.eventManager.getStatusCounts();
+    const nav = this.navigationManager;
+    const hist = this.historyManager;
+
+    console.group(`${logger.getPrefix()} Engine Debug`);
+
+    // Engine loop
+    console.log('Engine:', {
+      running: this.running,
+      loadInterrupted: this.loadInterrupted,
+      pendingResume: this.pendingResume ? this.pendingResume.eventId : null,
+    });
+
+    // Event execution
+    console.log('Event Runner:', {
+      currentEvent: runner.currentEventId,
+      step: runner.currentStep,
+      interrupted: runner.interrupted,
+      browsingHistory: runner.browsingHistory,
+      browseIndex: runner.browseIndex,
+      background: runner.currentBackground,
+      foreground: runner.currentForeground,
+      hasPendingRedo: runner.hasPendingRedo,
+    });
+
+    // Checkpoints
+    console.log('Checkpoints:', {
+      count: runner.checkpoints.count,
+      isReplaying: runner.checkpoints.isReplaying,
+      replayStep: runner.checkpoints.replayStep,
+    });
+
+    // Live dialogue
+    if (runner.liveDialogue) {
+      console.log('Live Dialogue:', {
+        speaker: runner.liveDialogue.speaker?.name ?? '(narrator)',
+        text: runner.liveDialogue.text,
+      });
+    }
+
+    // Events by status
+    console.group('Events:');
+    for (const [status, data] of Object.entries(eventCounts)) {
+      console.log(`${status}: ${data.count}`, data.ids);
+    }
+    console.groupEnd();
+
+    // Navigation
+    console.log('Navigation:', { waiting: nav.isWaiting });
+
+    // History
+    console.log('History:', {
+      entries: hist.count,
+      index: hist.index,
+      canGoBack: hist.canGoBack,
+      canGoForward: hist.canGoForward,
+      currentEvent: hist.current?.eventId ?? null,
+    });
+
+    console.groupEnd();
+  }
+
   /** Stop the engine loop */
   stop(): void {
     this.running = false;

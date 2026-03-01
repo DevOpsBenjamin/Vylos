@@ -159,6 +159,17 @@ export class EventManager {
     return ids;
   }
 
+  /** Get event counts grouped by status */
+  getStatusCounts(): Record<string, { count: number; ids: string[] }> {
+    const result: Record<string, { count: number; ids: string[] }> = {};
+    for (const [id, entry] of this.events) {
+      if (!result[entry.status]) result[entry.status] = { count: 0, ids: [] };
+      result[entry.status].count++;
+      result[entry.status].ids.push(id);
+    }
+    return result;
+  }
+
   /** Restore locked state from save data */
   restoreLockedIds(ids: string[]): void {
     for (const id of ids) {

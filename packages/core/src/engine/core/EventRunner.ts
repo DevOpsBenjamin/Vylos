@@ -508,6 +508,37 @@ export class EventRunner implements VylosAPI {
     this.interrupted = false;
   }
 
+  /** Get debug info for all internal state */
+  getDebugInfo(): {
+    currentEventId: string | null;
+    currentStep: number;
+    interrupted: boolean;
+    browsingHistory: boolean;
+    browseIndex: number;
+    liveDialogue: { text: string; speaker: VylosCharacter | null } | null;
+    checkpoints: { count: number; isReplaying: boolean; replayStep: number };
+    hasPendingRedo: boolean;
+    currentBackground: string | null;
+    currentForeground: string | null;
+  } {
+    return {
+      currentEventId: this.currentEvent?.id ?? null,
+      currentStep: this.currentStep,
+      interrupted: this.interrupted,
+      browsingHistory: this.isBrowsingHistory,
+      browseIndex: this.browseIndex,
+      liveDialogue: this.liveDialogue,
+      checkpoints: {
+        count: this.checkpoints.count,
+        isReplaying: this.checkpoints.isReplaying,
+        replayStep: this.checkpoints.currentReplayStep,
+      },
+      hasPendingRedo: this.pendingRedo !== null,
+      currentBackground: this.currentBackground,
+      currentForeground: this.currentForeground,
+    };
+  }
+
   /** Check if execution should be interrupted */
   private checkInterrupt(): void {
     if (this.interrupted) {
