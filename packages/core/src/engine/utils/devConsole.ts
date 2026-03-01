@@ -1,6 +1,6 @@
 import type { Engine } from '../core/Engine';
+import type { VylosConfig } from '../types/config';
 import type { VylosGameState } from '../types';
-import { logger } from './logger';
 
 export interface VylosConsole {
   /** Current game state (read/write — changes are live) */
@@ -26,31 +26,56 @@ declare global {
   }
 }
 
+/** Print a styled banner and cheat guide to the browser console */
+export function printBanner(config: VylosConfig): void {
+  const name = config.consoleName ?? 'Vylos';
+
+  console.log(
+    `%c${config.name}\n%c v${config.version}`,
+    'font-size:2em;font-weight:bold;color:#7c3aed;',
+    'font-size:0.9em;color:gray;',
+  );
+
+  console.log(
+    `\n⚠ Cheats are not blocked, but bad values can break your save.\n\n` +
+    `Type ${name} in console — state is a Vue reactive proxy.\n` +
+    `Drill into nested objects directly, changes apply live.\n` +
+    `In DevTools: expand Proxy → [[Target]] to see contents.\n\n` +
+    `${name}.state                              → Proxy {locationId, flags, inventories, ...}\n` +
+    `${name}.state.flags                        → Proxy {intro_done: true, ...}\n` +
+    `${name}.state.flags.intro_done = false     → changes apply live\n` +
+    `${name}.debug()                            → engine debug snapshot`,
+  );
+}
+
 /** Attach a global console object for cheating/debugging */
-export function attachDevConsole(engine: Engine, getState: () => VylosGameState, consoleName = 'Vylos'): void {
+export function attachDevConsole(engine: Engine, getState: () => VylosGameState, config: VylosConfig): void {
+  const consoleName = config.consoleName ?? 'Vylos';
   const im = engine.inventoryManager;
 
-  Object.defineProperty(window, consoleName, {
-    configurable: true,
-    get() {
-      const state = getState();
-      return {
-        get state() { return state; },
-        get inventory() {
-          return {
+  try {
+    Object.defineProperty(window, consoleName, {
+      configurable: true,
+      get(): VylosConsole {
+        const state = getState();
+        return {
+          state,
+          inventory: {
             add: (bag: string, itemId: string, qty?: number) => im.add(state.inventories, bag, itemId, qty),
             remove: (bag: string, itemId: string, qty?: number) => im.remove(state.inventories, bag, itemId, qty),
             has: (bag: string, itemId: string, qty?: number) => im.has(state.inventories, bag, itemId, qty),
             count: (bag: string, itemId: string) => im.count(state.inventories, bag, itemId),
             list: (bag: string) => im.list(state.inventories, bag),
             clear: (bag: string) => im.clearBag(state.inventories, bag),
-          };
-        },
-        get engine() { return engine; },
-        debug() { engine.debugPrint(); },
-      };
-    },
-  });
+          },
+          engine,
+          debug() { engine.debugPrint(); },
+        };
+      },
+    });
+  } catch {
+    console.warn(`[Vylos] Could not attach dev console as window.${consoleName}`);
+  }
 
-  logger.info(`DevConsole ready — type ${consoleName} in the browser console`);
+  printBanner(config);
 }
