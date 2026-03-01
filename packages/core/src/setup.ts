@@ -43,6 +43,7 @@ export function setupVylos(options: SetupOptions): void {
   const { config, plugin, locations = [], events = [], actions = [], initLinks, skipMainMenu = false } = options;
 
   if (config.logPrefix) logger.setPrefix(config.logPrefix);
+  document.title = config.name;
 
   const app = createApp(GameShell);
   const pinia = createPinia();
