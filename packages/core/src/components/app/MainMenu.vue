@@ -38,12 +38,15 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { useGameStateStore } from '../../stores/gameState';
+import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
 import { EnginePhase, MenuType } from '../../engine/types';
 import { assetUrl } from '../../utils/assetUrl';
+import type { Engine } from '../../engine/core/Engine';
 
+const engine = inject<Engine>(ENGINE_INJECT_KEY);
 const engineState = useEngineStateStore();
 const gameState = useGameStateStore();
 
@@ -54,6 +57,7 @@ const menuBgStyle = computed(() => ({
 }));
 
 function newGame() {
+  engine?.startNewGame();
   engineState.setPhase(EnginePhase.Running);
 }
 
