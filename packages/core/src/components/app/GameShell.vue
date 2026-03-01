@@ -195,8 +195,10 @@ function handleViewportClick(e: MouseEvent): void {
   // Only during Running phase, no menu open, no choices showing
   if (!isRunning.value || engineState.menuOpen || engineState.choices) return;
 
+  // Only handle click navigation when dialogue or choices are showing
+  if (!engineState.dialogue && !engineState.choices) return;
+
   const target = e.target as HTMLElement;
-  // Don't intercept clicks on interactive elements (buttons, overlays, etc.)
   if (target.closest('button, a, [role="button"]')) return;
 
   const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
