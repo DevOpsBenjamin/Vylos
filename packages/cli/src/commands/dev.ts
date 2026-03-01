@@ -7,7 +7,11 @@ import { vylosI18nPlugin } from '../vite/i18nPlugin';
 import { vylosEditorApiPlugin } from '../vite/editorApiPlugin';
 import { resolveGameAlias } from '../utils/resolveGameAlias';
 
-export async function dev(projectRoot: string) {
+export interface DevOptions {
+  open?: boolean;
+}
+
+export async function dev(projectRoot: string, options?: DevOptions) {
   console.log(`\n  Vylos dev server starting...\n  Project: ${projectRoot}\n`);
 
   const alias: Record<string, string> = { '@project': projectRoot };
@@ -32,7 +36,7 @@ export async function dev(projectRoot: string) {
     },
     server: {
       port: 5173,
-      open: true,
+      open: options?.open ?? true,
     },
   });
 
