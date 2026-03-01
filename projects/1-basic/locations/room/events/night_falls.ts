@@ -4,6 +4,7 @@ const nightFalls: VylosEvent = {
   id: 'night_falls',
   locationId: 'room',
   conditions: (state) => state.flags['intro_done'] === true && !state.flags['night_seen'] && state.gameTime >= 20,
+  locked: (state) => state.flags['night_seen'] === true,
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/room/room_night.png');
 

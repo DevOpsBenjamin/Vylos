@@ -9,6 +9,8 @@ const firstVisit: VylosEvent = {
     return state.flags['woke_up'] === true && !state.flags['visited_cafe'];
   },
 
+  locked: (state) => state.flags['visited_cafe'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     await engine.say('The Rosebud Cafe is a small corner place with warm lighting and mismatched chairs.');

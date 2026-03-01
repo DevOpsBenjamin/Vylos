@@ -10,6 +10,8 @@ const findLetter: VylosEvent = {
       && !state.flags['found_letter'];
   },
 
+  locked: (state) => state.flags['found_letter'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say(`As you're getting ready to head out, something catches your eye by the door.`);
     await engine.say('A small envelope, slipped under the gap. No stamp — handwritten, warm cursive.');

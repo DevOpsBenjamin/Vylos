@@ -10,11 +10,11 @@ interface EventEntry {
 /**
  * Manages event lifecycle: registration, condition evaluation, status transitions.
  *
- * Event lifecycle: NotReady → Unlocked → Running → Locked
- * - NotReady: conditions not yet met
- * - Unlocked: conditions met, ready to execute
+ * Event lifecycle: NotReady → Ready → Running → Ready (or Locked)
+ * - NotReady: unlocked() gate not yet passed
+ * - Ready: available — conditions() checked each tick
  * - Running: currently executing
- * - Locked: completed (won't trigger again)
+ * - Locked: permanently done (locked() returned true)
  */
 export class EventManager {
   private events = new Map<string, EventEntry>();
@@ -45,46 +45,44 @@ export class EventManager {
     return this.events.get(id)?.status;
   }
 
-  /** Evaluate conditions and update statuses. Returns newly unlocked events. */
+  /** Evaluate unlocked() gate for NotReady events. Returns newly ready events. */
   evaluate(state: VylosGameState): VylosEvent[] {
-    const unlocked: VylosEvent[] = [];
+    const newlyReady: VylosEvent[] = [];
 
     for (const [id, entry] of this.events) {
       if (entry.status !== EventStatus.NotReady) continue;
 
-      // Skip events bound to a different location
-      if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
+      // unlocked() gate: if not defined or returns !== false → Ready
+      if (entry.event.unlocked && entry.event.unlocked(state) === false) continue;
 
-      const conditionsMet = !entry.event.conditions || entry.event.conditions(state);
-      if (conditionsMet) {
-        entry.status = EventStatus.Unlocked;
-        entry.event.unlocked?.(state);
-        unlocked.push(entry.event);
-        logger.debug(`Event unlocked: ${id}`);
-      }
+      entry.status = EventStatus.Ready;
+      newlyReady.push(entry.event);
+      logger.debug(`Event ready: ${id}`);
     }
 
-    return unlocked;
+    return newlyReady;
   }
 
-  /** Get the next unlocked event matching the current location (first registered wins). Skips drawable events. */
+  /** Get the next ready event matching the current location whose conditions are met. Skips drawable events. */
   getNextUnlocked(state: VylosGameState): VylosEvent | undefined {
     for (const entry of this.events.values()) {
-      if (entry.status !== EventStatus.Unlocked) continue;
+      if (entry.status !== EventStatus.Ready) continue;
       if (entry.event.draw) continue; // Drawable events don't auto-trigger
       if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
+      if (entry.event.conditions && !entry.event.conditions(state)) continue;
       return entry.event;
     }
     return undefined;
   }
 
-  /** Get all unlocked drawable events at the current location */
+  /** Get all ready drawable events at the current location whose conditions are met */
   getDrawableEvents(state: VylosGameState, resolveText?: (text: string | Record<string, string>) => string): DrawableEventEntry[] {
     const result: DrawableEventEntry[] = [];
     for (const entry of this.events.values()) {
-      if (entry.status !== EventStatus.Unlocked) continue;
+      if (entry.status !== EventStatus.Ready) continue;
       if (!entry.event.draw) continue;
       if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
+      if (entry.event.conditions && !entry.event.conditions(state)) continue;
       const draw = entry.event.draw;
       const label = typeof draw.label === 'string'
         ? draw.label
@@ -107,13 +105,20 @@ export class EventManager {
     }
   }
 
-  /** Mark event as locked (completed) */
-  setLocked(id: string, state: VylosGameState): void {
+  /** Mark event as locked (permanently done) */
+  setLocked(id: string): void {
     const entry = this.events.get(id);
     if (entry) {
       entry.status = EventStatus.Locked;
-      entry.event.locked?.(state);
       logger.debug(`Event locked: ${id}`);
+    }
+  }
+
+  /** Mark event as ready (skip unlocked() gate) */
+  setReady(id: string): void {
+    const entry = this.events.get(id);
+    if (entry) {
+      entry.status = EventStatus.Ready;
     }
   }
 

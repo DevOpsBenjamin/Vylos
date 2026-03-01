@@ -9,6 +9,8 @@ const mayaPoem: VylosEvent = {
     return (state as any).npcs?.maya?.affection >= 40 && !state.flags['maya_poem'];
   },
 
+  locked: (state) => state.flags['maya_poem'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     engine.setForeground('/assets/locations/cafe/maya.png');

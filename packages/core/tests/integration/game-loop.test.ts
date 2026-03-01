@@ -69,6 +69,7 @@ describe('Game loop integration', () => {
 
     const event: VylosEvent = {
       id: 'intro',
+      locked: () => true,
       async execute(api: VylosAPI) {
         await api.say('Hello');
         await api.say('World');
@@ -130,6 +131,7 @@ describe('Game loop integration', () => {
     const events: VylosEvent[] = [
       {
         id: 'first',
+        locked: () => true,
         async execute(api: VylosAPI) {
           await api.say('In first event');
           api.jump('second');
@@ -137,6 +139,7 @@ describe('Game loop integration', () => {
       },
       {
         id: 'second',
+        locked: () => true,
         async execute(api: VylosAPI) {
           await api.say('In second event');
         },

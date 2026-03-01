@@ -9,6 +9,8 @@ const mayaDate: VylosEvent = {
     return (state as any).npcs?.maya?.affection >= 60 && !state.flags['maya_date_1'];
   },
 
+  locked: (state) => state.flags['maya_date_1'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     engine.setForeground('/assets/locations/cafe/maya.png');

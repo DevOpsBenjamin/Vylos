@@ -9,6 +9,8 @@ const meetLena: VylosEvent = {
     return state.flags['found_letter'] === true && !state.flags['met_lena'];
   },
 
+  locked: (state) => state.flags['met_lena'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`The hallway is narrow and warmly lit. You've barely stepped out when you hear a thud.`);

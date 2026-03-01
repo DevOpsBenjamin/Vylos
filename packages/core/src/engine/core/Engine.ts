@@ -138,18 +138,23 @@ export class Engine {
    * Restores game state, history, event lock state, and sets up mid-event resume if needed.
    */
   loadSave(saveData: SaveSlot, setState: (state: VylosGameState) => void): void {
+    logger.info('Loading save...');
+
     // Restore game state
     setState(JSON.parse(JSON.stringify(saveData.gameState)));
+    logger.debug(`Restored game state (location: ${saveData.gameState.locationId})`);
 
     // Restore event lock state
     this.eventManager.resetAll();
     if (saveData.lockedEventIds) {
       this.eventManager.restoreLockedIds(saveData.lockedEventIds);
+      logger.debug(`Restored ${saveData.lockedEventIds.length} locked events`);
     }
 
     // Restore history
     if (saveData.history) {
       this.historyManager.restore(saveData.history, saveData.historyIndex ?? -1);
+      logger.debug(`Restored history (${saveData.history.length} entries, index ${saveData.historyIndex ?? -1})`);
     } else {
       this.historyManager.clear();
     }
@@ -161,12 +166,14 @@ export class Engine {
         checkpoints: saveData.checkpoints,
         initialState: saveData.initialState,
       };
+      logger.debug(`Pending resume: ${saveData.eventId} (${saveData.checkpoints.length} checkpoints)`);
     }
 
     // Interrupt current execution so the loop picks up the new state
     this.loadInterrupted = true;
     this.eventRunner.interrupt('load');
     this.navigationManager.cancel();
+    logger.info('Save loaded');
   }
 
   /** Execute a single event, handling jumps */
@@ -183,18 +190,18 @@ export class Engine {
         // Skip lock/push if interrupted by a load
         if (this.loadInterrupted) return;
 
-        // Event completed successfully
+        // Event completed — check locked() to decide fate
         const state = getState();
-        this.eventManager.setLocked(currentEvent.id, state);
+        this.finishEvent(currentEvent, state);
         this.historyManager.push(currentEvent.id, this.eventRunner.checkpoints.getAll());
         currentEvent = undefined;
       } catch (error) {
         if (this.loadInterrupted) return;
 
         if (error instanceof JumpSignal) {
-          // Lock current event, find jump target
+          // Finish current event, find jump target
           const state = getState();
-          this.eventManager.setLocked(currentEvent.id, state);
+          this.finishEvent(currentEvent, state);
           this.historyManager.push(currentEvent.id, this.eventRunner.checkpoints.getAll());
 
           const target = this.eventManager.get(error.targetEventId);
@@ -234,14 +241,14 @@ export class Engine {
       if (this.loadInterrupted) return;
 
       const state = getState();
-      this.eventManager.setLocked(resume.eventId, state);
+      this.finishEvent(event, state);
       this.historyManager.push(resume.eventId, this.eventRunner.checkpoints.getAll());
     } catch (error) {
       if (this.loadInterrupted) return;
 
       if (error instanceof JumpSignal) {
         const state = getState();
-        this.eventManager.setLocked(resume.eventId, state);
+        this.finishEvent(event, state);
         this.historyManager.push(resume.eventId, this.eventRunner.checkpoints.getAll());
 
         const target = this.eventManager.get(error.targetEventId);
@@ -252,6 +259,15 @@ export class Engine {
       } else {
         logger.error('Resume execution error:', error);
       }
+    }
+  }
+
+  /** After event execution: lock permanently or return to Ready */
+  private finishEvent(event: VylosEvent, state: VylosGameState): void {
+    if (event.locked?.(state) === true) {
+      this.eventManager.setLocked(event.id);
+    } else {
+      this.eventManager.setReady(event.id);
     }
   }
 

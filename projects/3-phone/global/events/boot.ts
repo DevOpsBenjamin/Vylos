@@ -9,6 +9,8 @@ const boot: VylosEvent = {
 
   conditions: (state) => !state.flags['booted'],
 
+  locked: (state) => state.flags['booted'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     await engine.say('...');
     await engine.say('The screen flickers to life.');
