@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import { deepMerge, type VylosGameState } from '@vylos/core';
+import { deepMerge, type VylosGameState, type VylosGameStore } from '@vylos/core';
 
 export interface RomanceGameState extends VylosGameState {
   energy: number;
@@ -52,5 +52,6 @@ export const useRomanceGameStore = defineStore('gameState', () => {
     state.value = createState();
   }
 
-  return { state, getState, setState, getSnapshot, restoreSnapshot, $reset };
+  const store = { state, getState, setState, getSnapshot, restoreSnapshot, $reset };
+  return store satisfies VylosGameStore;
 });

@@ -1,15 +1,17 @@
 import type { DependencyContainer } from 'tsyringe';
-import type { Component, Ref } from 'vue';
+import type { Component } from 'vue';
 import type { VylosGameState } from './game-state';
 
 /**
  * Minimal contract for a game state store.
  * Compatible with the default `useGameStateStore` return type.
  * Projects with custom game state can implement this with additional properties.
+ *
+ * Note: `state` is intentionally excluded — Pinia setup stores unwrap Refs,
+ * causing type mismatches. Components access `.state` through their own
+ * typed store imports, not through this interface.
  */
 export interface VylosGameStore {
-  /** Reactive game state ref */
-  state: Ref<VylosGameState>;
   /** Get current (unwrapped) game state */
   getState(): VylosGameState;
   /** Replace the entire game state */
