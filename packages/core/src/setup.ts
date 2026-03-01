@@ -75,15 +75,13 @@ export function setupVylos(options: SetupOptions): void {
 
   const callbacks = buildCallbacks(engineState, gameStore, locationManager, resolveText);
   const engine = createEngine({ callbacks, projectId: config.id, plugin });
-  attachDevConsole(engine, () => gameStore.getState(), config.consoleName ?? 'Vylos');
+  attachDevConsole(engine, () => gameStore.getState(), config);
 
   app.provide(ENGINE_INJECT_KEY, engine);
   app.provide(CONFIG_INJECT_KEY, config);
   app.mount('#app');
 
-  if (initLinks) {
-    initLinks(locationManager);
-  }
+  initLinks?.(locationManager);
 
   // -- Loop callbacks (shared by all engine.run starts) ----------------------
   const loopCallbacks: EngineLoopCallbacks = {
@@ -225,9 +223,7 @@ function buildCallbacks(
       engineState.setDialogue(null);
       engineState.setChoices(null);
     },
-    resolveText(entry) {
-      return resolveText(entry);
-    },
+    resolveText,
     getState() {
       return gameStore.getState();
     },
