@@ -24,11 +24,11 @@ declare global {
   }
 }
 
-/** Attach `window.Vylos` for console cheating/debugging */
-export function attachDevConsole(engine: Engine, getState: () => VylosGameState): void {
+/** Attach a global console object for cheating/debugging */
+export function attachDevConsole(engine: Engine, getState: () => VylosGameState, consoleName = 'Vylos'): void {
   const im = engine.inventoryManager;
 
-  Object.defineProperty(window, 'Vylos', {
+  Object.defineProperty(window, consoleName, {
     configurable: true,
     get() {
       const state = getState();
@@ -49,5 +49,5 @@ export function attachDevConsole(engine: Engine, getState: () => VylosGameState)
     },
   });
 
-  logger.info('DevConsole ready — type Vylos in the browser console');
+  logger.info(`DevConsole ready — type ${consoleName} in the browser console`);
 }

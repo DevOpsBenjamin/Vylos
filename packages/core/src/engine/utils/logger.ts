@@ -12,32 +12,42 @@ let currentLevel: LogLevel = typeof import.meta !== 'undefined' &&
   ? LogLevel.Debug
   : LogLevel.Warn;
 
+let prefix = '[Vylos]';
+
 export const logger = {
   setLevel(level: LogLevel) {
     currentLevel = level;
   },
 
+  setPrefix(value: string) {
+    prefix = value;
+  },
+
+  getPrefix(): string {
+    return prefix;
+  },
+
   debug(...args: unknown[]) {
     if (currentLevel <= LogLevel.Debug) {
-      console.debug('[Vylos]', ...args);
+      console.debug(prefix, ...args);
     }
   },
 
   info(...args: unknown[]) {
     if (currentLevel <= LogLevel.Info) {
-      console.info('[Vylos]', ...args);
+      console.info(prefix, ...args);
     }
   },
 
   warn(...args: unknown[]) {
     if (currentLevel <= LogLevel.Warn) {
-      console.warn('[Vylos]', ...args);
+      console.warn(prefix, ...args);
     }
   },
 
   error(...args: unknown[]) {
     if (currentLevel <= LogLevel.Error) {
-      console.error('[Vylos]', ...args);
+      console.error(prefix, ...args);
     }
   },
 };
