@@ -5,9 +5,9 @@ import type { VylosCharacter } from './dialogue';
 export interface ForegroundLayer {
   /** Asset path */
   path: string;
-  /** Horizontal offset as percentage of viewport (0 = center), rendered as cqw */
+  /** Horizontal offset as percentage of scene width (-50 = left edge, 0 = center, 50 = right edge) */
   x?: number;
-  /** Vertical offset as percentage of viewport (0 = center), rendered as cqh */
+  /** Vertical offset as percentage of scene height (bottom-center: positive = up; center: positive = down) */
   y?: number;
   /** Scale multiplier (default 1) */
   scale?: number;

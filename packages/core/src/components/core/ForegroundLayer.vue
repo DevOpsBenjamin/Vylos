@@ -1,87 +1,156 @@
 <template>
-  <div
-    v-if="engineState.foreground"
-    ref="containerRef"
-    class="absolute inset-0 z-10 pointer-events-none overflow-hidden"
-  >
-    <img
-      v-if="blurUrl"
-      :src="blurUrl"
-      alt=""
-      class="fg-blur absolute inset-0 w-full h-full object-cover"
-    />
-    <!-- Stage: sized to first image's natural aspect, scaled to fit container -->
-    <div class="absolute inset-0 flex items-end justify-center">
+  <Transition name="fg-fade">
+    <div
+      v-if="engineState.foreground"
+      class="absolute inset-0 z-10 pointer-events-none overflow-hidden"
+    >
+      <img
+        v-if="blurUrl"
+        :src="blurUrl"
+        alt=""
+        class="fg-blur absolute inset-0 w-full h-full object-cover"
+      />
+      <!-- Stage: always mounted, observes container size -->
       <div
-        class="relative shrink-0"
-        :style="stageStyle"
+        ref="stageRef"
+        style="position: absolute; inset: 0; overflow: hidden;"
       >
-        <TransitionGroup name="fg-fade">
-          <div
-            v-for="(layer, i) in engineState.foreground"
+        <!-- Scene: natural pixel size, centered and scaled to fit -->
+        <div
+          v-if="sceneReady"
+          :style="{
+            position: 'absolute',
+            left: '50%',
+            top: '50%',
+            width: scene.width + 'px',
+            height: scene.height + 'px',
+            transform: `translate(-50%, -50%) scale(${sceneFitScale})`,
+            transformOrigin: 'center',
+          }"
+        >
+          <img
+            v-for="(layer, i) in scene.layers"
             :key="layer.path + '-' + i"
-            class="absolute"
-            :class="anchorClass(layer)"
-            :style="layerPosition(layer)"
-          >
-            <img
-              :src="resolveUrl(layer.path)"
-              alt=""
-              :style="imgScale(layer)"
-              @load="i === 0 ? onRefImageLoad($event) : undefined"
-            />
-          </div>
-        </TransitionGroup>
+            :src="resolveUrl(layer.path)"
+            alt=""
+            :style="layerStyle(layer)"
+          />
+        </div>
       </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted, watch } from 'vue';
+import { computed, ref, watch, onMounted, onUnmounted } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { assetUrl } from '../../utils/assetUrl';
 import type { ForegroundLayer } from '../../engine/types';
 
+interface LayerMeta {
+  path: string;
+  naturalWidth: number;
+  naturalHeight: number;
+  x: number;
+  y: number;
+  scale: number;
+  anchor: 'center' | 'bottom-center';
+}
+
+interface Scene {
+  width: number;
+  height: number;
+  layers: LayerMeta[];
+}
+
 const engineState = useEngineStateStore();
 
-const containerRef = ref<HTMLElement | null>(null);
+const stageRef = ref<HTMLElement | null>(null);
 const containerW = ref(0);
 const containerH = ref(0);
 
-/** First image's natural dimensions (the reference frame) */
-const refNaturalW = ref(0);
-const refNaturalH = ref(0);
+const scene = ref<Scene>({ width: 0, height: 0, layers: [] });
+const sceneReady = ref(false);
 
+// --- ResizeObserver on stage (always mounted when foreground active) ---
 let observer: ResizeObserver | null = null;
 
 onMounted(() => {
-  if (!containerRef.value) return;
   observer = new ResizeObserver(([entry]) => {
     containerW.value = entry.contentRect.width;
     containerH.value = entry.contentRect.height;
   });
-  observer.observe(containerRef.value);
+  if (stageRef.value) observer.observe(stageRef.value);
 });
 
 onUnmounted(() => {
   observer?.disconnect();
 });
 
-// Reset natural dimensions when foreground layers change
-watch(() => engineState.foreground?.[0]?.path, () => {
-  refNaturalW.value = 0;
-  refNaturalH.value = 0;
+// Re-attach observer when stageRef appears (v-if toggles)
+watch(stageRef, (el) => {
+  observer?.disconnect();
+  if (el) observer?.observe(el);
 });
 
-function resolveUrl(path: string): string {
-  return assetUrl(path);
+// --- Image metadata loading ---
+function loadImageMeta(path: string): Promise<{ width: number; height: number }> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    img.onerror = () => resolve({ width: 0, height: 0 });
+    img.src = assetUrl(path);
+  });
 }
 
-function onRefImageLoad(event: Event): void {
-  const img = event.target as HTMLImageElement;
-  refNaturalW.value = img.naturalWidth;
-  refNaturalH.value = img.naturalHeight;
+// --- Build scene when foreground changes ---
+watch(
+  () => engineState.foreground,
+  async (layers) => {
+    if (!layers || layers.length === 0) {
+      sceneReady.value = false;
+      return;
+    }
+
+    const metas = await Promise.all(layers.map((l) => loadImageMeta(l.path)));
+
+    const baseW = metas[0].width;
+    const baseH = metas[0].height;
+    if (baseW === 0 || baseH === 0) {
+      sceneReady.value = false;
+      return;
+    }
+
+    scene.value = {
+      width: baseW,
+      height: baseH,
+      layers: layers.map((l, i) => ({
+        path: l.path,
+        naturalWidth: metas[i].width,
+        naturalHeight: metas[i].height,
+        x: l.x ?? 0,
+        y: l.y ?? 0,
+        scale: l.scale ?? 1,
+        anchor: l.anchor ?? 'bottom-center',
+      })),
+    };
+    sceneReady.value = true;
+  },
+  { immediate: true },
+);
+
+// --- Scale: one number, min(containerW/sceneW, containerH/sceneH) ---
+const sceneFitScale = computed(() => {
+  if (!sceneReady.value || containerW.value === 0 || containerH.value === 0) return 1;
+  return Math.min(
+    containerW.value / scene.value.width,
+    containerH.value / scene.value.height,
+  );
+});
+
+// --- Helpers ---
+function resolveUrl(path: string): string {
+  return assetUrl(path);
 }
 
 const blurUrl = computed(() => {
@@ -90,47 +159,41 @@ const blurUrl = computed(() => {
   return resolveUrl(layers[0].path);
 });
 
-/** Scale factor: how much the first image must scale to fit the container (object-contain logic) */
-const fitScale = computed(() => {
-  if (containerW.value === 0 || containerH.value === 0) return 1;
-  if (refNaturalW.value === 0 || refNaturalH.value === 0) return 1;
-  return Math.min(
-    containerW.value / refNaturalW.value,
-    containerH.value / refNaturalH.value,
-  );
-});
+function layerStyle(layer: LayerMeta): Record<string, string> {
+  const isCenter = layer.anchor === 'center';
 
-/** Stage dimensions: first image's natural size scaled to fit */
-const stageStyle = computed(() => {
-  if (refNaturalW.value === 0 || refNaturalH.value === 0) return {};
-  return {
-    width: `${refNaturalW.value * fitScale.value}px`,
-    height: `${refNaturalH.value * fitScale.value}px`,
+  // Normalize every layer to the scene height so all sprites are proportionate
+  const heightScale = scene.value.height / layer.naturalHeight;
+  const displayW = layer.naturalWidth * heightScale;
+  const displayH = scene.value.height;
+
+  // x/y are percentages of scene dimensions (resolution-independent)
+  const xPx = (layer.x / 100) * scene.value.width;
+  const yPx = (layer.y / 100) * scene.value.height;
+
+  const style: Record<string, string> = {
+    position: 'absolute',
+    width: displayW + 'px',
+    height: displayH + 'px',
   };
-});
 
-function anchorClass(layer: ForegroundLayer): string {
-  return layer.anchor === 'center'
-    ? 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
-    : 'left-1/2 bottom-0 -translate-x-1/2';
-}
+  if (isCenter) {
+    style.left = '50%';
+    style.top = '50%';
+    style.transform = `translate(calc(-50% + ${xPx}px), calc(-50% + ${yPx}px))`;
+  } else {
+    style.left = '50%';
+    style.bottom = '0';
+    style.transform = `translateX(calc(-50% + ${xPx}px))`;
+    if (yPx !== 0) style.bottom = yPx + 'px';
+  }
 
-function layerPosition(layer: ForegroundLayer): Record<string, string> {
-  const x = layer.x ?? 0;
-  const y = layer.y ?? 0;
-  const style: Record<string, string> = {};
-  if (x !== 0) style.marginLeft = `${x * fitScale.value * refNaturalW.value / 100}px`;
-  if (y !== 0) style.marginBottom = `${-y * fitScale.value * refNaturalH.value / 100}px`;
+  if (layer.scale !== 1) {
+    style.transform += ` scale(${layer.scale})`;
+    style.transformOrigin = isCenter ? 'center' : 'bottom center';
+  }
+
   return style;
-}
-
-function imgScale(layer: ForegroundLayer): Record<string, string> {
-  const s = layer.scale ?? 1;
-  const base = fitScale.value;
-  return {
-    transform: `scale(${base * s})`,
-    transformOrigin: layer.anchor === 'center' ? 'center' : 'bottom center',
-  };
 }
 </script>
 
