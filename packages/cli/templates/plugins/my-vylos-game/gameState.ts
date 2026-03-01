@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
-import type { VylosGameState } from '@vylos/core';
+import type { VylosGameState, VylosGameStore } from '@vylos/core';
 import { deepMerge } from '@vylos/core';
 import { type Player, createPlayer } from './player';
 
@@ -31,9 +31,17 @@ export const useGameStore = defineStore('gameState', () => {
     state.value = deepMerge(createState(), newState) as GameState;
   }
 
+  function getSnapshot(): GameState {
+    return structuredClone(state.value);
+  }
+
+  function restoreSnapshot(snapshot: GameState) {
+    state.value = deepMerge(createState(), snapshot) as GameState;
+  }
+
   function $reset() {
     state.value = createState();
   }
 
-  return { state, getState, setState, $reset };
+  return { state, getState, setState, getSnapshot, restoreSnapshot, $reset } satisfies VylosGameStore;
 });
