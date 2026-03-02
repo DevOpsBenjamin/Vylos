@@ -269,6 +269,7 @@ onUnmounted(() => {
   justify-content: center;
   background: #000;
   overflow: hidden;
+  user-select: none;
 }
 
 .game-shell__bg {
