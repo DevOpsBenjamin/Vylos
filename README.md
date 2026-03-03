@@ -1,119 +1,139 @@
 # Vylos
 
-A checkpoint-based visual novel engine for the web, built with Vue 3 and TypeScript.
+**The Sandbox Visual Novel Engine**
 
 [![npm](https://img.shields.io/npm/v/@vylos/core)](https://www.npmjs.com/package/@vylos/core)
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Features
+Vylos is a TypeScript visual novel engine for developers who want more than dialogue trees. Build sandbox VNs with explorable locations, timed actions, stat tracking, and full plugin customization — all with checkpoint-based execution inspired by Ren'Py.
 
-- **Checkpoint-based execution** — inline choices with `if/else`, rollback via re-execute + fast-forward (like Ren'Py)
-- **Async/await events** — write linear stories with `engine.say()` and `engine.choice()`
-- **Rollback & history** — full forward/back navigation through past events
-- **Drawable events** — custom canvas-based interactive scenes
-- **i18n** — built-in multi-language support with `TextEntry` (`string | Record<string, string>`)
-- **Save/load with mid-event resume** — checkpoint system preserves exact position within events
-- **Plugin system** — DI-based (tsyringe) manager and component overrides
-- **AZERTY/QWERTY auto-detect** — keyboard input adapts automatically
-- **Mouse click navigation** — navigate locations by clicking on the scene
+## Why Vylos
 
-## Quick Start
+- **Sandbox-first** — Locations, actions, time systems, stats, and inventory out of the box. Your game is a world, not a script.
+- **TypeScript safety** — Typed events, typed game state, full autocomplete. No more mistyped variable names breaking your game at runtime.
+- **Plugin everything** — Swap any UI component, override any engine manager, inject custom stores. The engine adapts to your game, not the other way around.
+
+## Vylos vs the Alternatives
+
+| | Vylos | Ren'Py | SugarCube |
+|---|---|---|---|
+| **Language** | TypeScript | Python (custom DSL) | JavaScript (Twine macros) |
+| **Execution** | Checkpoint async/await | Checkpoint script | Passage-based |
+| **Type safety** | Full (compile-time) | None | None |
+| **UI customization** | Vue components + DI | Screen language | CSS + macros |
+| **Distribution** | Single HTML file | Desktop/mobile app | HTML file |
+| **State model** | Typed Pinia stores | Python variables | Story variables |
+
+## Getting Started
 
 ```bash
-# Install the CLI
 pnpm add -D @vylos/cli
-
-# Scaffold a new project
-vylos create my-game
-
-# Start the dev server
-vylos dev
+npx vylos create my-game
+cd my-game && pnpm dev
 ```
 
 Requires Node.js >= 22.0.0 and pnpm 9.15+.
 
-## Project Structure
+## Sample Projects
 
-Games follow a file-based convention:
+| Demo | Description |
+|---|---|
+| **1-basic** | Minimal playable demo — 3 locations, day/night cycle, 1 NPC, custom game state |
+| **2-advanced** | Full showcase — 5 locations, 2 NPC routes, i18n, custom TopBar, journal overlay, DI-registered items, typed helpers |
+| **3-phone** | Phone UI — demonstrates component overrides (GameShell, TopBar, DialogueBox) |
 
-```
-my-game/
-├── index.html
-├── main.ts              # Bootstrap: createApp, createEngine, provide, run
-├── style.css            # Tailwind + @source
-├── vylos.config.ts      # Project metadata
-├── setup.ts             # VylosPlugin (optional)
-├── locations/<id>/
-│   ├── location.ts      # VylosLocation: id, name, backgrounds (with timeRange)
-│   ├── events/          # VylosEvent files
-│   ├── actions/         # VylosAction files
-│   └── assets/          # Images for this location
-└── global/
-    ├── events/          # Global events (trigger anywhere)
-    ├── actions/         # Global actions (always available)
-    └── images/menu/     # Menu background
-```
-
-## Event Example
+## How It Works
 
 Events are async functions that pause at each `say()` or `choice()`:
 
 ```typescript
-import type { VylosEvent, VylosAPI, BaseGameState } from '@vylos/core';
+import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 
-const explore: VylosEvent = {
-  id: 'explore_hallway',
-  locationId: 'hallway',
-  conditions: (state) => state.flags['intro_done'] === true,
-  async execute(engine: VylosAPI, state: BaseGameState) {
-    await engine.say('The hallway stretches ahead, dimly lit.');
+const firstVisit: VylosEvent = {
+  id: 'first_visit',
+  locationId: 'cafe',
+  conditions: (state) => state.flags['woke_up'] && !state.flags['visited_cafe'],
+
+  async execute(engine: VylosAPI, state: VylosGameState) {
+    await engine.say('The cafe is warm and inviting.');
+
+    engine.setForeground('/assets/locations/cafe/maya.png');
+    await engine.say('"New face! I\'m Maya."', { from: maya });
 
     const pick = await engine.choice([
-      { text: 'Go outside', value: 'outside' },
-      { text: 'Go back', value: 'room' },
+      { text: 'Flirt', value: 'flirt' },
+      { text: 'Be friendly', value: 'friendly' },
     ]);
 
-    if (pick === 'outside') {
-      await engine.say('You push through the door into the open air.');
-      engine.setLocation('outside');
-    } else {
-      await engine.say('You turn around and head back.');
-      engine.setLocation('room');
+    if (pick === 'flirt') {
+      modAffection(state, 'maya', 15);
     }
+
+    state.flags['visited_cafe'] = true;
   },
 };
-
-export default explore;
 ```
+
+Rollback works by re-executing the event and fast-forwarding past checkpoints — no manual state snapshots needed.
+
+## Project Structure
+
+```
+my-game/
+├── vylos.config.ts          # Name, id, languages, resolution
+├── setup.ts                 # VylosPlugin: setup(), components, gameStore
+├── main.ts                  # Bootstrap
+├── plugins/my-game/
+│   ├── gameDatas/            # Modular state (player, relationships, journal)
+│   ├── helpers/              # Typed wrappers (modAffection, formatTime)
+│   ├── components/           # Custom Vue components (TopBar, overlays)
+│   └── data/                 # Items, recipes, constants
+├── locations/<id>/
+│   ├── location.ts           # Backgrounds, name, accessibility
+│   ├── events/               # Location-scoped events
+│   └── actions/              # Location-scoped actions
+├── global/
+│   ├── events/               # Global events (trigger anywhere)
+│   └── actions/              # Global actions
+└── assets/                   # Images, audio
+```
+
+## Key Concepts
+
+- **Events** — Async functions that pause at `say()` and `choice()`. Gated by `conditions` and `locked`.
+- **Locations** — Places the player can visit. Backgrounds change by time of day. Navigation via linked location graph.
+- **Actions** — Buttons that modify state (rest, order coffee). Use flag-to-event pattern for narrated actions.
+- **State** — Extend `VylosGameState` with custom fields. Compose from sub-modules (player, relationships, journal).
+- **Plugins** — `VylosPlugin` with three hooks: `setup(container)` for DI, `components` for UI overrides, `gameStore` for custom state.
 
 ## CLI Commands
 
 | Command | Description |
-|---------|-------------|
-| `vylos dev [dir]` | Start Vite dev server |
-| `vylos build [dir]` | Build single-file HTML for production |
-| `vylos verify [dir]` | Type-check the project |
+|---|---|
+| `vylos dev` | Start Vite dev server |
+| `vylos build` | Build single-file HTML |
 | `vylos create <name>` | Scaffold a new project |
-| `vylos editor [dir]` | Open the visual editor |
-
-## Monorepo Layout
-
-```
-packages/core/     @vylos/core — engine, types, stores, components, managers
-packages/cli/      @vylos/cli — Vite dev/build/create commands
-projects/1-basic/  Feature showcase (locations, day/night, sleep cycle)
-projects/2-romance/ Dating sim (Maya/Lena routes, i18n en/fr)
-projects/3-phone/  Phone game with plugin UI override
-```
+| `vylos verify` | Type-check the project |
+| `vylos editor` | Open the visual editor |
 
 ## Contributing
 
 ```bash
 git clone https://github.com/DevOpsBenjamin/vylos.git
-cd vylos
-pnpm install
+cd vylos && pnpm install
 pnpm test
-pnpm dev        # Runs the 2-romance demo project
+pnpm dev              # Runs 2-advanced demo
+```
+
+## Monorepo Layout
+
+```
+packages/core/       @vylos/core — engine, stores, components, managers
+packages/cli/        @vylos/cli — dev/build/create commands
+projects/1-basic/    Minimal demo
+projects/2-advanced/ Full plugin showcase
+projects/3-phone/    Phone UI override demo
+pages/               GitHub Pages site
 ```
 
 ## License

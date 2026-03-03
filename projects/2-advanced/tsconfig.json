@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@vylos/core": ["../../packages/core/src"],
+      "@game": ["./plugins/advanced"],
+      "@game/*": ["./plugins/advanced/*"]
+    }
+  },
+  "include": ["./**/*.ts", "./**/*.vue", "./env.d.ts"],
+  "exclude": ["node_modules", "dist"]
+}

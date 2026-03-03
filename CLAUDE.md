@@ -12,12 +12,12 @@ Vylos is a visual novel engine built as a distributable pnpm monorepo. It uses a
 pnpm install                    # Install all workspace deps
 pnpm test                       # Run Vitest (packages/core)
 pnpm dev:basic                  # Dev server: 1-basic
-pnpm dev:romance                # Dev server: 2-romance
+pnpm dev:advanced               # Dev server: 2-advanced
 pnpm dev:phone                  # Dev server: 3-phone
-pnpm dev                        # Shortcut → 2-romance
+pnpm dev                        # Shortcut → 2-advanced
 pnpm dev:pages                  # Dev server: GitHub Pages showcase
 pnpm build:basic                # Production single-HTML build
-pnpm build:romance              # Production single-HTML build
+pnpm build:advanced             # Production single-HTML build
 pnpm build:phone                # Production single-HTML build
 pnpm build:pages                # Build GitHub Pages showcase
 pnpm build:all                  # Build pages + all projects
@@ -31,8 +31,8 @@ Node.js >= 22.0.0, pnpm 9.15+ required.
 ```
 packages/core/         @vylos/core (0.3.0) — engine, types, schemas, stores, components, managers
 packages/cli/          @vylos/cli (0.3.0) — Vite dev/build/create commands + project templates
-projects/1-basic/      Feature showcase (3 locations, day/night, sleep cycle, intro tutorial)
-projects/2-romance/    Dating sim (5 locations, Maya/Lena routes, i18n en/fr)
+projects/1-basic/      Minimal demo (3 locations, day/night, 1 NPC, custom gameStore)
+projects/2-advanced/   Advanced demo (5 locations, Maya/Lena, i18n, plugin showcase: custom TopBar, journal, DI items, typed helpers)
 projects/3-phone/      Phone game with plugin UI override
 pages/                 GitHub Pages showcase site
 ```

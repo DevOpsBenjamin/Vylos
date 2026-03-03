@@ -1,7 +1,7 @@
 import type { LocationManager } from '@vylos/core';
 
 export default function (lm: LocationManager) {
-  lm.link('room', 'hallway');
-  lm.link('hallway', ['room', 'outside']);
-  lm.link('outside', 'hallway');
+  lm.link('apartment', 'hallway');
+  lm.link('hallway', ['apartment', 'cafe']);
+  lm.link('cafe', 'hallway');
 }
