@@ -3,26 +3,17 @@ import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
 const explore: VylosEvent = {
   id: 'explore_hallway',
   locationId: 'hallway',
-  conditions: (state) => state.flags['intro_done'] === true && !state.flags['hallway_explored'],
+
+  conditions(state: VylosGameState) {
+    return state.flags['intro_done'] === true && !state.flags['hallway_explored'];
+  },
+
   locked: (state) => state.flags['hallway_explored'] === true,
+
   async execute(engine: VylosAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/hallway/hallway.png');
-
-    await engine.say('The hallway stretches ahead, dimly lit by overhead lights.');
-    await engine.say('At the far end you can see a door leading outside.');
-
-    const pick = await engine.choice([
-      { text: 'Go outside', value: 'outside' },
-      { text: 'Go back to your room', value: 'room' },
-    ]);
-
-    if (pick === 'outside') {
-      await engine.say('You push through the door into the open air.');
-      engine.setLocation('outside');
-    } else {
-      await engine.say('You turn around and head back to your room.');
-      engine.setLocation('room');
-    }
+    await engine.say('The hallway is narrow and warmly lit. Doors line both sides.');
+    await engine.say('Down the stairs, you can hear the faint clatter of a cafe.');
 
     state.flags['hallway_explored'] = true;
   },

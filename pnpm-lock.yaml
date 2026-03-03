@@ -126,7 +126,7 @@ importers:
         specifier: ^6.0.7
         version: 6.4.1(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)
 
-  projects/2-romance:
+  projects/2-advanced:
     dependencies:
       '@vylos/cli':
         specifier: workspace:*

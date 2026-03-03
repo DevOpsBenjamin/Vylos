@@ -12,11 +12,11 @@
       <!-- Separator -->
       <div class="mt-6 w-48 h-0.5 bg-gradient-to-r from-transparent via-violet-500 to-transparent rounded-full"></div>
 
-      <p class="mt-6 text-lg text-gray-400 tracking-wide uppercase font-mono text-center">Visual Novel Engine for the Web</p>
+      <p class="mt-6 text-lg text-gray-400 tracking-wide uppercase font-mono text-center">The Sandbox Visual Novel Engine</p>
 
       <p class="mt-4 max-w-xl text-center text-gray-500 leading-relaxed">
-        TypeScript-first, checkpoint-based execution, built with Vue 3.
-        Write branching stories with async/await — rollback, i18n, save/load, and plugins included.
+        TypeScript-first, checkpoint-based execution inspired by Ren'Py.
+        Build sandbox VNs with locations, actions, stats, and full plugin customization.
       </p>
 
       <!-- Install snippet -->
@@ -47,15 +47,15 @@
       </div>
     </section>
 
-    <!-- Features -->
+    <!-- Why Vylos -->
     <section class="max-w-5xl mx-auto px-6 py-20">
-      <h2 class="text-3xl font-bold text-center mb-12">Features</h2>
+      <h2 class="text-3xl font-bold text-center mb-12">Why Vylos</h2>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div v-for="feature in features" :key="feature.title" class="feature-card">
-          <span class="text-3xl mb-3 block">{{ feature.icon }}</span>
-          <h3 class="text-lg font-semibold mb-1">{{ feature.title }}</h3>
-          <p class="text-sm text-gray-400 leading-relaxed">{{ feature.desc }}</p>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div v-for="reason in reasons" :key="reason.title" class="feature-card">
+          <span class="text-3xl mb-3 block">{{ reason.icon }}</span>
+          <h3 class="text-lg font-semibold mb-1">{{ reason.title }}</h3>
+          <p class="text-sm text-gray-400 leading-relaxed">{{ reason.desc }}</p>
         </div>
       </div>
     </section>
@@ -102,19 +102,28 @@ function copy(text: string) {
   setTimeout(() => { copied.value = false; }, 2000);
 }
 
-const features = [
-  { icon: '\u{1F4CC}', title: 'Checkpoint Execution', desc: 'Pause at every say() and choice() via native async/await. Rollback by re-executing and fast-forwarding.' },
-  { icon: '\u{26A1}', title: 'Async Events', desc: 'Write branching narratives with plain TypeScript. Inline if/else, loops, and state mutations.' },
-  { icon: '\u{23EA}', title: 'Rollback & History', desc: 'Full event replay with text history browsing. Arrow keys navigate through past dialogue.' },
-  { icon: '\u{1F310}', title: 'i18n Built-in', desc: 'TextEntry supports string or Record<locale, string>. Switch languages at runtime.' },
-  { icon: '\u{1F4BE}', title: 'Save & Load', desc: 'Checkpoint-based serialization with slot management. Automatic state validation on load.' },
-  { icon: '\u{1F9E9}', title: 'Plugin System', desc: 'DI-powered architecture. Override any manager or component with VylosPlugin setup().' },
+const reasons = [
+  {
+    icon: '\u{1F30D}',
+    title: 'Sandbox First',
+    desc: 'Locations, actions, time systems, stats, and inventory out of the box. Your game is a world to explore, not a linear script.',
+  },
+  {
+    icon: '\u{1F6E1}\u{FE0F}',
+    title: 'TypeScript Safety',
+    desc: 'Typed events, typed game state, full autocomplete. No mistyped variable names silently breaking your game at runtime.',
+  },
+  {
+    icon: '\u{1F9E9}',
+    title: 'Plugin Everything',
+    desc: 'Swap any UI component, override any manager via DI, inject custom Pinia stores. The engine adapts to your game.',
+  },
 ];
 
 const demos = [
-  { icon: '\u{1F3E0}', title: '1-basic', desc: '3 locations, day/night cycle, sleep action, intro tutorial.', href: `${base}1-basic/` },
-  { icon: '\u{2764}\u{FE0F}', title: '2-romance', desc: 'Dating sim — Maya & Lena routes, 5 locations, en/fr i18n.', href: `${base}2-romance/` },
-  { icon: '\u{1F4F1}', title: '3-phone', desc: 'Phone UI with plugin component overrides.', href: `${base}3-phone/` },
+  { icon: '\u{1F3E0}', title: '1-basic', desc: 'Minimal demo — 3 locations, day/night cycle, 1 NPC, custom game state.', href: `${base}1-basic/` },
+  { icon: '\u{2728}', title: '2-advanced', desc: 'Full showcase — plugin TopBar, journal overlay, DI items, typed helpers, i18n.', href: `${base}2-advanced/` },
+  { icon: '\u{1F4F1}', title: '3-phone', desc: 'Phone UI with full component overrides (GameShell, TopBar, DialogueBox).', href: `${base}3-phone/` },
 ];
 </script>
 

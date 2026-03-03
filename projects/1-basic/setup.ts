@@ -1,3 +1,8 @@
 import type { VylosPlugin } from '@vylos/core';
-const plugin: VylosPlugin = {};
+import { useBasicGameStore } from '@game/gameState';
+
+const plugin: VylosPlugin = {
+  gameStore: (pinia) => useBasicGameStore(pinia),
+};
+
 export default plugin;
