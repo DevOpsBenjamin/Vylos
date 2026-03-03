@@ -122,7 +122,7 @@ my-game/
 git clone https://github.com/DevOpsBenjamin/vylos.git
 cd vylos && pnpm install
 pnpm test
-pnpm dev              # Runs 2-advanced demo
+pnpm dev              # Runs GitHub Pages showcase
 ```
 
 ## Monorepo Layout

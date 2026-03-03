@@ -8,7 +8,7 @@
     "dev:basic": "pnpm --filter 1-basic dev",
     "dev:advanced": "pnpm --filter 2-advanced dev",
     "dev:phone": "pnpm --filter 3-phone dev",
-    "dev": "pnpm --filter 2-advanced dev",
+    "dev": "pnpm --filter vylos-pages dev",
     "build:basic": "pnpm --filter 1-basic build",
     "build:advanced": "pnpm --filter 2-advanced build",
     "build:phone": "pnpm --filter 3-phone build",

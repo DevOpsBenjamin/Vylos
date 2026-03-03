@@ -14,7 +14,7 @@ pnpm test                       # Run Vitest (packages/core)
 pnpm dev:basic                  # Dev server: 1-basic
 pnpm dev:advanced               # Dev server: 2-advanced
 pnpm dev:phone                  # Dev server: 3-phone
-pnpm dev                        # Shortcut → 2-advanced
+pnpm dev                        # Shortcut → GitHub Pages showcase
 pnpm dev:pages                  # Dev server: GitHub Pages showcase
 pnpm build:basic                # Production single-HTML build
 pnpm build:advanced             # Production single-HTML build
