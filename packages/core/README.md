@@ -35,7 +35,7 @@ import {
   useEngineStateStore,
   ENGINE_INJECT_KEY,
   type VylosEvent,
-  type VylosAPI,
+  type VylosEventAPI,
   type VylosGameState,
 } from '@vylos/core';
 ```
@@ -46,7 +46,7 @@ import {
 const intro: VylosEvent = {
   id: 'intro',
   conditions: (state) => !state.flags['intro_done'],
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     await engine.say('Welcome!');
 
     const pick = await engine.choice([
@@ -81,7 +81,7 @@ interface GameState extends VylosGameState {
 ### Inventory
 
 ```typescript
-async execute(engine: VylosAPI, state: GameState) {
+async execute(engine: VylosEventAPI, state: GameState) {
   engine.inventory.add('backpack', 'potion', 3);
 
   if (engine.inventory.has('backpack', 'key')) {

@@ -1,4 +1,4 @@
-import type { VylosAction, VylosGameState } from '@vylos/core';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
 import type { BasicGameState } from '@game/gameState';
 
 const rest: VylosAction = {
@@ -10,7 +10,7 @@ const rest: VylosAction = {
     return (state as BasicGameState).energy < 50;
   },
 
-  execute(state: VylosGameState) {
+  execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as BasicGameState;
     s.energy = Math.min(100, s.energy + 30);
     s.gameTime += 2;

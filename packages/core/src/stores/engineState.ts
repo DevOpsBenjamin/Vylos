@@ -26,8 +26,6 @@ export const useEngineStateStore = defineStore('engineState', () => {
   const historyBrowsing = ref(false);
   const uiHidden = ref(false);
   const drawableEvents = ref<DrawableEventEntry[]>([]);
-  const overlayId = ref<string | null>(null);
-  const overlayProps = ref<Record<string, unknown> | null>(null);
 
   function setDialogue(state: DialogueState | null) {
     dialogue.value = state;
@@ -73,11 +71,6 @@ export const useEngineStateStore = defineStore('engineState', () => {
     drawableEvents.value = events;
   }
 
-  function setOverlay(id: string | null, props?: Record<string, unknown>) {
-    overlayId.value = id;
-    overlayProps.value = props ?? null;
-  }
-
   function $reset() {
     phase.value = EnginePhase.Created;
     background.value = null;
@@ -93,8 +86,6 @@ export const useEngineStateStore = defineStore('engineState', () => {
     historyBrowsing.value = false;
     uiHidden.value = false;
     drawableEvents.value = [];
-    overlayId.value = null;
-    overlayProps.value = null;
   }
 
   return {
@@ -112,8 +103,6 @@ export const useEngineStateStore = defineStore('engineState', () => {
     historyBrowsing,
     uiHidden,
     drawableEvents,
-    overlayId,
-    overlayProps,
     setDialogue,
     setChoices,
     setBackground,
@@ -125,7 +114,6 @@ export const useEngineStateStore = defineStore('engineState', () => {
     openMenu,
     closeMenu,
     setDrawableEvents,
-    setOverlay,
     $reset,
   };
 });

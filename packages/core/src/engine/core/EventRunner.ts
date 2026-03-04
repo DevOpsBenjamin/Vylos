@@ -1,5 +1,5 @@
 import type {
-  VylosAPI,
+  VylosEventAPI,
   InventoryAPI,
   VylosEvent,
   VylosGameState,
@@ -32,10 +32,6 @@ export interface EventRunnerCallbacks {
   onSetBackground(path: string): void;
   /** Called to update foreground */
   onSetForeground(layers: ForegroundLayer[] | null): void;
-  /** Called to show overlay */
-  onShowOverlay(componentId: string, props?: Record<string, unknown>): void;
-  /** Called to hide overlay */
-  onHideOverlay(): void;
   /** Called when location changes */
   onSetLocation(locationId: string): void;
   /** Called to clear dialogue/choices (between steps) */
@@ -59,7 +55,7 @@ export interface HistoryStep {
 }
 
 /**
- * EventRunner implements VylosAPI and drives event execution.
+ * EventRunner implements VylosEventAPI and drives event execution.
  *
  * It uses native async/await: each `say()` / `choice()` pauses the event function.
  * The WaitManager creates promises that the UI resolves when the player interacts.
@@ -67,7 +63,7 @@ export interface HistoryStep {
  * During rollback, it replays the event by instantly resolving promises
  * with stored checkpoint data until reaching the target step.
  */
-export class EventRunner implements VylosAPI {
+export class EventRunner implements VylosEventAPI {
   readonly checkpoints: CheckpointManager;
   private waitManager = new WaitManager();
   private callbacks: EventRunnerCallbacks;
@@ -266,7 +262,7 @@ export class EventRunner implements VylosAPI {
     this.waitManager.reject(new InterruptSignal(reason));
   }
 
-  // --- VylosAPI Implementation ---
+  // --- VylosEventAPI Implementation ---
 
   async say(text: string | TextEntry, options?: SayOptions): Promise<void> {
     this.checkInterrupt();
@@ -373,30 +369,6 @@ export class EventRunner implements VylosAPI {
     this.callbacks.onSetForeground(layers);
   }
 
-  async showOverlay(componentId: string, props?: Record<string, unknown>): Promise<void> {
-    this.checkInterrupt();
-
-    if (this.checkpoints.isReplaying) {
-      this.checkpoints.advanceReplay();
-      this.currentStep++;
-      return;
-    }
-
-    this.callbacks.onShowOverlay(componentId, props);
-    await this.waitManager.wait();
-
-    this.checkpoints.capture(
-      this.callbacks.getState(),
-      'overlay' as CheckpointType,
-    );
-
-    this.currentStep++;
-  }
-
-  hideOverlay(): void {
-    this.callbacks.onHideOverlay();
-  }
-
   jump(eventId: string): never {
     throw new JumpSignal(eventId);
   }
@@ -425,18 +397,6 @@ export class EventRunner implements VylosAPI {
 
   setLocation(locationId: string): void {
     this.callbacks.onSetLocation(locationId);
-  }
-
-  playSfx(_path: string): void {
-    // TODO: Audio system
-  }
-
-  playMusic(_path: string): void {
-    // TODO: Audio system
-  }
-
-  stopMusic(): void {
-    // TODO: Audio system
   }
 
   /** Resolve the current wait (called by UI) */

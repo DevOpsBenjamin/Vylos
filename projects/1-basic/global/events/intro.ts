@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 
 const intro: VylosEvent = {
   id: 'intro',
@@ -9,7 +9,7 @@ const intro: VylosEvent = {
 
   locked: (state) => state.flags['intro_done'] === true,
 
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     await engine.say('You unlock the door to your new apartment. Cardboard boxes everywhere.');
     await engine.say('A fresh start in a city you barely know. Exciting — and a little terrifying.');
 

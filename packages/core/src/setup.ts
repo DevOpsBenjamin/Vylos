@@ -17,6 +17,7 @@ import type { VylosPlugin, VylosGameStore } from './engine/types/plugin';
 import type { VylosLocation } from './engine/types/locations';
 import type { VylosEvent, TextEntry } from './engine/types/events';
 import type { VylosAction } from './engine/types/actions';
+import type { VylosActionAPI } from './engine/types/events';
 import type { VylosCharacter } from './engine/types/dialogue';
 import type { EventRunnerCallbacks } from './engine/core/EventRunner';
 import type { EngineLoopCallbacks } from './engine/core/Engine';
@@ -108,7 +109,11 @@ export function setupVylos(options: SetupOptions): void {
       if (bg) engineState.setBackground(bg);
     },
     onAction(actionId, state) {
-      actionManager.execute(actionId, state);
+      const actionAPI: VylosActionAPI = {
+        jump: (eventId: string) => engine.eventRunner.jump(eventId),
+        get inventory() { return engine.eventRunner.inventory; },
+      };
+      actionManager.execute(actionId, state, actionAPI);
     },
   };
 
@@ -203,12 +208,6 @@ function buildCallbacks(
     },
     onSetForeground(layers) {
       engineState.setForeground(layers);
-    },
-    onShowOverlay(componentId, props) {
-      engineState.setOverlay(componentId, props);
-    },
-    onHideOverlay() {
-      engineState.setOverlay(null);
     },
     onSetLocation(locationId) {
       const state = gameStore.getState();

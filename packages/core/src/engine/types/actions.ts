@@ -1,5 +1,5 @@
 import type { VylosGameState } from './game-state';
-import type { TextEntry } from './events';
+import type { TextEntry, VylosActionAPI } from './events';
 
 /** An action available to the player at a location */
 export interface VylosAction<TState extends VylosGameState = VylosGameState> {
@@ -15,6 +15,6 @@ export interface VylosAction<TState extends VylosGameState = VylosGameState> {
   /** Whether this action is currently available */
   unlocked?(state: TState): boolean;
 
-  /** Execute the action (synchronous state mutation) */
-  execute(state: TState): void;
+  /** Execute the action — has access to jump() and inventory via engine */
+  execute(engine: VylosActionAPI, state: TState): void;
 }

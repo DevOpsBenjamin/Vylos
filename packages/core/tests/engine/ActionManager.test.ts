@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ActionManager } from '../../src/engine/managers/ActionManager';
-import type { VylosAction, VylosGameState } from '../../src/engine/types';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '../../src/engine/types';
+import { JumpSignal } from '../../src/engine/errors/JumpSignal';
 
 function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
@@ -14,6 +15,11 @@ function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   };
 }
 
+const mockActionAPI: VylosActionAPI = {
+  jump(eventId: string): never { throw new JumpSignal(eventId); },
+  get inventory() { return {} as VylosActionAPI['inventory']; },
+};
+
 describe('ActionManager', () => {
   let am: ActionManager;
 
@@ -21,7 +27,7 @@ describe('ActionManager', () => {
     id: 'sleep',
     label: 'Go to Sleep',
     locationId: 'bedroom',
-    execute(state) {
+    execute(_engine, state) {
       state.gameTime += 8;
     },
   };
@@ -31,7 +37,7 @@ describe('ActionManager', () => {
     label: 'Order Coffee',
     locationId: 'cafe',
     unlocked: (state) => state.counters['coffee_count'] === undefined || state.counters['coffee_count'] < 3,
-    execute(state) {
+    execute(_engine, state) {
       state.counters['coffee_count'] = (state.counters['coffee_count'] ?? 0) + 1;
     },
   };
@@ -39,7 +45,7 @@ describe('ActionManager', () => {
   const globalAction: VylosAction = {
     id: 'check_phone',
     label: 'Check Phone',
-    execute(state) {
+    execute(_engine, state) {
       state.flags['checked_phone'] = true;
     },
   };
@@ -78,14 +84,14 @@ describe('ActionManager', () => {
 
   it('execute runs action and mutates state', () => {
     const state = makeState();
-    const result = am.execute('order_coffee', state);
+    const result = am.execute('order_coffee', state, mockActionAPI);
     expect(result).toBe(true);
     expect(state.counters['coffee_count']).toBe(1);
   });
 
   it('execute returns false for unknown action', () => {
     const state = makeState();
-    expect(am.execute('nope', state)).toBe(false);
+    expect(am.execute('nope', state, mockActionAPI)).toBe(false);
   });
 
   it('clear removes all actions', () => {

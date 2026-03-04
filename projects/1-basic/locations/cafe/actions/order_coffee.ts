@@ -1,4 +1,4 @@
-import type { VylosAction, VylosGameState } from '@vylos/core';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
 import type { BasicGameState } from '@game/gameState';
 
 const orderCoffee: VylosAction = {
@@ -10,7 +10,7 @@ const orderCoffee: VylosAction = {
     return state.flags['visited_cafe'] === true;
   },
 
-  execute(state: VylosGameState) {
+  execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as BasicGameState;
     s.energy = Math.min(100, s.energy + 5);
     s.maya_affection = Math.min(100, s.maya_affection + 2);

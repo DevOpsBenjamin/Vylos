@@ -1,4 +1,4 @@
-import type { VylosAction, VylosGameState } from '@vylos/core';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 import { modAffection } from '@game/helpers/relationships';
 
@@ -11,7 +11,7 @@ const chatMaya: VylosAction = {
     return state.flags['met_maya'] === true;
   },
 
-  execute(state: VylosGameState) {
+  execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as AdvancedGameState;
     modAffection(s, 'maya', 3);
     s.gameTime += 0.5;

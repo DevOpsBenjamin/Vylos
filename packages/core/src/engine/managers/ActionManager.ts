@@ -1,4 +1,4 @@
-import type { VylosAction, VylosGameState, TextEntry } from '../types';
+import type { VylosAction, VylosActionAPI, VylosGameState, TextEntry } from '../types';
 import { logger } from '../utils/logger';
 
 /**
@@ -43,14 +43,14 @@ export class ActionManager {
   }
 
   /** Execute an action by ID */
-  execute(id: string, state: VylosGameState): boolean {
+  execute(id: string, state: VylosGameState, engine: VylosActionAPI): boolean {
     const action = this.actions.get(id);
     if (!action) {
       logger.warn(`Action not found: ${id}`);
       return false;
     }
 
-    action.execute(state);
+    action.execute(engine, state);
     logger.debug(`Action executed: ${id}`);
     return true;
   }
