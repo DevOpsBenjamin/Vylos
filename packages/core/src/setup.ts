@@ -11,7 +11,6 @@ import { LocationManager } from './engine/managers/LocationManager';
 import { ActionManager } from './engine/managers/ActionManager';
 import { LanguageManager } from './engine/managers/LanguageManager';
 import { EnginePhase } from './engine/types/engine';
-import { logger } from './engine/utils/logger';
 import { attachDevConsole } from './engine/utils/devConsole';
 import type { VylosConfig } from './engine/types/config';
 import type { VylosPlugin, VylosGameStore } from './engine/types/plugin';
@@ -42,7 +41,6 @@ export interface SetupOptions {
 export function setupVylos(options: SetupOptions): void {
   const { config, plugin, locations = [], events = [], actions = [], initLinks, skipMainMenu = false } = options;
 
-  if (config.logPrefix) logger.setPrefix(config.logPrefix);
   document.title = config.name;
 
   const app = createApp(GameShell);
@@ -64,7 +62,7 @@ export function setupVylos(options: SetupOptions): void {
 
   if (locations.length > 0 && !locationManager.has(config.defaultLocation)) {
     console.error(
-      `${logger.getPrefix()} Default location "${config.defaultLocation}" is not registered. ` +
+      `[Vylos] Default location "${config.defaultLocation}" is not registered. ` +
       `Registered locations: [${locationManager.getAll().map(l => l.id).join(', ')}]. ` +
       `Check your vylos.config.ts defaultLocation value.`
     );

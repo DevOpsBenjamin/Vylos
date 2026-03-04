@@ -10,7 +10,6 @@ const baseConfig: VylosConfig = {
   defaultLanguage: 'en',
   defaultLocation: 'home',
   resolution: { width: 1920, height: 1080 },
-  consoleName: 'TestGame',
 };
 
 describe('printBanner', () => {
@@ -38,13 +37,8 @@ describe('printBanner', () => {
     expect(spy.mock.calls[0][0]).toContain('1.2.3');
   });
 
-  it('prints cheat guide with consoleName prefix', () => {
+  it('prints cheat guide with Vylos prefix', () => {
     printBanner(baseConfig);
-    expect(spy.mock.calls[1][0]).toContain('TestGame.state');
-  });
-
-  it('uses Vylos as default prefix when consoleName not set', () => {
-    printBanner({ ...baseConfig, consoleName: undefined });
     expect(spy.mock.calls[1][0]).toContain('Vylos.state');
   });
 });

@@ -12,19 +12,11 @@ let currentLevel: LogLevel = typeof import.meta !== 'undefined' &&
   ? LogLevel.Debug
   : LogLevel.Warn;
 
-let prefix = '[Vylos]';
+const prefix = '[Vylos]';
 
 export const logger = {
   setLevel(level: LogLevel) {
     currentLevel = level;
-  },
-
-  setPrefix(value: string) {
-    prefix = value;
-  },
-
-  getPrefix(): string {
-    return prefix;
   },
 
   debug(...args: unknown[]) {
