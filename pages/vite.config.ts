@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import tailwindcss from '@tailwindcss/vite';
+import { viteSingleFile } from 'vite-plugin-singlefile';
 import { resolve } from 'path';
 import { existsSync, readFileSync } from 'fs';
 
@@ -46,5 +47,5 @@ function serveProjectDists(): Plugin {
 
 export default defineConfig({
   base: '/vylos/',
-  plugins: [vue(), tailwindcss(), serveProjectDists()],
+  plugins: [vue(), tailwindcss(), viteSingleFile(), serveProjectDists()],
 });
