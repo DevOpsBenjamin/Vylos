@@ -36,15 +36,9 @@ jobs:
       - name: Build pages
         run: pnpm build:pages
 
-      # Build each project with subpath base
-      - name: Build 1-basic
-        run: pnpm --filter 1-basic build -- --base /vylos/1-basic/
-
-      - name: Build 2-romance
-        run: pnpm --filter 2-romance build -- --base /vylos/2-romance/
-
-      - name: Build 3-phone
-        run: pnpm --filter 3-phone build -- --base /vylos/3-phone/
+      # Build each demo project
+      - name: Build demos
+        run: pnpm build:demos
 
       # Assemble _site/
       - name: Assemble site
@@ -52,7 +46,7 @@ jobs:
           mkdir -p _site
           cp -r pages/dist/* _site/
           cp -r projects/1-basic/dist _site/1-basic
-          cp -r projects/2-romance/dist _site/2-romance
+          cp -r projects/2-advanced/dist _site/2-advanced
           cp -r projects/3-phone/dist _site/3-phone
 
       - name: Upload artifact

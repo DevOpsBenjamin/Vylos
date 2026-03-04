@@ -8,13 +8,15 @@
     "dev:basic": "pnpm --filter 1-basic dev",
     "dev:advanced": "pnpm --filter 2-advanced dev",
     "dev:phone": "pnpm --filter 3-phone dev",
-    "dev": "pnpm --filter vylos-pages dev",
+    "dev": "pnpm build:demos && pnpm --filter vylos-pages dev",
+    "build:demos": "node scripts/build-demos.mjs",
     "build:basic": "pnpm --filter 1-basic build",
     "build:advanced": "pnpm --filter 2-advanced build",
     "build:phone": "pnpm --filter 3-phone build",
     "dev:pages": "pnpm --filter vylos-pages dev",
     "build:pages": "pnpm --filter vylos-pages build",
-    "build:all": "pnpm build:pages && pnpm build:basic && pnpm build:advanced && pnpm build:phone"
+    "build": "pnpm build:pages && pnpm build:demos",
+    "build:all": "pnpm build:pages && pnpm build:demos"
   },
   "engines": {
     "node": ">=22.0.0"

@@ -22,7 +22,7 @@ async function main() {
     }
 
     case 'build': {
-      const base = parseFlag('--base');
+      const base = parseFlag('--base') ?? process.env.VYLOS_BASE;
       const projectArg = args.find((a, i) => i > 0 && a !== '--' && !a.startsWith('--') && args[i - 1] !== '--base');
       const projectRoot = resolve(projectArg ?? process.cwd());
       const { build } = await import('./commands/build');
