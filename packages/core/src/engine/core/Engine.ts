@@ -310,7 +310,7 @@ export class Engine {
     const nav = this.navigationManager;
     const hist = this.historyManager;
 
-    console.group(`${logger.getPrefix()} Engine Debug`);
+    console.group('[Vylos] Engine Debug');
 
     // Engine loop
     console.log('Engine:', {

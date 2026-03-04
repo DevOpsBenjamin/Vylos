@@ -28,8 +28,6 @@ declare global {
 
 /** Print a styled banner and cheat guide to the browser console */
 export function printBanner(config: VylosConfig): void {
-  const name = config.consoleName ?? 'Vylos';
-
   console.log(
     `%c${config.name}\n%c v${config.version}`,
     'font-size:2em;font-weight:bold;color:#7c3aed;',
@@ -38,23 +36,22 @@ export function printBanner(config: VylosConfig): void {
 
   console.log(
     `\n⚠ Cheats are not blocked, but bad values can break your save.\n\n` +
-    `Type ${name} in console — state is a Vue reactive proxy.\n` +
+    `Type Vylos in console — state is a Vue reactive proxy.\n` +
     `Drill into nested objects directly, changes apply live.\n` +
     `In DevTools: expand Proxy → [[Target]] to see contents.\n\n` +
-    `${name}.state                              → Proxy {locationId, flags, inventories, ...}\n` +
-    `${name}.state.flags                        → Proxy {intro_done: true, ...}\n` +
-    `${name}.state.flags.intro_done = false     → changes apply live\n` +
-    `${name}.debug()                            → engine debug snapshot`,
+    `Vylos.state                              → Proxy {locationId, flags, inventories, ...}\n` +
+    `Vylos.state.flags                        → Proxy {intro_done: true, ...}\n` +
+    `Vylos.state.flags.intro_done = false     → changes apply live\n` +
+    `Vylos.debug()                            → engine debug snapshot`,
   );
 }
 
 /** Attach a global console object for cheating/debugging */
 export function attachDevConsole(engine: Engine, getState: () => VylosGameState, config: VylosConfig): void {
-  const consoleName = config.consoleName ?? 'Vylos';
   const im = engine.inventoryManager;
 
   try {
-    Object.defineProperty(window, consoleName, {
+    Object.defineProperty(window, 'Vylos', {
       configurable: true,
       get(): VylosConsole {
         const state = getState();
@@ -74,7 +71,7 @@ export function attachDevConsole(engine: Engine, getState: () => VylosGameState,
       },
     });
   } catch {
-    console.warn(`[Vylos] Could not attach dev console as window.${consoleName}`);
+    console.warn('[Vylos] Could not attach dev console as window.Vylos');
   }
 
   printBanner(config);
