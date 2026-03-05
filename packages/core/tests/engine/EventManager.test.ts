@@ -3,12 +3,15 @@ import { EventManager } from '../../src/engine/managers/EventManager';
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '../../src/engine/types';
 import { EventStatus } from '../../src/engine/types';
 
-function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
+interface TestState extends VylosGameState {
+  flags: Record<string, boolean>;
+}
+
+function makeState(overrides: Partial<TestState> = {}): TestState {
   return {
     locationId: 'cafe',
     gameTime: 8,
     flags: {},
-    counters: {},
     player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
@@ -63,7 +66,7 @@ describe('EventManager', () => {
 
     it('keeps events NotReady when unlocked() returns false', () => {
       em.register(makeEvent('ev1', {
-        unlocked: (state) => state.flags['intro_done'] === true,
+        unlocked: (state) => (state as TestState).flags['intro_done'] === true,
       }));
 
       expect(em.evaluate(makeState())).toHaveLength(0);
@@ -113,7 +116,7 @@ describe('EventManager', () => {
 
     it('returns Ready event when conditions return true', () => {
       em.register(makeEvent('ev1', {
-        conditions: (state) => state.flags['go'] === true,
+        conditions: (state) => (state as TestState).flags['go'] === true,
       }));
       em.evaluate(makeState());
 

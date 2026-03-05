@@ -3,14 +3,11 @@ import { EventRunner, type EventRunnerCallbacks } from '../../src/engine/core/Ev
 import { InventoryManager } from '../../src/engine/managers/InventoryManager';
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '../../src/engine/types';
 import { JumpSignal } from '../../src/engine/errors/JumpSignal';
-import { EventEndError } from '../../src/engine/errors/EventEndError';
 
 function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 8,
-    flags: {},
-    counters: {},
     player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
@@ -25,8 +22,6 @@ function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: 
     onChoice: vi.fn(),
     onSetBackground: vi.fn(),
     onSetForeground: vi.fn(),
-    onShowOverlay: vi.fn(),
-    onHideOverlay: vi.fn(),
     onSetLocation: vi.fn(),
     onClear: vi.fn(),
     resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
@@ -149,7 +144,7 @@ describe('EventRunner', () => {
 
       await vi.waitFor(() => {
         expect(callbacks.onChoice).toHaveBeenCalled();
-        const options = callbacks.onChoice.mock.calls[0][0];
+        const options = (callbacks.onChoice as any).mock.calls[0][0];
         expect(options).toHaveLength(1);
         expect(options[0].value).toBe('coffee');
       });

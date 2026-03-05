@@ -17,8 +17,6 @@ function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
   return {
     locationId: 'cafe',
     gameTime: 8,
-    flags: {},
-    counters: {},
     player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
@@ -33,8 +31,6 @@ function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: 
     onChoice: vi.fn(),
     onSetBackground: vi.fn(),
     onSetForeground: vi.fn(),
-    onShowOverlay: vi.fn(),
-    onHideOverlay: vi.fn(),
     onSetLocation: vi.fn(),
     onClear: vi.fn(),
     resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
@@ -46,7 +42,8 @@ function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: 
 describe('Game loop integration', () => {
   it('executes an event, locks it, and records history', async () => {
     const callbacks = makeCallbacks();
-    const eventRunner = new EventRunner(callbacks);
+    const inventoryManager = new InventoryManager();
+    const eventRunner = new EventRunner(callbacks, inventoryManager);
     const eventManager = new EventManager();
     const historyManager = new HistoryManager();
     const navigationManager = new NavigationManager();
@@ -54,8 +51,6 @@ describe('Game loop integration', () => {
     await storage.open();
     const saveManager = new SaveManager(storage);
     const settingsManager = new SettingsManager(storage);
-
-    const inventoryManager = new InventoryManager();
 
     const engine = new Engine({
       eventManager,
@@ -104,7 +99,8 @@ describe('Game loop integration', () => {
 
   it('handles jump between events', async () => {
     const callbacks = makeCallbacks();
-    const eventRunner = new EventRunner(callbacks);
+    const inventoryManager = new InventoryManager();
+    const eventRunner = new EventRunner(callbacks, inventoryManager);
     const eventManager = new EventManager();
     const historyManager = new HistoryManager();
     const navigationManager = new NavigationManager();
@@ -112,8 +108,6 @@ describe('Game loop integration', () => {
     await storage.open();
     const saveManager = new SaveManager(storage);
     const settingsManager = new SettingsManager(storage);
-
-    const inventoryManager = new InventoryManager();
 
     const engine = new Engine({
       eventManager,
