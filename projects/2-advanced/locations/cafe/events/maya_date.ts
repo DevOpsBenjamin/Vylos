@@ -1,20 +1,20 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { maya } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { getAffection } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 
 const mayaDate: VylosEvent = {
   id: 'maya_date',
   locationId: 'cafe',
 
   conditions(state: VylosGameState) {
-    return getAffection(state as AdvancedGameState, 'maya') >= 60 && !state.flags['maya_date_1'];
+    const s = state as AdvancedGameState;
+    return s.characters.maya.affection >= 60 && !s.characters.maya.date1;
   },
 
-  locked: (state) => state.flags['maya_date_1'] === true,
+  locked: (state) => (state as AdvancedGameState).characters.maya.date1,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { maya } = state.characters;
 
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     engine.setForeground('/assets/locations/cafe/maya.png');
@@ -31,7 +31,7 @@ const mayaDate: VylosEvent = {
 
     if (pick === 'yes') {
       await engine.say('"Perfect." She smiles — unhurried, warm. "Give me a minute to grab my jacket."', { from: maya });
-      state.flags['maya_date_1'] = true;
+      maya.date1 = true;
       state.locationId = 'park';
       state.gameTime += 0.5;
     } else {

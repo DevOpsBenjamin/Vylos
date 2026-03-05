@@ -1,15 +1,15 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { addJournalEntry } from '@game/helpers/journal';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
+import type { AdvancedGameState } from '@game/gameState';
 
 const intro: VylosEvent = {
   id: 'intro',
 
   conditions(state: VylosGameState) {
-    return !state.flags['intro_done'];
+    return !(state as AdvancedGameState).flags.introDone;
   },
 
-  locked: (state) => state.flags['intro_done'] === true,
+  locked: (state) => (state as AdvancedGameState).flags.introDone,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
@@ -30,7 +30,7 @@ const intro: VylosEvent = {
     await engine.say(`${name}. That's who you are. And this city? It doesn't know what's coming.`);
     await engine.say('The morning light spills through dusty windows. Day one begins now.');
 
-    state.flags['intro_done'] = true;
+    state.flags.introDone = true;
     state.locationId = 'apartment';
     state.gameTime = 8;
 

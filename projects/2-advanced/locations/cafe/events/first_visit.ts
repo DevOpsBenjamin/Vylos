@@ -1,7 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { maya } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { modAffection, setNpcMet } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
 const firstVisit: VylosEvent = {
@@ -9,13 +7,15 @@ const firstVisit: VylosEvent = {
   locationId: 'cafe',
 
   conditions(state: VylosGameState) {
-    return state.flags['woke_up'] === true && !state.flags['visited_cafe'];
+    const s = state as AdvancedGameState;
+    return s.flags.wokeUp && !s.flags.visitedCafe;
   },
 
-  locked: (state) => state.flags['visited_cafe'] === true,
+  locked: (state) => (state as AdvancedGameState).flags.visitedCafe,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { maya } = state.characters;
 
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     await engine.say('The Rosebud Cafe is a small corner place with warm lighting and mismatched chairs.');
@@ -33,21 +33,20 @@ const firstVisit: VylosEvent = {
 
     if (pick === 'flirt') {
       await engine.say(`She laughs — a real one, surprised out of her. "I like you already. Name's Maya."`, { from: maya });
-      modAffection(state, 'maya', 15);
+      maya.affection = Math.min(100, maya.affection + 15);
     } else if (pick === 'friendly') {
       await engine.say(`"Oh perfect timing — we just started doing weekday specials. I'm Maya."`, { from: maya });
-      modAffection(state, 'maya', 10);
+      maya.affection = Math.min(100, maya.affection + 10);
     } else {
       await engine.say(`She softens instantly. "Of course! Coming right up. I'm Maya — welcome."`, { from: maya });
-      modAffection(state, 'maya', 5);
+      maya.affection = Math.min(100, maya.affection + 5);
     }
 
     await engine.say('She slides a cup across the counter with a small, knowing smile.');
     engine.setForeground(null);
 
-    state.flags['visited_cafe'] = true;
-    state.flags['met_maya'] = true;
-    setNpcMet(state, 'maya');
+    state.flags.visitedCafe = true;
+    maya.met = true;
     state.gameTime += 1;
 
     addJournalEntry(state, 'met_maya', 'Met Maya', 'Visited the Rosebud Cafe and met Maya, the barista.');

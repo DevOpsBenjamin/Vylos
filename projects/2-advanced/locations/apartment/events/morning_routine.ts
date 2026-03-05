@@ -1,5 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
+import type { AdvancedGameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
 const morningRoutine: VylosEvent = {
@@ -7,10 +7,11 @@ const morningRoutine: VylosEvent = {
   locationId: 'apartment',
 
   conditions(state: VylosGameState) {
-    return state.flags['intro_done'] === true && !state.flags['woke_up'];
+    const s = state as AdvancedGameState;
+    return s.flags.introDone && !s.flags.wokeUp;
   },
 
-  locked: (state) => state.flags['woke_up'] === true,
+  locked: (state) => (state as AdvancedGameState).flags.wokeUp,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
@@ -34,7 +35,7 @@ const morningRoutine: VylosEvent = {
       state.gameTime += 1;
     }
 
-    state.flags['woke_up'] = true;
+    state.flags.wokeUp = true;
     await engine.say('Alright. New day, new city. Time to explore.');
 
     addJournalEntry(state, 'first_morning', 'First Morning', 'Woke up in the new apartment. Time to explore the city.');

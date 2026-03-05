@@ -1,7 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { lena } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { getAffection, modAffection } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 
 const lenaInvite: VylosEvent = {
   id: 'lena_invite',
@@ -9,13 +7,14 @@ const lenaInvite: VylosEvent = {
 
   conditions(state: VylosGameState) {
     const s = state as AdvancedGameState;
-    return getAffection(s, 'maya') >= 30 && getAffection(s, 'lena') >= 30 && !s.flags['lena_invited'];
+    return s.characters.maya.affection >= 30 && s.characters.lena.affection >= 30 && !s.characters.lena.invited;
   },
 
-  locked: (state) => state.flags['lena_invited'] === true,
+  locked: (state) => (state as AdvancedGameState).characters.lena.invited,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { lena } = state.characters;
 
     engine.setBackground('/assets/locations/hallway/hallway.png');
     await engine.say(`You're halfway out the door when you hear your name from down the hall.`);
@@ -32,8 +31,8 @@ const lenaInvite: VylosEvent = {
 
     if (pick === 'yes') {
       await engine.say('"Perfect." She grins, warm and a little pleased. "Thursday it is."', { from: lena });
-      state.flags['lena_invited'] = true;
-      modAffection(state, 'lena', 10);
+      lena.invited = true;
+      lena.affection = Math.min(100, lena.affection + 10);
     } else {
       await engine.say('"No worries. The invitation stands." She shrugs, easy and gracious about it.', { from: lena });
     }

@@ -1,9 +1,4 @@
-import type { VylosCategory, VylosItem } from '@vylos/core';
-
-export const CATEGORIES: VylosCategory[] = [
-  { id: 'gifts', name: 'Gifts', sortOrder: 1 },
-  { id: 'consumables', name: 'Consumables', sortOrder: 2 },
-];
+import type { VylosItem } from '@vylos/core';
 
 export const ITEMS: VylosItem[] = [
   { id: 'coffee', name: 'Coffee', category: 'consumables' },

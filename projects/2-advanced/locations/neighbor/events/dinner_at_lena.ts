@@ -1,7 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { lena } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { modAffection, addDate } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
 const dinnerAtLena: VylosEvent = {
@@ -9,13 +7,15 @@ const dinnerAtLena: VylosEvent = {
   locationId: 'neighbor',
 
   conditions(state: VylosGameState) {
-    return state.flags['lena_invited'] === true && !state.flags['dinner_done'];
+    const s = state as AdvancedGameState;
+    return s.characters.lena.invited && !s.characters.lena.dinnerDone;
   },
 
-  locked: (state) => state.flags['dinner_done'] === true,
+  locked: (state) => (state as AdvancedGameState).characters.lena.dinnerDone,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { lena } = state.characters;
 
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
     engine.setForeground('/assets/locations/neighbor/lena.png');
@@ -35,25 +35,25 @@ const dinnerAtLena: VylosEvent = {
       await engine.say(`"Oh — you noticed?" She lights up. Not performed delight. Genuine surprise.`, { from: lena });
       await engine.say(`"I paint what I can't say. Which means I paint a lot."`, { from: lena });
       await engine.say('You talk about the paintings for an hour. The wine disappears.');
-      modAffection(state, 'lena', 15);
+      lena.affection = Math.min(100, lena.affection + 15);
     } else if (pick === 'food') {
       await engine.say(`"This is incredible — seriously. What's in the sauce?"`);
       await engine.say('"Wine, shallots, and a pinch of stubbornness."', { from: lena });
       await engine.say(`She's pleased — quietly, warmly pleased. You eat well and laugh more than you expected.`);
-      modAffection(state, 'lena', 10);
+      lena.affection = Math.min(100, lena.affection + 10);
     } else if (state.charm >= 50) {
       await engine.say('You let the silence stretch half a second too long, holding her eyes with a soft smile.');
       await engine.say(`Color rises in her cheeks. She looks away first — but she's smiling.`, { from: lena });
       await engine.say(`"You're trouble," she says quietly, like it's not entirely a complaint.`, { from: lena });
-      modAffection(state, 'lena', 20);
+      lena.affection = Math.min(100, lena.affection + 20);
     } else {
       await engine.say('You try your best but the moment lands slightly off — a beat too eager.');
       await engine.say('Lena smiles politely and refills your glass. The evening stays warm but measured.');
     }
 
     engine.setForeground(null);
-    state.flags['dinner_done'] = true;
-    addDate(state, 'lena');
+    lena.dinnerDone = true;
+    lena.dates += 1;
     state.gameTime += 3;
 
     addJournalEntry(state, 'dinner_lena', 'Dinner at Lena\'s', 'Had dinner at Lena\'s place. Her apartment is full of paintings.');

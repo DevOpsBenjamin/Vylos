@@ -1,7 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { maya } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { modAffection, addDate } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
 const mayaParkDate: VylosEvent = {
@@ -9,13 +7,15 @@ const mayaParkDate: VylosEvent = {
   locationId: 'park',
 
   conditions(state: VylosGameState) {
-    return state.flags['maya_date_1'] === true && !state.flags['maya_park_done'];
+    const s = state as AdvancedGameState;
+    return s.characters.maya.date1 && !s.characters.maya.parkDone;
   },
 
-  locked: (state) => state.flags['maya_park_done'] === true,
+  locked: (state) => (state as AdvancedGameState).characters.maya.parkDone,
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { maya } = state.characters;
 
     engine.setBackground('/assets/locations/park/park_sunset.jpg');
     engine.setForeground('/assets/locations/park/maya_casual.png');
@@ -36,17 +36,17 @@ const mayaParkDate: VylosEvent = {
       await engine.say('She listens. Actually listens — not waiting for her turn, just... present.');
       await engine.say(`"That's the most honest thing anyone's said to me in a long time."`, { from: maya });
       await engine.say('She bumps your shoulder gently. The river keeps moving beneath you both.');
-      modAffection(state, 'maya', 20);
+      maya.affection = Math.min(100, maya.affection + 20);
     } else {
       await engine.say('"Portugal has good tiles," you offer. "Terrible for espresso quality control though."');
       await engine.say('She snorts — caught off guard — then laughs properly, leaning into your arm for a second.', { from: maya });
       await engine.say(`"You're a terrible person," she says, grinning. "I mean that fondly."`, { from: maya });
-      modAffection(state, 'maya', 10);
+      maya.affection = Math.min(100, maya.affection + 10);
     }
 
     engine.setForeground(null);
-    state.flags['maya_park_done'] = true;
-    addDate(state, 'maya');
+    maya.parkDone = true;
+    maya.dates += 1;
     state.gameTime += 2;
 
     addJournalEntry(state, 'park_date_maya', 'Sunset Walk', 'Walked along the river with Maya at sunset. She opened up about her dreams.');

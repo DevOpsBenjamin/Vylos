@@ -2,10 +2,13 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { deepMerge, type VylosGameState, type VylosGameStore } from '@vylos/core';
 import { type PlayerState, createPlayerState } from './player';
-import { type RelationshipState, createRelationshipState } from './relationships';
+import { type Flags, createFlags } from './flags';
+import { type Characters, createCharacters } from '../characters';
 import { type JournalState, createJournalState } from './journal';
 
-export interface AdvancedGameState extends VylosGameState, PlayerState, RelationshipState {
+export interface AdvancedGameState extends VylosGameState, PlayerState {
+  characters: Characters;
+  flags: Flags;
   journal: JournalState;
   inventory: string[];
 }
@@ -14,12 +17,12 @@ function createState(): AdvancedGameState {
   return {
     locationId: '',
     gameTime: 8,
-    flags: {},
+    flags: createFlags(),
     counters: {},
     player: { id: 'player', name: 'Player' },
     inventories: {},
     ...createPlayerState(),
-    ...createRelationshipState(),
+    characters: createCharacters(),
     journal: createJournalState(),
     inventory: [],
   };

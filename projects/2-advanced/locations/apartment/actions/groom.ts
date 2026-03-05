@@ -1,5 +1,5 @@
 import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
+import type { AdvancedGameState } from '@game/gameState';
 
 const groom: VylosAction = {
   id: 'groom',
@@ -14,7 +14,7 @@ const groom: VylosAction = {
     const s = state as AdvancedGameState;
     s.charm = Math.min(100, s.charm + 5);
     s.gameTime += 0.5;
-    s.flags['freshened_up'] = true;
+    s.flags.freshenedUp = true;
   },
 };
 

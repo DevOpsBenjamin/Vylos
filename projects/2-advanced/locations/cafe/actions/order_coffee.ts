@@ -1,5 +1,5 @@
 import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
+import type { AdvancedGameState } from '@game/gameState';
 
 const orderCoffee: VylosAction = {
   id: 'order_coffee',
@@ -7,14 +7,14 @@ const orderCoffee: VylosAction = {
   locationId: 'cafe',
 
   unlocked(state: VylosGameState) {
-    return state.flags['visited_cafe'] === true;
+    return (state as AdvancedGameState).flags.visitedCafe;
   },
 
   execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as AdvancedGameState;
     s.energy = Math.min(100, s.energy + 5);
     s.gameTime += 0.5;
-    s.flags['ordered_coffee'] = true;
+    s.flags.orderedCoffee = true;
   },
 };
 

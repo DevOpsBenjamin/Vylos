@@ -1,4 +1,5 @@
 import type { VylosLocation, VylosGameState } from '@vylos/core';
+import type { AdvancedGameState } from '@game/gameState';
 
 const neighbor: VylosLocation = {
   id: 'neighbor',
@@ -7,7 +8,7 @@ const neighbor: VylosLocation = {
     { path: '/assets/locations/neighbor/lena_apartment.png' },
   ],
   accessible(state: VylosGameState) {
-    return state.flags['knows_lena'] === true;
+    return (state as AdvancedGameState).characters.lena.known;
   },
 };
 

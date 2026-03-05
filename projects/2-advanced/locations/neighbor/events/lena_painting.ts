@@ -1,7 +1,5 @@
 import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { lena } from '@game';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { getAffection, modAffection } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 
 const lenaPainting: VylosEvent = {
   id: 'lena_painting',
@@ -9,11 +7,12 @@ const lenaPainting: VylosEvent = {
 
   conditions(state: VylosGameState) {
     const s = state as AdvancedGameState;
-    return s.flags['dinner_done'] === true && getAffection(s, 'lena') >= 50 && !s.flags['lena_painting'];
+    return s.characters.lena.dinnerDone && s.characters.lena.affection >= 50 && !s.characters.lena.painting;
   },
 
   async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
+    const { lena } = state.characters;
 
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
     engine.setForeground('/assets/locations/neighbor/lena_artist.png');
@@ -34,12 +33,11 @@ const lenaPainting: VylosEvent = {
       await engine.say('"Good." She pulls over a chair, positions it in the light by the window.', { from: lena });
       await engine.say('You sit. She studies you — unhurried, careful, with the kind of attention that makes you feel both seen and safe.');
       await engine.say(`The afternoon passes in near-silence. It might be the most honest hour you've spent with anyone.`);
-      modAffection(state, 'lena', 20);
-      state.flags['lena_painting'] = true;
+      lena.affection = Math.min(100, lena.affection + 20);
+      lena.painting = true;
     } else {
       await engine.say(`"That's okay." She nods, and means it. "Another time, maybe."`, { from: lena });
       await engine.say('She turns back to her canvases. The offer stays gently open.');
-      state.flags['lena_painting'] = false;
     }
 
     engine.setForeground(null);

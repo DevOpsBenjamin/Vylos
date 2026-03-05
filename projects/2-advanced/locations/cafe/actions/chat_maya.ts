@@ -1,6 +1,5 @@
 import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameDatas/gameState';
-import { modAffection } from '@game/helpers/relationships';
+import type { AdvancedGameState } from '@game/gameState';
 
 const chatMaya: VylosAction = {
   id: 'chat_maya',
@@ -8,14 +7,14 @@ const chatMaya: VylosAction = {
   locationId: 'cafe',
 
   unlocked(state: VylosGameState) {
-    return state.flags['met_maya'] === true;
+    return (state as AdvancedGameState).characters.maya.met;
   },
 
   execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as AdvancedGameState;
-    modAffection(s, 'maya', 3);
+    s.characters.maya.affection = Math.min(100, s.characters.maya.affection + 3);
     s.gameTime += 0.5;
-    s.flags['chatted_maya'] = true;
+    s.flags.chattedMaya = true;
   },
 };
 

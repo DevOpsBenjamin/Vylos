@@ -1,4 +1,4 @@
-import type { AdvancedGameState } from '../gameDatas/gameState';
+import type { AdvancedGameState } from '../gameState';
 
 export function addJournalEntry(
   state: AdvancedGameState,
