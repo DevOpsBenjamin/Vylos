@@ -31,10 +31,22 @@ export interface InventoryAPI {
 }
 
 /**
- * The API available to event execute() functions.
+ * Minimal sync API available to action execute() functions.
+ * Actions can jump to events and manage inventory.
+ */
+export interface VylosActionAPI {
+  /** Jump to an event (throws JumpSignal) */
+  jump(eventId: string): never;
+
+  /** Inventory operations (add, remove, has, count, etc.) */
+  readonly inventory: InventoryAPI;
+}
+
+/**
+ * Full API available to event execute() functions.
  * This is what visual novel authors interact with.
  */
-export interface VylosAPI {
+export interface VylosEventAPI extends VylosActionAPI {
   /** Show dialogue text and wait for player to continue */
   say(text: string | TextEntry, options?: SayOptions): Promise<void>;
 
@@ -47,36 +59,16 @@ export interface VylosAPI {
   /** Show/hide foreground layers (character sprites, etc.) */
   setForeground(input: ForegroundInput): void;
 
-  /** Show a custom overlay component */
-  showOverlay(componentId: string, props?: Record<string, unknown>): Promise<void>;
-
-  /** Hide overlay */
-  hideOverlay(): void;
-
-  /** Jump to another event */
-  jump(eventId: string): never;
-
   /** End the current event */
   end(): never;
-
-  /** Inventory operations (add, remove, has, count, etc.) */
-  readonly inventory: InventoryAPI;
 
   /** Wait for a specified duration (ms) */
   wait(ms: number): Promise<void>;
 
   /** Change location */
   setLocation(locationId: string): void;
-
-  /** Play sound effect */
-  playSfx(path: string): void;
-
-  /** Play background music */
-  playMusic(path: string): void;
-
-  /** Stop background music */
-  stopMusic(): void;
 }
+
 
 /** Configuration for drawable events — clickable characters/objects in a location */
 export interface DrawableEventConfig {
@@ -117,7 +109,7 @@ export interface VylosEvent<TState extends VylosGameState = VylosGameState> {
   locked?(state: TState): boolean;
 
   /** The event's narrative logic */
-  execute(engine: VylosAPI, state: TState): Promise<void>;
+  execute(engine: VylosEventAPI, state: TState): Promise<void>;
 }
 
 /** Event lifecycle status */

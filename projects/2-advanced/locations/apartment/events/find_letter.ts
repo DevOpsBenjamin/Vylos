@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
@@ -13,7 +13,7 @@ const findLetter: VylosEvent = {
 
   locked: (state) => state.flags['found_letter'] === true,
 
-  async execute(engine: VylosAPI, _state: VylosGameState) {
+  async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
 
     await engine.say(`As you're getting ready to head out, something catches your eye by the door.`);

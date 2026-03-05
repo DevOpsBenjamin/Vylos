@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { maya } from '@game';
 
 const actionFeedback: VylosEvent = {
@@ -11,7 +11,7 @@ const actionFeedback: VylosEvent = {
     );
   },
 
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     if (state.flags['rested']) {
       state.flags['rested'] = false;
       await engine.say('You close your eyes and let the hours drift by. Much better — energy restored.');

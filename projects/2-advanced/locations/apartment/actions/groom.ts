@@ -1,4 +1,4 @@
-import type { VylosAction, VylosGameState } from '@vylos/core';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 
 const groom: VylosAction = {
@@ -10,7 +10,7 @@ const groom: VylosAction = {
     return true;
   },
 
-  execute(state: VylosGameState) {
+  execute(_engine: VylosActionAPI, state: VylosGameState) {
     const s = state as AdvancedGameState;
     s.charm = Math.min(100, s.charm + 5);
     s.gameTime += 0.5;

@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { maya } from '@game';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 import { modAffection, setNpcMet } from '@game/helpers/relationships';
@@ -14,7 +14,7 @@ const firstVisit: VylosEvent = {
 
   locked: (state) => state.flags['visited_cafe'] === true,
 
-  async execute(engine: VylosAPI, _state: VylosGameState) {
+  async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
 
     engine.setBackground('/assets/locations/cafe/cafe_day.png');

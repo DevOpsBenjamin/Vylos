@@ -132,7 +132,21 @@ export class Engine {
           break;
         case NavigationAction.Action:
           if (nav.payload) {
-            loop?.onAction?.(nav.payload, getState());
+            try {
+              loop?.onAction?.(nav.payload, getState());
+            } catch (error) {
+              if (error instanceof JumpSignal) {
+                const target = this.eventManager.get(error.targetEventId);
+                if (target) {
+                  logger.debug(`Action jump to: ${error.targetEventId}`);
+                  await this.executeEvent(target, getState);
+                } else {
+                  logger.error(`Action jump target not found: ${error.targetEventId}`);
+                }
+              } else {
+                throw error;
+              }
+            }
           }
           break;
         case NavigationAction.DrawableEvent:

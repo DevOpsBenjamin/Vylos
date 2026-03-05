@@ -27,12 +27,12 @@ class CustomRegistry {
 }
 ```
 
-### VylosAPI Extension
+### VylosEventAPI Extension
 
 Add `runCustom()` to the engine API:
 
 ```ts
-interface VylosAPI {
+interface VylosEventAPI {
   /** Run a custom action/mini-game, returns the branch result */
   runCustom<T = string>(args: CustomArgs): Promise<T>;
 }

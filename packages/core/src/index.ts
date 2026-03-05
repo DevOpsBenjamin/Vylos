@@ -29,7 +29,7 @@ export { Engine } from './engine/core/Engine';
 export type { EngineLoopCallbacks } from './engine/core/Engine';
 export { EventRunner } from './engine/core/EventRunner';
 export type { EventRunnerCallbacks, HistoryStep } from './engine/core/EventRunner';
-export type { InventoryAPI } from './engine/types/events';
+export type { InventoryAPI, VylosActionAPI, VylosEventAPI } from './engine/types/events';
 export { CheckpointManager } from './engine/core/CheckpointManager';
 export { createEngine, getComponentOverride, clearComponentOverrides, DI_TOKENS } from './engine/core/EngineFactory';
 
@@ -66,7 +66,6 @@ export { default as BackgroundLayer } from './components/core/BackgroundLayer.vu
 export { default as ForegroundLayer } from './components/core/ForegroundLayer.vue';
 export { default as DialogueBox } from './components/core/DialogueBox.vue';
 export { default as ChoicePanel } from './components/core/ChoicePanel.vue';
-export { default as CustomOverlay } from './components/core/CustomOverlay.vue';
 export { default as DrawableOverlay } from './components/core/DrawableOverlay.vue';
 
 // Components — menu

@@ -22,9 +22,6 @@
       <!-- z-35: Choice panel (inside DialogueBox z-range) -->
       <component :is="choicePanelComponent" />
 
-      <!-- z-40: Custom overlay -->
-      <CustomOverlay />
-
       <!-- z-45: Project HUD (always visible when UI is shown) -->
       <slot name="hud" />
     </template>
@@ -40,7 +37,6 @@ import DefaultForegroundLayer from '../core/ForegroundLayer.vue';
 import DefaultDrawableOverlay from '../core/DrawableOverlay.vue';
 import DefaultDialogueBox from '../core/DialogueBox.vue';
 import DefaultChoicePanel from '../core/ChoicePanel.vue';
-import CustomOverlay from '../core/CustomOverlay.vue';
 import DefaultActionOverlay from '../menu/ActionOverlay.vue';
 import DefaultLocationOverlay from '../menu/LocationOverlay.vue';
 import DefaultTopBar from '../menu/TopBar.vue';

@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EventManager } from '../../src/engine/managers/EventManager';
-import type { VylosEvent, VylosAPI, VylosGameState } from '../../src/engine/types';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '../../src/engine/types';
 import { EventStatus } from '../../src/engine/types';
 
 function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
@@ -18,7 +18,7 @@ function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
 function makeEvent(id: string, overrides: Partial<VylosEvent> = {}): VylosEvent {
   return {
     id,
-    async execute(_engine: VylosAPI) { /* noop */ },
+    async execute(_engine: VylosEventAPI) { /* noop */ },
     ...overrides,
   };
 }

@@ -47,14 +47,14 @@ Requires Node.js >= 22.0.0 and pnpm 9.15+.
 Events are async functions that pause at each `say()` or `choice()`:
 
 ```typescript
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 
 const firstVisit: VylosEvent = {
   id: 'first_visit',
   locationId: 'cafe',
   conditions: (state) => state.flags['woke_up'] && !state.flags['visited_cafe'],
 
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     await engine.say('The cafe is warm and inviting.');
 
     engine.setForeground('/assets/locations/cafe/maya.png');

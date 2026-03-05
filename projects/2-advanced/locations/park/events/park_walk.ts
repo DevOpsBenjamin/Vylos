@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 
 const parkWalk: VylosEvent = {
   id: 'park_walk',
@@ -10,7 +10,7 @@ const parkWalk: VylosEvent = {
 
   locked: (state) => state.flags['park_intro'] === true,
 
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     engine.setBackground('/assets/locations/park/park_day.jpg');
     await engine.say(`Riverside Park stretches along the water's edge, wide and unhurried.`);
     await engine.say('Willow trees trail their fingers in the current. Couples stroll. Pigeons argue over bread.');

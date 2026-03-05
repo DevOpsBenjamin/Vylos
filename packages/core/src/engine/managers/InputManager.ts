@@ -109,6 +109,9 @@ export class InputManager {
       return 'back';
     }
 
+    // Number keys 1-9 → choice selection
+    if (key >= '1' && key <= '9') return 'choice-' + key;
+
     return null;
   }
 

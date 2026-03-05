@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { system, unknown } from '@game';
 
 /**
@@ -13,7 +13,7 @@ const unknownChat: VylosEvent = {
 
   locked: (state) => state.flags['unknown_chat_done'] === true,
 
-  async execute(engine: VylosAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: VylosGameState) {
     await engine.say('You open the conversation with Unknown Number.', { from: system });
 
     await engine.say("So you found the phone.", { from: unknown });

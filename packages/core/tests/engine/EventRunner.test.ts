@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { EventRunner, type EventRunnerCallbacks } from '../../src/engine/core/EventRunner';
 import { InventoryManager } from '../../src/engine/managers/InventoryManager';
-import type { VylosEvent, VylosAPI, VylosGameState } from '../../src/engine/types';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '../../src/engine/types';
 import { JumpSignal } from '../../src/engine/errors/JumpSignal';
 import { EventEndError } from '../../src/engine/errors/EventEndError';
 
@@ -48,7 +48,7 @@ describe('EventRunner', () => {
     it('displays dialogue and waits for continue', async () => {
       const event: VylosEvent = {
         id: 'test-say',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Hello world');
         },
       };
@@ -72,7 +72,7 @@ describe('EventRunner', () => {
       const barista = { id: 'barista', name: 'Barista' };
       const event: VylosEvent = {
         id: 'test-speaker',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Hi!', { from: barista });
         },
       };
@@ -92,7 +92,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-vars',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Hello {name}!', { variables: { name: 'Bob' } });
         },
       };
@@ -113,7 +113,7 @@ describe('EventRunner', () => {
       let result = '';
       const event: VylosEvent = {
         id: 'test-choice',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           result = await engine.choice([
             { text: 'Coffee', value: 'coffee' },
             { text: 'Tea', value: 'tea' },
@@ -137,7 +137,7 @@ describe('EventRunner', () => {
     it('filters choices by condition', async () => {
       const event: VylosEvent = {
         id: 'test-choice-filter',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.choice([
             { text: 'Coffee', value: 'coffee' },
             { text: 'Secret', value: 'secret', condition: () => false },
@@ -166,7 +166,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-branch',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Welcome!');
           const pick = await engine.choice([
             { text: 'Coffee', value: 'coffee' },
@@ -210,7 +210,7 @@ describe('EventRunner', () => {
     it('throws JumpSignal', async () => {
       const event: VylosEvent = {
         id: 'test-jump',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.jump('other-event');
         },
       };
@@ -221,7 +221,7 @@ describe('EventRunner', () => {
     it('carries target event ID', async () => {
       const event: VylosEvent = {
         id: 'test-jump-id',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.jump('intro');
         },
       };
@@ -242,7 +242,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-end',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Before end');
           engine.end();
           // This should never execute
@@ -264,7 +264,7 @@ describe('EventRunner', () => {
     it('calls callbacks synchronously (string normalized to array)', async () => {
       const event: VylosEvent = {
         id: 'test-bg',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.setBackground('/bg.jpg');
           engine.setForeground('/fg.png');
         },
@@ -282,7 +282,7 @@ describe('EventRunner', () => {
       ];
       const event: VylosEvent = {
         id: 'test-multi-fg',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.setForeground(layers);
         },
       };
@@ -294,7 +294,7 @@ describe('EventRunner', () => {
     it('null clears foreground', async () => {
       const event: VylosEvent = {
         id: 'test-clear-fg',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.setForeground('/fg.png');
           engine.setForeground(null);
         },
@@ -309,7 +309,7 @@ describe('EventRunner', () => {
     it('add() delegates to InventoryManager with current state', async () => {
       const event: VylosEvent = {
         id: 'test-inv-add',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.inventory.add('backpack', 'potion', 3);
         },
       };
@@ -324,7 +324,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-inv-has',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           result = engine.inventory.has('backpack', 'potion', 3);
         },
       };
@@ -338,7 +338,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-inv-remove',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.inventory.remove('backpack', 'potion', 2);
         },
       };
@@ -353,7 +353,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-inv-count',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           result = engine.inventory.count('backpack', 'potion');
         },
       };
@@ -368,7 +368,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-inv-list',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           result = engine.inventory.list('backpack');
         },
       };
@@ -382,7 +382,7 @@ describe('EventRunner', () => {
 
       const event: VylosEvent = {
         id: 'test-inv-clear',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           engine.inventory.clear('backpack');
         },
       };
@@ -396,7 +396,7 @@ describe('EventRunner', () => {
     it('captures checkpoint for each say', async () => {
       const event: VylosEvent = {
         id: 'test-cp',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.say('Line 1');
           await engine.say('Line 2');
         },
@@ -417,7 +417,7 @@ describe('EventRunner', () => {
     it('captures choice result in checkpoint', async () => {
       const event: VylosEvent = {
         id: 'test-cp-choice',
-        async execute(engine: VylosAPI) {
+        async execute(engine: VylosEventAPI) {
           await engine.choice([
             { text: 'A', value: 'a' },
             { text: 'B', value: 'b' },

@@ -8,7 +8,7 @@ import { SaveManager } from '../../src/engine/managers/SaveManager';
 import { SettingsManager } from '../../src/engine/managers/SettingsManager';
 import { VylosStorage } from '../../src/engine/storage/VylosStorage';
 import { Engine } from '../../src/engine/core/Engine';
-import type { VylosAPI, VylosEvent, VylosGameState } from '../../src/engine/types';
+import type { VylosEventAPI, VylosEvent, VylosGameState } from '../../src/engine/types';
 import { createEngine, clearComponentOverrides, getComponentOverride } from '../../src/engine/core/EngineFactory';
 import type { VylosPlugin } from '../../src/engine/types';
 import { defineComponent } from 'vue';
@@ -70,7 +70,7 @@ describe('Game loop integration', () => {
     const event: VylosEvent = {
       id: 'intro',
       locked: () => true,
-      async execute(api: VylosAPI) {
+      async execute(api: VylosEventAPI) {
         await api.say('Hello');
         await api.say('World');
       },
@@ -132,7 +132,7 @@ describe('Game loop integration', () => {
       {
         id: 'first',
         locked: () => true,
-        async execute(api: VylosAPI) {
+        async execute(api: VylosEventAPI) {
           await api.say('In first event');
           api.jump('second');
         },
@@ -140,7 +140,7 @@ describe('Game loop integration', () => {
       {
         id: 'second',
         locked: () => true,
-        async execute(api: VylosAPI) {
+        async execute(api: VylosEventAPI) {
           await api.say('In second event');
         },
       },

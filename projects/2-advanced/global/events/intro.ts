@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { addJournalEntry } from '@game/helpers/journal';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 
@@ -11,7 +11,7 @@ const intro: VylosEvent = {
 
   locked: (state) => state.flags['intro_done'] === true,
 
-  async execute(engine: VylosAPI, _state: VylosGameState) {
+  async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
 
     await engine.say('Moving vans, cardboard boxes, and the scent of a city you barely know.');

@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import { lena } from '@game';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 import { getAffection, modAffection } from '@game/helpers/relationships';
@@ -12,7 +12,7 @@ const lenaPainting: VylosEvent = {
     return s.flags['dinner_done'] === true && getAffection(s, 'lena') >= 50 && !s.flags['lena_painting'];
   },
 
-  async execute(engine: VylosAPI, _state: VylosGameState) {
+  async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
 
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');

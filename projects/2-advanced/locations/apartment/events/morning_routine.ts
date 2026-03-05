@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
 import type { AdvancedGameState } from '@game/gameDatas/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
 
@@ -12,7 +12,7 @@ const morningRoutine: VylosEvent = {
 
   locked: (state) => state.flags['woke_up'] === true,
 
-  async execute(engine: VylosAPI, _state: VylosGameState) {
+  async execute(engine: VylosEventAPI, _state: VylosGameState) {
     const state = _state as AdvancedGameState;
 
     engine.setBackground('/assets/locations/apartment/apartment_day.png');
