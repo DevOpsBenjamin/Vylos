@@ -1,11 +1,12 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game';
+import type { GameState } from '@game/gameState';
+import { advanceTime } from '@game/helpers/time';
 
 const wait: VylosAction<GameState> = {
   id: 'wait',
   label: 'Wait 1 Hour',
   execute(_engine: VylosActionAPI, state: GameState) {
-    state.gameTime += 1;
+    advanceTime(state, 1);
   },
 };
 

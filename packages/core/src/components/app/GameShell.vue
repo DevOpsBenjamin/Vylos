@@ -233,6 +233,23 @@ onMounted(() => {
       return;
     }
 
+    // Number keys select choices
+    if (action.startsWith('choice-') && engineState.choices && engine) {
+      const index = parseInt(action.slice(7)) - 1;
+      const option = engineState.choices.options[index];
+      if (option && !option.disabled) {
+        if (engineState.choices.historyStepIndex != null) {
+          const stepIndex = engineState.choices.historyStepIndex;
+          engineState.historyBrowsing = false;
+          engineState.setChoices(null);
+          engine.eventRunner.requestRedoChoice(stepIndex, option.value);
+        } else {
+          engine.eventRunner.resolveWait(option.value);
+        }
+      }
+      return;
+    }
+
     switch (action) {
       case 'continue':
         handleKeyboardContinue();
