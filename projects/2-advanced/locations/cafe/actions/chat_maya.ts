@@ -1,20 +1,15 @@
-import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosAction, VylosActionAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 
-const chatMaya: VylosAction = {
+const chatMaya: VylosAction<GameState> = {
   id: 'chat_maya',
   label: { en: 'Chat with Maya', fr: 'Discuter avec Maya' },
   locationId: 'cafe',
-
-  unlocked(state: VylosGameState) {
-    return (state as AdvancedGameState).characters.maya.met;
-  },
-
-  execute(_engine: VylosActionAPI, state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    s.characters.maya.affection = Math.min(100, s.characters.maya.affection + 3);
-    s.gameTime += 0.5;
-    s.flags.chattedMaya = true;
+  unlocked: (state) => state.characters.maya.met,
+  execute(_engine: VylosActionAPI, state: GameState) {
+    state.characters.maya.affection = Math.min(100, state.characters.maya.affection + 3);
+    state.gameTime += 0.5;
+    state.flags.chattedMaya = true;
   },
 };
 

@@ -1,54 +1,49 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
+import t from 'vylos:texts/neighbor/dinner_at_lena';
 
-const dinnerAtLena: VylosEvent = {
+const dinnerAtLena: VylosEvent<GameState> = {
   id: 'dinner_at_lena',
   locationId: 'neighbor',
+  conditions: (state) => state.characters.lena.invited && !state.characters.lena.dinnerDone,
+  locked: (state) => state.characters.lena.dinnerDone,
 
-  conditions(state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    return s.characters.lena.invited && !s.characters.lena.dinnerDone;
-  },
-
-  locked: (state) => (state as AdvancedGameState).characters.lena.dinnerDone,
-
-  async execute(engine: VylosEventAPI, _state: VylosGameState) {
-    const state = _state as AdvancedGameState;
+  async execute(engine: VylosEventAPI, state: GameState) {
     const { lena } = state.characters;
 
     engine.setBackground('/assets/locations/neighbor/lena_apartment.png');
     engine.setForeground('/assets/locations/neighbor/lena.png');
 
-    await engine.say(`Lena's apartment smells like garlic, rosemary, and something with wine in it.`);
-    await engine.say(`Canvases line the walls — unfinished, overlapping, all slightly wild. It's beautiful chaos.`);
-    await engine.say(`"You came!" She says it like she wasn't entirely sure you would.`, { from: lena });
-    await engine.say('She pours two glasses of red without asking and hands you one. The food is laid out simply and perfectly.');
+    await engine.say(t.smell);
+    await engine.say(t.canvases);
+    await engine.say(t.you_came, { from: lena });
+    await engine.say(t.wine);
 
     const pick = await engine.choice([
-      { text: 'Ask about her art', value: 'art' },
-      { text: 'Compliment the food', value: 'food' },
-      { text: 'Flirt boldly — hold her gaze a beat too long', value: 'flirt' },
+      { text: t.choice_art, value: 'art' },
+      { text: t.choice_food, value: 'food' },
+      { text: t.choice_flirt, value: 'flirt' },
     ]);
 
     if (pick === 'art') {
-      await engine.say(`"Oh — you noticed?" She lights up. Not performed delight. Genuine surprise.`, { from: lena });
-      await engine.say(`"I paint what I can't say. Which means I paint a lot."`, { from: lena });
-      await engine.say('You talk about the paintings for an hour. The wine disappears.');
+      await engine.say(t.art_1, { from: lena });
+      await engine.say(t.art_2, { from: lena });
+      await engine.say(t.art_3);
       lena.affection = Math.min(100, lena.affection + 15);
     } else if (pick === 'food') {
-      await engine.say(`"This is incredible — seriously. What's in the sauce?"`);
-      await engine.say('"Wine, shallots, and a pinch of stubbornness."', { from: lena });
-      await engine.say(`She's pleased — quietly, warmly pleased. You eat well and laugh more than you expected.`);
+      await engine.say(t.food_1);
+      await engine.say(t.food_2, { from: lena });
+      await engine.say(t.food_3);
       lena.affection = Math.min(100, lena.affection + 10);
-    } else if (state.charm >= 50) {
-      await engine.say('You let the silence stretch half a second too long, holding her eyes with a soft smile.');
-      await engine.say(`Color rises in her cheeks. She looks away first — but she's smiling.`, { from: lena });
-      await engine.say(`"You're trouble," she says quietly, like it's not entirely a complaint.`, { from: lena });
+    } else if (state.player.charm >= 50) {
+      await engine.say(t.flirt_charm);
+      await engine.say(t.flirt_blush, { from: lena });
+      await engine.say(t.flirt_trouble, { from: lena });
       lena.affection = Math.min(100, lena.affection + 20);
     } else {
-      await engine.say('You try your best but the moment lands slightly off — a beat too eager.');
-      await engine.say('Lena smiles politely and refills your glass. The evening stays warm but measured.');
+      await engine.say(t.flirt_fail_1);
+      await engine.say(t.flirt_fail_2);
     }
 
     engine.setForeground(null);

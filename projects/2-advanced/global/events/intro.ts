@@ -1,23 +1,18 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
-import type { AdvancedGameState } from '@game/gameState';
+import t from 'vylos:texts/global/intro';
 
-const intro: VylosEvent = {
+const intro: VylosEvent<GameState> = {
   id: 'intro',
+  conditions: (state) => !state.flags.introDone,
+  locked: (state) => state.flags.introDone,
 
-  conditions(state: VylosGameState) {
-    return !(state as AdvancedGameState).flags.introDone;
-  },
-
-  locked: (state) => (state as AdvancedGameState).flags.introDone,
-
-  async execute(engine: VylosEventAPI, _state: VylosGameState) {
-    const state = _state as AdvancedGameState;
-
-    await engine.say('Moving vans, cardboard boxes, and the scent of a city you barely know.');
-    await engine.say(`You've arrived in the heart of the city, chasing something — a fresh start, maybe love, maybe both.`);
-    await engine.say('Your new apartment is small but full of possibility. The neighbors? Completely unknown.');
-    await engine.say('But first — who are you, exactly?');
+  async execute(engine: VylosEventAPI, state: GameState) {
+    await engine.say(t.moving_day);
+    await engine.say(t.arrived);
+    await engine.say(t.new_apartment);
+    await engine.say(t.who_are_you);
 
     const name = await engine.choice([
       { text: 'Alex', value: 'Alex' },
@@ -27,8 +22,8 @@ const intro: VylosEvent = {
     ]);
 
     state.player.name = name;
-    await engine.say(`${name}. That's who you are. And this city? It doesn't know what's coming.`);
-    await engine.say('The morning light spills through dusty windows. Day one begins now.');
+    await engine.say(t.name_confirm, { variables: { name } });
+    await engine.say(t.day_begins);
 
     state.flags.introDone = true;
     state.locationId = 'apartment';

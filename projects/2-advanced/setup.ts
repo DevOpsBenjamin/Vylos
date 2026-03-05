@@ -1,6 +1,6 @@
 import type { VylosPlugin } from '@vylos/core';
 import { DI_TOKENS, InventoryManager } from '@vylos/core';
-import { useAdvancedGameStore } from '@game/gameState';
+import { useGameStore } from '@game/gameState';
 import { CATEGORIES, ITEMS } from '@game/items';
 
 const plugin: VylosPlugin = {
@@ -9,8 +9,7 @@ const plugin: VylosPlugin = {
     im.registerCategories(CATEGORIES);
     im.registerItems(ITEMS);
   },
-
-  gameStore: (pinia) => useAdvancedGameStore(pinia),
+  gameStore: (pinia) => useGameStore(pinia),
 };
 
 export default plugin;

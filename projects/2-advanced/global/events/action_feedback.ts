@@ -1,35 +1,30 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
+import t from 'vylos:texts/global/action_feedback';
 
-const actionFeedback: VylosEvent = {
+const actionFeedback: VylosEvent<GameState> = {
   id: 'action_feedback',
+  conditions: (state) => state.flags.freshenedUp || state.flags.rested || state.flags.orderedCoffee || state.flags.chattedMaya,
 
-  conditions(state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    return s.flags.freshenedUp || s.flags.rested || s.flags.orderedCoffee || s.flags.chattedMaya;
-  },
-
-  async execute(engine: VylosEventAPI, _state: VylosGameState) {
-    const state = _state as AdvancedGameState;
-
+  async execute(engine: VylosEventAPI, state: GameState) {
     if (state.flags.freshenedUp) {
       state.flags.freshenedUp = false;
-      await engine.say('A quick splash of water, a fresh shirt. You feel a bit more confident.');
+      await engine.say(t.freshened_up);
     }
 
     if (state.flags.rested) {
       state.flags.rested = false;
-      await engine.say('You close your eyes and let the hours drift by. Much better — energy restored.');
+      await engine.say(t.rested);
     }
 
     if (state.flags.orderedCoffee) {
       state.flags.orderedCoffee = false;
-      await engine.say('The warm cup settles in your hands. A small boost, but it helps.');
+      await engine.say(t.ordered_coffee);
     }
 
     if (state.flags.chattedMaya) {
       state.flags.chattedMaya = false;
-      await engine.say('You exchange a few words with Maya. Her smile lingers as you walk away.', { from: state.characters.maya });
+      await engine.say(t.chatted_maya, { from: state.characters.maya });
     }
   },
 };

@@ -1,0 +1,16 @@
+export default {
+  enter: "Le couloir est etroit et chaleureusement eclaire. Vous venez a peine de sortir quand vous entendez un bruit sourd.",
+  groceries: "Un sac en papier est tombe des bras de quelqu'un — les courses eparpillees sur le sol.",
+  eggs: '"Oh non, pas les oeufs..."',
+  crouching: "Elle est accroupie pour tout ramasser — les cheveux bruns tombant sur son visage, les joues rouges.",
+  choice_help: 'L\'aider a tout ramasser',
+  choice_hi: 'Juste dire bonjour et sourire',
+  help_1: 'Vous vous mettez a genoux et commencez a ramasser les oranges qui ont roule contre le mur.',
+  help_2: '"Oh ! Merci, vraiment — je porte toujours trop a la fois."',
+  help_3: 'Elle rit doucement, un peu genee, un peu reconnaissante.',
+  help_4: '"Je suis Lena, au fait. 4B. Vous devez etre le nouveau voisin."',
+  hi_1: 'Vous faites un signe de la main et offrez votre plus beau sourire. "Besoin d\'aide ?"',
+  hi_2: '"Ca va, mais merci ! Vous etes gentil."',
+  hi_3: '"Lena. 4B. Bienvenue dans l\'immeuble."',
+  farewell: 'Vous echangez un sourire chaleureux avant qu\'elle ne disparaisse derriere sa porte.',
+} as const;

@@ -1,0 +1,15 @@
+export default {
+  scene: 'Vous trouvez Lena entouree de toiles fraiches, un pinceau a la main, une question dans les yeux.',
+  portrait: '"J\'ai reflechi a une serie de portraits," dit-elle prudemment.',
+  real: '"De vraies personnes. De vrais visages. Pas de pose, pas de performance — juste... quelqu\'un qui reste tranquille avec moi un moment."',
+  look: 'Elle se tourne pour vous regarder correctement. La question est silencieuse mais indubitable.',
+  ask: '"Vous poseriez pour moi ?"',
+  choice_agree: '"Oui. J\'aimerais bien."',
+  choice_decline: '"Je ne pense pas etre pret pour ca."',
+  agree_settle: "Quelque chose dans son expression se pose — comme si elle avait retenu son souffle.",
+  agree_chair: '"Bien." Elle tire une chaise, la place dans la lumiere pres de la fenetre.',
+  agree_study: "Vous vous asseyez. Elle vous etudie — sans se presser, attentive, avec le genre d'attention qui vous fait vous sentir a la fois vu et en securite.",
+  agree_afternoon: "L'apres-midi passe dans un quasi-silence. C'est peut-etre l'heure la plus honnete que vous ayez passee avec qui que ce soit.",
+  decline_1: '"Ce n\'est pas grave." Elle hoche la tete, et le pense. "Une autre fois, peut-etre."',
+  decline_2: 'Elle retourne a ses toiles. L\'offre reste doucement ouverte.',
+} as const;

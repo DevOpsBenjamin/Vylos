@@ -1,20 +1,15 @@
-import type { VylosAction, VylosActionAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosAction, VylosActionAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 
-const rest: VylosAction = {
+const rest: VylosAction<GameState> = {
   id: 'rest',
   label: { en: 'Rest', fr: 'Se reposer' },
   locationId: 'apartment',
-
-  unlocked(state: VylosGameState) {
-    return (state as AdvancedGameState).energy < 50;
-  },
-
-  execute(_engine: VylosActionAPI, state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    s.energy = Math.min(100, s.energy + 30);
-    s.gameTime += 2;
-    s.flags.rested = true;
+  unlocked: (state) => state.player.energy < 50,
+  execute(_engine: VylosActionAPI, state: GameState) {
+    state.player.energy = Math.min(100, state.player.energy + 30);
+    state.gameTime += 2;
+    state.flags.rested = true;
   },
 };
 

@@ -1,48 +1,43 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { addJournalEntry } from '@game/helpers/journal';
+import t from 'vylos:texts/cafe/first_visit';
 
-const firstVisit: VylosEvent = {
+const firstVisit: VylosEvent<GameState> = {
   id: 'first_visit',
   locationId: 'cafe',
+  conditions: (state) => state.flags.wokeUp && !state.flags.visitedCafe,
+  locked: (state) => state.flags.visitedCafe,
 
-  conditions(state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    return s.flags.wokeUp && !s.flags.visitedCafe;
-  },
-
-  locked: (state) => (state as AdvancedGameState).flags.visitedCafe,
-
-  async execute(engine: VylosEventAPI, _state: VylosGameState) {
-    const state = _state as AdvancedGameState;
+  async execute(engine: VylosEventAPI, state: GameState) {
     const { maya } = state.characters;
 
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
-    await engine.say('The Rosebud Cafe is a small corner place with warm lighting and mismatched chairs.');
-    await engine.say(`The smell of fresh espresso hits you at the door — rich, inviting, like a hug you didn't know you needed.`);
+    await engine.say(t.enter);
+    await engine.say(t.aroma);
 
     engine.setForeground('/assets/locations/cafe/maya.png');
-    await engine.say('Behind the counter, a woman with flour on her sleeve glances up and breaks into a grin.', { from: maya });
-    await engine.say(`"New face! Don't be shy — I don't bite. Usually."`, { from: maya });
+    await engine.say(t.maya_appears, { from: maya });
+    await engine.say(t.maya_greeting, { from: maya });
 
     const pick = await engine.choice([
-      { text: `Flirt: "Good to know. I like to take my chances."`, value: 'flirt' },
-      { text: `Friendly: "I just moved in nearby. Thought I'd check it out."`, value: 'friendly' },
-      { text: 'Shy: "Oh, um — hi. A coffee, please?"', value: 'shy' },
+      { text: t.choice_flirt, value: 'flirt' },
+      { text: t.choice_friendly, value: 'friendly' },
+      { text: t.choice_shy, value: 'shy' },
     ]);
 
     if (pick === 'flirt') {
-      await engine.say(`She laughs — a real one, surprised out of her. "I like you already. Name's Maya."`, { from: maya });
+      await engine.say(t.flirt_reply, { from: maya });
       maya.affection = Math.min(100, maya.affection + 15);
     } else if (pick === 'friendly') {
-      await engine.say(`"Oh perfect timing — we just started doing weekday specials. I'm Maya."`, { from: maya });
+      await engine.say(t.friendly_reply, { from: maya });
       maya.affection = Math.min(100, maya.affection + 10);
     } else {
-      await engine.say(`She softens instantly. "Of course! Coming right up. I'm Maya — welcome."`, { from: maya });
+      await engine.say(t.shy_reply, { from: maya });
       maya.affection = Math.min(100, maya.affection + 5);
     }
 
-    await engine.say('She slides a cup across the counter with a small, knowing smile.');
+    await engine.say(t.cup_slide);
     engine.setForeground(null);
 
     state.flags.visitedCafe = true;

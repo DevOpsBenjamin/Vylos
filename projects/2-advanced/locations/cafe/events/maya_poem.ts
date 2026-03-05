@@ -1,45 +1,40 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import type { AdvancedGameState } from '@game/gameState';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
+import t from 'vylos:texts/cafe/maya_poem';
 
-const mayaPoem: VylosEvent = {
+const mayaPoem: VylosEvent<GameState> = {
   id: 'maya_poem',
   locationId: 'cafe',
+  conditions: (state) => state.characters.maya.affection >= 40 && !state.characters.maya.poem,
+  locked: (state) => state.characters.maya.poem,
 
-  conditions(state: VylosGameState) {
-    const s = state as AdvancedGameState;
-    return s.characters.maya.affection >= 40 && !s.characters.maya.poem;
-  },
-
-  locked: (state) => (state as AdvancedGameState).characters.maya.poem,
-
-  async execute(engine: VylosEventAPI, _state: VylosGameState) {
-    const state = _state as AdvancedGameState;
+  async execute(engine: VylosEventAPI, state: GameState) {
     const { maya } = state.characters;
 
     engine.setBackground('/assets/locations/cafe/cafe_day.png');
     engine.setForeground('/assets/locations/cafe/maya.png');
 
-    await engine.say('The afternoon crowd has thinned. Maya leans on the counter with a folded piece of paper.');
-    await engine.say(`"Okay, don't laugh — I write sometimes. And I want an honest opinion."`, { from: maya });
-    await engine.say(`She slides the page toward you. It's a poem about rainstorms and waiting for something unnamed.`);
+    await engine.say(t.scene);
+    await engine.say(t.offer, { from: maya });
+    await engine.say(t.desc);
 
     const pick = await engine.choice([
-      { text: `"It's beautiful — raw and honest."`, value: 'beautiful' },
-      { text: '"Interesting. Lots of imagery."', value: 'interesting' },
-      { text: `"It's... not really my thing, honestly."`, value: 'notmine' },
+      { text: t.choice_beautiful, value: 'beautiful' },
+      { text: t.choice_interesting, value: 'interesting' },
+      { text: t.choice_notmine, value: 'notmine' },
     ]);
 
     if (pick === 'beautiful') {
-      await engine.say('Her expression softens. Something in her eyes shifts — like a wall quietly coming down.', { from: maya });
-      await engine.say(`"Thank you. I wasn't sure anyone would get it."`, { from: maya });
+      await engine.say(t.beautiful_1, { from: maya });
+      await engine.say(t.beautiful_2, { from: maya });
       maya.affection = Math.min(100, maya.affection + 15);
     } else if (pick === 'interesting') {
-      await engine.say(`"Imagery. Ha. That's a careful word."`, { from: maya });
-      await engine.say(`She smiles, a little wry. "I'll take it."`, { from: maya });
+      await engine.say(t.interesting_1, { from: maya });
+      await engine.say(t.interesting_2, { from: maya });
       maya.affection = Math.min(100, maya.affection + 5);
     } else {
-      await engine.say('"Fair enough." She folds it back up, expression unreadable for a beat.', { from: maya });
-      await engine.say('"I asked for honest."', { from: maya });
+      await engine.say(t.notmine_1, { from: maya });
+      await engine.say(t.notmine_2, { from: maya });
       maya.affection = Math.max(0, maya.affection - 5);
     }
 
