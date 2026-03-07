@@ -8,9 +8,9 @@ const firstNotification: VylosEvent<GameState> = {
   id: 'first_notification',
   locationId: 'homescreen',
 
-  conditions: (state) => state.flags['booted'] && !state.flags['first_notif_done'],
+  conditions: (state) => state.flags.booted && !state.flags.firstNotifDone,
 
-  locked: (state) => state.flags['first_notif_done'] === true,
+  locked: (state) => state.flags.firstNotifDone,
 
   async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('The phone buzzes.');
@@ -29,8 +29,8 @@ const firstNotification: VylosEvent<GameState> = {
       await engine.say(`[Messages] Unknown: "You can't ignore me. I'm in the phone."`);
     }
 
-    state.flags['first_notif_done'] = true;
-    state.flags['gallery_hint'] = true;
+    state.flags.firstNotifDone = true;
+    state.flags.galleryHint = true;
   },
 };
 

@@ -10,9 +10,9 @@ const hiddenPhoto: VylosEvent<GameState> = {
   id: 'hidden_photo',
   locationId: 'gallery',
 
-  conditions: (state) => state.flags['gallery_hint'] && !state.flags['found_photo'],
+  conditions: (state) => state.flags.galleryHint && !state.flags.foundPhoto,
 
-  locked: (state) => state.flags['found_photo'] === true,
+  locked: (state) => state.flags.foundPhoto,
 
   async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('You scroll through the gallery...', { from: system });
@@ -30,12 +30,12 @@ const hiddenPhoto: VylosEvent<GameState> = {
     if (pick === 'search') {
       await engine.say('You search carefully through every album...');
       await engine.say('Nothing else stands out. For now.');
-      state.flags['thorough_searcher'] = true;
+      state.flags.thoroughSearcher = true;
     }
 
-    state.flags['found_photo'] = true;
+    state.flags.foundPhoto = true;
     await engine.say('Your phone buzzes. New message from Unknown.');
-    state.flags['photo_reaction_pending'] = true;
+    state.flags.photoReactionPending = true;
   },
 };
 

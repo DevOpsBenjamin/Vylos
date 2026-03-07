@@ -8,9 +8,9 @@ import type { GameState } from '@game/gameState';
 const boot: VylosEvent<GameState> = {
   id: 'boot',
 
-  conditions: (state) => !state.flags['booted'],
+  conditions: (state) => !state.flags.booted,
 
-  locked: (state) => state.flags['booted'] === true,
+  locked: (state) => state.flags.booted,
 
   async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('...');
@@ -29,14 +29,14 @@ const boot: VylosEvent<GameState> = {
     } else {
       await engine.say('You look around. Nobody in sight.');
       await engine.say('Maybe there are clues in the phone itself...');
-      state.flags['looking_for_owner'] = true;
+      state.flags.lookingForOwner = true;
     }
 
     await engine.say('You notice a new notification.');
     await engine.say(`[Messages] Unknown Number: "Don't turn it off."`);
 
-    state.flags['booted'] = true;
-    state.flags['has_mysterious_message'] = true;
+    state.flags.booted = true;
+    state.flags.hasMysteriousMessage = true;
   },
 };
 

@@ -10,9 +10,9 @@ const unknownChat: VylosEvent<GameState> = {
   id: 'unknown_chat',
   locationId: 'messages',
 
-  conditions: (state) => state.flags['first_notif_done'] && !state.flags['unknown_chat_done'],
+  conditions: (state) => state.flags.firstNotifDone && !state.flags.unknownChatDone,
 
-  locked: (state) => state.flags['unknown_chat_done'] === true,
+  locked: (state) => state.flags.unknownChatDone,
 
   async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('You open the conversation with Unknown Number.', { from: system });
@@ -42,7 +42,7 @@ const unknownChat: VylosEvent<GameState> = {
     await engine.say("And... be careful with the other apps.", { from: unknown });
     await engine.say("Not everything here is what it seems.", { from: unknown });
 
-    state.flags['unknown_chat_done'] = true;
+    state.flags.unknownChatDone = true;
     state.story.mainQuestStep = 1;
   },
 };
