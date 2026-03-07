@@ -3,7 +3,12 @@ import { ActionManager } from '../../src/engine/managers/ActionManager';
 import type { VylosAction, VylosActionAPI, VylosGameState } from '../../src/engine/types';
 import { JumpSignal } from '../../src/engine/errors/JumpSignal';
 
-function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
+interface TestState extends VylosGameState {
+  flags: Record<string, boolean>;
+  counters: Record<string, number>;
+}
+
+function makeState(overrides: Partial<TestState> = {}): TestState {
   return {
     locationId: 'cafe',
     gameTime: 12,
@@ -36,9 +41,9 @@ describe('ActionManager', () => {
     id: 'order_coffee',
     label: 'Order Coffee',
     locationId: 'cafe',
-    unlocked: (state) => state.counters['coffee_count'] === undefined || state.counters['coffee_count'] < 3,
+    unlocked: (state) => (state as TestState).counters['coffee_count'] === undefined || (state as TestState).counters['coffee_count'] < 3,
     execute(_engine, state) {
-      state.counters['coffee_count'] = (state.counters['coffee_count'] ?? 0) + 1;
+      (state as TestState).counters['coffee_count'] = ((state as TestState).counters['coffee_count'] ?? 0) + 1;
     },
   };
 
@@ -46,7 +51,7 @@ describe('ActionManager', () => {
     id: 'check_phone',
     label: 'Check Phone',
     execute(_engine, state) {
-      state.flags['checked_phone'] = true;
+      (state as TestState).flags['checked_phone'] = true;
     },
   };
 
@@ -86,7 +91,7 @@ describe('ActionManager', () => {
     const state = makeState();
     const result = am.execute('order_coffee', state, mockActionAPI);
     expect(result).toBe(true);
-    expect(state.counters['coffee_count']).toBe(1);
+    expect((state as TestState).counters['coffee_count']).toBe(1);
   });
 
   it('execute returns false for unknown action', () => {

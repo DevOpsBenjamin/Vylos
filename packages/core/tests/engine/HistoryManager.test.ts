@@ -9,9 +9,8 @@ function makeCheckpoints(count: number): Checkpoint[] {
     gameState: {
       locationId: 'cafe',
       gameTime: 8 + i,
-      flags: {},
-      counters: {},
       player: { id: 'alice', name: 'Alice' },
+      inventories: {},
     },
     type: CheckpointType.Say,
   }));

@@ -1,13 +1,16 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { LocationManager } from '../../src/engine/managers/LocationManager';
-import type { VylosLocation, LocationLink, VylosGameState } from '../../src/engine/types';
+import type { VylosLocation, VylosGameState } from '../../src/engine/types';
 
-function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
+interface TestState extends VylosGameState {
+  flags: Record<string, boolean>;
+}
+
+function makeState(overrides: Partial<TestState> = {}): TestState {
   return {
     locationId: 'bedroom',
     gameTime: 12,
     flags: {},
-    counters: {},
     player: { id: 'alice', name: 'Alice' },
     inventories: {},
     ...overrides,
@@ -29,7 +32,7 @@ const hallway: VylosLocation = {
   backgrounds: [{ path: '/hallway.jpg' }],
 };
 
-const cafe: VylosLocation = {
+const cafe: VylosLocation<TestState> = {
   id: 'cafe',
   name: { en: 'Cafe', fr: 'Café' },
   backgrounds: [{ path: '/cafe.jpg' }],
@@ -95,7 +98,7 @@ describe('LocationManager', () => {
         {
           from: 'bedroom',
           to: 'cafe',
-          condition: (state) => state.flags['secret_path'] === true,
+          condition: (state) => (state as TestState).flags['secret_path'] === true,
         },
       ]);
 

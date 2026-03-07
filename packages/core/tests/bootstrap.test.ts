@@ -2,12 +2,15 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { LocationManager } from '../src/engine/managers/LocationManager';
 import type { VylosLocation, VylosGameState } from '../src/engine/types';
 
-function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
+interface TestState extends VylosGameState {
+  flags: Record<string, boolean>;
+}
+
+function makeState(overrides: Partial<TestState> = {}): TestState {
   return {
     locationId: 'room_a',
     gameTime: 12,
     flags: {},
-    counters: {},
     player: { id: 'player', name: 'Player' },
     inventories: {},
     ...overrides,
@@ -64,7 +67,7 @@ describe('LocationManager.link()', () => {
 
   it('creates a link with a condition', () => {
     lm.link('room_a', ['room_b'], {
-      condition: (state) => state.flags['has_key'] === true,
+      condition: (state) => (state as TestState).flags['has_key'] === true,
     });
 
     const stateWithout = makeState();

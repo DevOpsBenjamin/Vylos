@@ -7,8 +7,6 @@ function createDefaultState(): VylosGameState {
   return {
     locationId: '',
     gameTime: 8,
-    flags: {},
-    counters: {},
     player: {
       id: 'player',
       name: 'Player',

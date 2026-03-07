@@ -1,0 +1,15 @@
+export default {
+  scene: 'You find Lena surrounded by fresh canvases, a brush in her hand, a question in her eyes.',
+  portrait: '"I\'ve been thinking about a portrait series," she says carefully.',
+  real: '"Real people. Real faces. No posing, no performance — just... someone sitting still with me for a while."',
+  look: 'She turns to look at you properly. The question is quiet but unmistakable.',
+  ask: '"Would you sit for me?"',
+  choice_agree: '"Yes. I\'d like that."',
+  choice_decline: '"I don\'t think I\'m ready for that."',
+  agree_settle: "Something in her expression settles — like she'd been holding her breath.",
+  agree_chair: '"Good." She pulls over a chair, positions it in the light by the window.',
+  agree_study: 'You sit. She studies you — unhurried, careful, with the kind of attention that makes you feel both seen and safe.',
+  agree_afternoon: "The afternoon passes in near-silence. It might be the most honest hour you've spent with anyone.",
+  decline_1: '"That\'s okay." She nods, and means it. "Another time, maybe."',
+  decline_2: 'She turns back to her canvases. The offer stays gently open.',
+} as const;

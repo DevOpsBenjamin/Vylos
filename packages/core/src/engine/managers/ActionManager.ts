@@ -1,4 +1,4 @@
-import type { VylosAction, VylosActionAPI, VylosGameState, TextEntry } from '../types';
+import type { VylosAction, VylosActionAPI, VylosGameState } from '../types';
 import { logger } from '../utils/logger';
 
 /**

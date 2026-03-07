@@ -1,37 +1,30 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
-import { maya } from '@game';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
+import t from 'vylos:texts/global/action_feedback';
 
-const actionFeedback: VylosEvent = {
+const actionFeedback: VylosEvent<GameState> = {
   id: 'action_feedback',
+  conditions: (state) => state.flags.freshenedUp || state.flags.rested || state.flags.orderedCoffee || state.flags.chattedMaya,
 
-  conditions(state: VylosGameState) {
-    return (
-      state.flags['freshened_up'] === true ||
-      state.flags['rested'] === true ||
-      state.flags['ordered_coffee'] === true ||
-      state.flags['chatted_maya'] === true
-    );
-  },
-
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
-    if (state.flags['freshened_up']) {
-      state.flags['freshened_up'] = false;
-      await engine.say('A quick splash of water, a fresh shirt. You feel a bit more confident.');
+  async execute(engine: VylosEventAPI, state: GameState) {
+    if (state.flags.freshenedUp) {
+      state.flags.freshenedUp = false;
+      await engine.say(t.freshened_up);
     }
 
-    if (state.flags['rested']) {
-      state.flags['rested'] = false;
-      await engine.say('You close your eyes and let the hours drift by. Much better — energy restored.');
+    if (state.flags.rested) {
+      state.flags.rested = false;
+      await engine.say(t.rested);
     }
 
-    if (state.flags['ordered_coffee']) {
-      state.flags['ordered_coffee'] = false;
-      await engine.say('The warm cup settles in your hands. A small boost, but it helps.');
+    if (state.flags.orderedCoffee) {
+      state.flags.orderedCoffee = false;
+      await engine.say(t.ordered_coffee);
     }
 
-    if (state.flags['chatted_maya']) {
-      state.flags['chatted_maya'] = false;
-      await engine.say('You exchange a few words with Maya. Her smile lingers as you walk away.', { from: maya });
+    if (state.flags.chattedMaya) {
+      state.flags.chattedMaya = false;
+      await engine.say(t.chatted_maya, { from: state.characters.maya });
     }
   },
 };
