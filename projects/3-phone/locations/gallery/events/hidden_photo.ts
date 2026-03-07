@@ -1,19 +1,20 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { system } from '@game';
 
 /**
  * Discover a hidden photo in the gallery — deepens the mystery.
  * Placeholder for a more complex gallery mechanic.
  */
-const hiddenPhoto: VylosEvent = {
+const hiddenPhoto: VylosEvent<GameState> = {
   id: 'hidden_photo',
   locationId: 'gallery',
 
-  conditions: (state) => state.flags['gallery_hint'] && !state.flags['found_photo'],
+  conditions: (state) => state.flags.galleryHint && !state.flags.foundPhoto,
 
-  locked: (state) => state.flags['found_photo'] === true,
+  locked: (state) => state.flags.foundPhoto,
 
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('You scroll through the gallery...', { from: system });
     await engine.say('Mostly generic wallpapers and stock photos.');
     await engine.say('But then you notice something.');
@@ -29,12 +30,12 @@ const hiddenPhoto: VylosEvent = {
     if (pick === 'search') {
       await engine.say('You search carefully through every album...');
       await engine.say('Nothing else stands out. For now.');
-      state.flags['thorough_searcher'] = true;
+      state.flags.thoroughSearcher = true;
     }
 
-    state.flags['found_photo'] = true;
+    state.flags.foundPhoto = true;
     await engine.say('Your phone buzzes. New message from Unknown.');
-    state.flags['photo_reaction_pending'] = true;
+    state.flags.photoReactionPending = true;
   },
 };
 

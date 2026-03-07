@@ -1,6 +1,6 @@
-import type { DependencyContainer } from 'tsyringe';
 import type { Component } from 'vue';
 import type { VylosGameState } from './game-state';
+import type { InventoryManager } from '../managers/InventoryManager';
 
 /**
  * Minimal contract for a game state store.
@@ -24,10 +24,16 @@ export interface VylosGameStore {
   $reset(): void;
 }
 
+/** Context passed to plugin setup — provides access to engine managers */
+export interface PluginContext {
+  /** Inventory manager for registering items and categories */
+  inventoryManager: InventoryManager;
+}
+
 /** Plugin interface for project-level engine customization */
 export interface VylosPlugin {
-  /** Register DI overrides (custom managers, etc.) */
-  setup?(container: DependencyContainer): void;
+  /** Configure engine managers (register items, categories, etc.) */
+  setup?(context: PluginContext): void;
 
   /** Override Vue components by component ID */
   components?: Record<string, Component>;

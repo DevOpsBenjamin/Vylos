@@ -66,8 +66,8 @@ describe('LocationManager.link()', () => {
   });
 
   it('creates a link with a condition', () => {
-    lm.link('room_a', ['room_b'], {
-      condition: (state) => (state as TestState).flags['has_key'] === true,
+    lm.link<TestState>('room_a', ['room_b'], {
+      condition: (state) => state.flags['has_key'] === true,
     });
 
     const stateWithout = makeState();
@@ -157,7 +157,7 @@ describe('LocationManager.link()', () => {
  * bootstrapVylos() is a high-level orchestration function that:
  * - Creates a Vue application with createApp(GameShell)
  * - Sets up Pinia stores
- * - Creates the engine via createEngine() (which uses tsyringe DI)
+ * - Creates the engine via createEngine()
  * - Mounts the app to #app
  * - Sets up a phase watcher to start the game loop
  *

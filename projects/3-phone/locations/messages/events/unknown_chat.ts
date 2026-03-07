@@ -1,19 +1,20 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { system, unknown } from '@game';
 
 /**
  * First conversation with the unknown number.
  * Placeholder for a deeper messaging system.
  */
-const unknownChat: VylosEvent = {
+const unknownChat: VylosEvent<GameState> = {
   id: 'unknown_chat',
   locationId: 'messages',
 
-  conditions: (state) => state.flags['first_notif_done'] && !state.flags['unknown_chat_done'],
+  conditions: (state) => state.flags.firstNotifDone && !state.flags.unknownChatDone,
 
-  locked: (state) => state.flags['unknown_chat_done'] === true,
+  locked: (state) => state.flags.unknownChatDone,
 
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('You open the conversation with Unknown Number.', { from: system });
 
     await engine.say("So you found the phone.", { from: unknown });
@@ -41,11 +42,8 @@ const unknownChat: VylosEvent = {
     await engine.say("And... be careful with the other apps.", { from: unknown });
     await engine.say("Not everything here is what it seems.", { from: unknown });
 
-    state.flags['unknown_chat_done'] = true;
-    (state as Record<string, unknown>).story = {
-      ...((state as Record<string, unknown>).story as Record<string, unknown> || {}),
-      mainQuestStep: 1,
-    };
+    state.flags.unknownChatDone = true;
+    state.story.mainQuestStep = 1;
   },
 };
 

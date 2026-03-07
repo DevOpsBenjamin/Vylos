@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 // Types
 export * from './engine/types';
 
@@ -31,7 +29,7 @@ export { EventRunner } from './engine/core/EventRunner';
 export type { EventRunnerCallbacks, HistoryStep } from './engine/core/EventRunner';
 export type { InventoryAPI, VylosActionAPI, VylosEventAPI } from './engine/types/events';
 export { CheckpointManager } from './engine/core/CheckpointManager';
-export { createEngine, getComponentOverride, clearComponentOverrides, DI_TOKENS } from './engine/core/EngineFactory';
+export { createEngine, getComponentOverride, clearComponentOverrides } from './engine/core/EngineFactory';
 
 // Managers
 export { InventoryManager } from './engine/managers/InventoryManager';

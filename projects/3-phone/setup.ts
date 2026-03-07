@@ -1,4 +1,5 @@
 import type { VylosPlugin } from '@vylos/core';
+import { useGameStore } from '@game/gameState';
 import PhoneShell from './components/ui/PhoneShell.vue';
 import PhoneTopBar from './components/ui/PhoneTopBar.vue';
 import PhoneDialogue from './components/ui/PhoneDialogue.vue';
@@ -13,6 +14,7 @@ const plugin: VylosPlugin = {
     TopBar: PhoneTopBar,
     DialogueBox: PhoneDialogue,
   },
+  gameStore: (pinia) => useGameStore(pinia),
 };
 
 export default plugin;

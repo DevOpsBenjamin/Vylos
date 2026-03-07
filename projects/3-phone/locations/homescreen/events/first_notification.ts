@@ -1,17 +1,18 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 
 /**
  * First real notification after boot — draws player into the mystery.
  */
-const firstNotification: VylosEvent = {
+const firstNotification: VylosEvent<GameState> = {
   id: 'first_notification',
   locationId: 'homescreen',
 
-  conditions: (state) => state.flags['booted'] && !state.flags['first_notif_done'],
+  conditions: (state) => state.flags.booted && !state.flags.firstNotifDone,
 
-  locked: (state) => state.flags['first_notif_done'] === true,
+  locked: (state) => state.flags.firstNotifDone,
 
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('The phone buzzes.');
     await engine.say('[Messages] Unknown: "I know you can see this."');
     await engine.say('[Messages] Unknown: "The previous owner left something for you."');
@@ -28,8 +29,8 @@ const firstNotification: VylosEvent = {
       await engine.say(`[Messages] Unknown: "You can't ignore me. I'm in the phone."`);
     }
 
-    state.flags['first_notif_done'] = true;
-    state.flags['gallery_hint'] = true;
+    state.flags.firstNotifDone = true;
+    state.flags.galleryHint = true;
   },
 };
 

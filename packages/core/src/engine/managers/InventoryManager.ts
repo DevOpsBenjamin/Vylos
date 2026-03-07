@@ -2,9 +2,6 @@ import type { VylosCategory, VylosItem, InventoryData } from '../types';
 
 /**
  * Manages item/category definitions and inventory operations.
- *
- * No constructor args — compatible with tsyringe `{ useClass }` DI resolution.
- * Projects can extend this class and override any method via the plugin system.
  */
 export class InventoryManager {
   private categories = new Map<string, VylosCategory>();

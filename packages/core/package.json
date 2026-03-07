@@ -1,6 +1,6 @@
 {
   "name": "@vylos/core",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/DevOpsBenjamin/Vylos"
@@ -22,8 +22,6 @@
   "dependencies": {
     "pinia": "^2.3.0",
     "pinia-plugin-persistedstate": "^3.2.3",
-    "reflect-metadata": "^0.2.2",
-    "tsyringe": "^4.8.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {

@@ -40,10 +40,10 @@ const cafe: VylosLocation<TestState> = {
 };
 
 describe('LocationManager', () => {
-  let lm: LocationManager;
+  let lm: LocationManager<TestState>;
 
   beforeEach(() => {
-    lm = new LocationManager();
+    lm = new LocationManager<TestState>();
     lm.registerAll([bedroom, hallway, cafe]);
   });
 
@@ -93,12 +93,12 @@ describe('LocationManager', () => {
     });
 
     it('supports conditional links', () => {
-      lm.setLinks([
+      lm.setLinks<TestState>([
         { from: 'bedroom', to: 'hallway' },
         {
           from: 'bedroom',
           to: 'cafe',
-          condition: (state) => (state as TestState).flags['secret_path'] === true,
+          condition: (state) => state.flags['secret_path'] === true,
         },
       ]);
 
