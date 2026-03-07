@@ -6,6 +6,6 @@ export default function (lm: LocationManager) {
   lm.link('hallway', ['apartment', 'cafe', 'park']);
   lm.link('cafe', 'hallway');
   lm.link('park', 'hallway');
-  lm.link('hallway', 'neighbor', { condition: (s) => (s as GameState).characters.lena.known });
+  lm.link<GameState>('hallway', 'neighbor', { condition: (s) => s.characters.lena.known });
   lm.link('neighbor', 'hallway');
 }

@@ -93,12 +93,12 @@ describe('LocationManager', () => {
     });
 
     it('supports conditional links', () => {
-      lm.setLinks([
+      lm.setLinks<TestState>([
         { from: 'bedroom', to: 'hallway' },
         {
           from: 'bedroom',
           to: 'cafe',
-          condition: (state) => (state as TestState).flags['secret_path'] === true,
+          condition: (state) => state.flags['secret_path'] === true,
         },
       ]);
 

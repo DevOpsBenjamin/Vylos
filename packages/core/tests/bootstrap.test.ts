@@ -66,8 +66,8 @@ describe('LocationManager.link()', () => {
   });
 
   it('creates a link with a condition', () => {
-    lm.link('room_a', ['room_b'], {
-      condition: (state) => (state as TestState).flags['has_key'] === true,
+    lm.link<TestState>('room_a', ['room_b'], {
+      condition: (state) => state.flags['has_key'] === true,
     });
 
     const stateWithout = makeState();

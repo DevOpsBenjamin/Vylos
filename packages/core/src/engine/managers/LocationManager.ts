@@ -23,15 +23,15 @@ export class LocationManager {
   }
 
   /** Set the location link graph (replaces all existing links) */
-  setLinks(links: LocationLink[]): void {
+  setLinks<TState extends VylosGameState = VylosGameState>(links: LocationLink<TState>[]): void {
     this.links = links;
   }
 
   /** Add directed links from one location to one or more others (additive) */
-  link(
+  link<TState extends VylosGameState = VylosGameState>(
     fromId: string,
     toIds: string | string[],
-    options?: { condition?: (state: VylosGameState) => boolean },
+    options?: { condition?: (state: TState) => boolean },
   ): void {
     const targets = Array.isArray(toIds) ? toIds : [toIds];
     for (const toId of targets) {
