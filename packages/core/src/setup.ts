@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { createApp, watch } from 'vue';
 import { createPinia } from 'pinia';
 import GameShell from './components/app/GameShell.vue';
@@ -19,16 +18,17 @@ import type { VylosEvent, TextEntry } from './engine/types/events';
 import type { VylosAction } from './engine/types/actions';
 import type { VylosActionAPI } from './engine/types/events';
 import type { VylosCharacter } from './engine/types/dialogue';
+import type { VylosGameState } from './engine/types/game-state';
 import type { EventRunnerCallbacks } from './engine/core/EventRunner';
 import type { EngineLoopCallbacks } from './engine/core/Engine';
 
-export interface SetupOptions {
+export interface SetupOptions<TState extends VylosGameState = VylosGameState> {
   config: VylosConfig;
   plugin?: VylosPlugin;
-  locations?: VylosLocation[];
-  events?: VylosEvent[];
-  actions?: VylosAction[];
-  initLinks?: (lm: LocationManager) => void;
+  locations?: VylosLocation<TState>[];
+  events?: VylosEvent<TState>[];
+  actions?: VylosAction<TState>[];
+  initLinks?: (lm: LocationManager<TState>) => void;
   /** When true, skip the MainMenu phase and go directly to Running (triggers startGame). */
   skipMainMenu?: boolean;
   /** Called when New Game resets state — use to reinitialize custom game store fields. */
@@ -39,7 +39,7 @@ export interface SetupOptions {
  * One-call setup function that replaces all main.ts boilerplate.
  * Creates the Vue app, Pinia stores, engine, and wires everything together.
  */
-export function setupVylos(options: SetupOptions): void {
+export function setupVylos<TState extends VylosGameState = VylosGameState>(options: SetupOptions<TState>): void {
   const { config, plugin, locations = [], events = [], actions = [], initLinks, skipMainMenu = false } = options;
 
   document.title = config.name;
@@ -58,7 +58,7 @@ export function setupVylos(options: SetupOptions): void {
     : null;
   const resolveText = buildResolveText(languageManager, config);
 
-  const locationManager = new LocationManager();
+  const locationManager = new LocationManager<TState>();
   locationManager.registerAll(locations);
 
   if (locations.length > 0 && !locationManager.has(config.defaultLocation)) {
@@ -87,7 +87,7 @@ export function setupVylos(options: SetupOptions): void {
     onTick(state) {
       engineState.setLocation(state.locationId);
 
-      const locs = locationManager.getAccessibleFrom(state.locationId, state);
+      const locs = locationManager.getAccessibleFrom(state.locationId, state as TState);
       engineState.setLocations(locs.map(l => ({
         id: l.id,
         name: resolveText(l.name),

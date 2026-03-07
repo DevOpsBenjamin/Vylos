@@ -32,7 +32,7 @@ export async function dev(projectRoot: string, options?: DevOptions) {
       dedupe: ['vue', 'pinia', '@vylos/core'],
     },
     optimizeDeps: {
-      include: ['vue', 'pinia', 'reflect-metadata'],
+      include: ['vue', 'pinia'],
     },
     server: {
       port: 5173,

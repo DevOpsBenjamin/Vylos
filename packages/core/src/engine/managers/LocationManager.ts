@@ -5,30 +5,30 @@ import { logger } from '../utils/logger';
 /**
  * Manages locations: registration, linking, accessibility, background resolution.
  */
-export class LocationManager {
-  private locations = new Map<string, VylosLocation>();
-  private links: LocationLink[] = [];
+export class LocationManager<TState extends VylosGameState = VylosGameState> {
+  private locations = new Map<string, VylosLocation<TState>>();
+  private links: LocationLink<TState>[] = [];
 
   /** Register a location */
-  register(location: VylosLocation): void {
+  register(location: VylosLocation<TState>): void {
     this.locations.set(location.id, location);
     logger.debug(`Location registered: ${location.id}`);
   }
 
   /** Register multiple locations */
-  registerAll(locations: VylosLocation[]): void {
+  registerAll(locations: VylosLocation<TState>[]): void {
     for (const loc of locations) {
       this.register(loc);
     }
   }
 
   /** Set the location link graph (replaces all existing links) */
-  setLinks<TState extends VylosGameState = VylosGameState>(links: LocationLink<TState>[]): void {
+  setLinks(links: LocationLink<TState>[]): void {
     this.links = links;
   }
 
   /** Add directed links from one location to one or more others (additive) */
-  link<TState extends VylosGameState = VylosGameState>(
+  link(
     fromId: string,
     toIds: string | string[],
     options?: { condition?: (state: TState) => boolean },
@@ -40,17 +40,17 @@ export class LocationManager {
   }
 
   /** Get a location by ID */
-  get(id: string): VylosLocation | undefined {
+  get(id: string): VylosLocation<TState> | undefined {
     return this.locations.get(id);
   }
 
   /** Get all registered locations */
-  getAll(): VylosLocation[] {
+  getAll(): VylosLocation<TState>[] {
     return [...this.locations.values()];
   }
 
   /** Get locations accessible from a given location, considering state conditions */
-  getAccessibleFrom(locationId: string, state: VylosGameState): VylosLocation[] {
+  getAccessibleFrom(locationId: string, state: TState): VylosLocation<TState>[] {
     const linkedIds = this.links
       .filter(link => {
         if (link.from !== locationId) return false;
@@ -61,7 +61,7 @@ export class LocationManager {
 
     return linkedIds
       .map(id => this.locations.get(id))
-      .filter((loc): loc is VylosLocation => {
+      .filter((loc): loc is VylosLocation<TState> => {
         if (!loc) return false;
         if (loc.accessible && !loc.accessible(state)) return false;
         return true;

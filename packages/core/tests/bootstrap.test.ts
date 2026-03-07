@@ -157,7 +157,7 @@ describe('LocationManager.link()', () => {
  * bootstrapVylos() is a high-level orchestration function that:
  * - Creates a Vue application with createApp(GameShell)
  * - Sets up Pinia stores
- * - Creates the engine via createEngine() (which uses tsyringe DI)
+ * - Creates the engine via createEngine()
  * - Mounts the app to #app
  * - Sets up a phase watcher to start the game loop
  *

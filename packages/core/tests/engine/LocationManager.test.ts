@@ -40,10 +40,10 @@ const cafe: VylosLocation<TestState> = {
 };
 
 describe('LocationManager', () => {
-  let lm: LocationManager;
+  let lm: LocationManager<TestState>;
 
   beforeEach(() => {
-    lm = new LocationManager();
+    lm = new LocationManager<TestState>();
     lm.registerAll([bedroom, hallway, cafe]);
   });
 

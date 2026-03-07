@@ -1,50 +1,23 @@
-import 'reflect-metadata';
-import { container as globalContainer, Lifecycle, type DependencyContainer } from 'tsyringe';
 import type { VylosPlugin } from '../types';
 import { type Component, shallowReactive } from 'vue';
 import { EventManager } from '../managers/EventManager';
 import { HistoryManager } from '../managers/HistoryManager';
 import { NavigationManager } from '../managers/NavigationManager';
-import { WaitManager } from '../managers/WaitManager';
 import { SaveManager } from '../managers/SaveManager';
 import { SettingsManager } from '../managers/SettingsManager';
 import { EventRunner, type EventRunnerCallbacks } from './EventRunner';
-import { CheckpointManager } from './CheckpointManager';
 import { InventoryManager } from '../managers/InventoryManager';
 import { VylosStorage } from '../storage/VylosStorage';
 import { Engine } from './Engine';
 import { logger } from '../utils/logger';
-
-/** Tokens used for DI registration */
-export const DI_TOKENS = {
-  EventManager: 'EventManager',
-  HistoryManager: 'HistoryManager',
-  NavigationManager: 'NavigationManager',
-  WaitManager: 'WaitManager',
-  CheckpointManager: 'CheckpointManager',
-  InventoryManager: 'InventoryManager',
-  EventRunner: 'EventRunner',
-  Engine: 'Engine',
-} as const;
 
 /** Component override map — stored on globalThis to survive dual-module resolution */
 const GLOBAL_KEY = '__vylos_component_overrides__';
 const componentOverrides: Record<string, Component> =
   (globalThis as any)[GLOBAL_KEY] ??= shallowReactive<Record<string, Component>>({});
 
-/** Register all default managers in a DI container */
-function registerDefaults(c: DependencyContainer): void {
-  const scoped = { lifecycle: Lifecycle.ContainerScoped };
-  c.register(DI_TOKENS.EventManager, { useClass: EventManager }, scoped);
-  c.register(DI_TOKENS.HistoryManager, { useClass: HistoryManager }, scoped);
-  c.register(DI_TOKENS.NavigationManager, { useClass: NavigationManager }, scoped);
-  c.register(DI_TOKENS.WaitManager, { useClass: WaitManager }, scoped);
-  c.register(DI_TOKENS.CheckpointManager, { useClass: CheckpointManager }, scoped);
-  c.register(DI_TOKENS.InventoryManager, { useClass: InventoryManager }, scoped);
-}
-
 export interface CreateEngineOptions {
-  /** Project plugin for DI overrides and component overrides */
+  /** Project plugin for component overrides and setup */
   plugin?: VylosPlugin;
   /** Callbacks for EventRunner (UI integration) */
   callbacks: EventRunnerCallbacks;
@@ -54,18 +27,25 @@ export interface CreateEngineOptions {
 
 /**
  * Create and wire an Engine instance with all managers.
- * Projects can provide a plugin to override any manager.
  */
 export function createEngine(options: CreateEngineOptions): Engine {
-  // Create a child container so tests/multiple instances don't conflict
-  const childContainer = globalContainer.createChildContainer();
+  // Create managers
+  const eventManager = new EventManager();
+  const historyManager = new HistoryManager();
+  const navigationManager = new NavigationManager();
+  const inventoryManager = new InventoryManager();
 
-  // Register defaults
-  registerDefaults(childContainer);
+  // EventRunner needs callbacks + inventoryManager
+  const eventRunner = new EventRunner(options.callbacks, inventoryManager);
 
-  // Apply plugin overrides (plugin can re-register any token)
+  // Storage + persistence managers
+  const storage = new VylosStorage(options.projectId ?? 'default');
+  const saveManager = new SaveManager(storage);
+  const settingsManager = new SettingsManager(storage);
+
+  // Apply plugin setup (register items, categories, etc.)
   if (options.plugin?.setup) {
-    options.plugin.setup(childContainer);
+    options.plugin.setup({ inventoryManager });
   }
 
   // Register component overrides
@@ -75,20 +55,6 @@ export function createEngine(options: CreateEngineOptions): Engine {
       logger.debug(`Component override registered: ${id}`);
     }
   }
-
-  // Resolve managers
-  const eventManager = childContainer.resolve<EventManager>(DI_TOKENS.EventManager);
-  const historyManager = childContainer.resolve<HistoryManager>(DI_TOKENS.HistoryManager);
-  const navigationManager = childContainer.resolve<NavigationManager>(DI_TOKENS.NavigationManager);
-  const inventoryManager = childContainer.resolve<InventoryManager>(DI_TOKENS.InventoryManager);
-
-  // EventRunner needs callbacks + inventoryManager, so we construct it directly
-  const eventRunner = new EventRunner(options.callbacks, inventoryManager);
-
-  // Storage + persistence managers
-  const storage = new VylosStorage(options.projectId ?? 'default');
-  const saveManager = new SaveManager(storage);
-  const settingsManager = new SettingsManager(storage);
 
   return new Engine({
     eventManager,

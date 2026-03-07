@@ -10,7 +10,7 @@ import { VylosStorage } from '../../src/engine/storage/VylosStorage';
 import { Engine } from '../../src/engine/core/Engine';
 import type { VylosEventAPI, VylosEvent, VylosGameState } from '../../src/engine/types';
 import { createEngine, clearComponentOverrides, getComponentOverride } from '../../src/engine/core/EngineFactory';
-import type { VylosPlugin } from '../../src/engine/types';
+import type { VylosPlugin, PluginContext } from '../../src/engine/types';
 import { defineComponent } from 'vue';
 
 function makeState(overrides: Partial<VylosGameState> = {}): VylosGameState {
@@ -159,7 +159,7 @@ describe('Game loop integration', () => {
   });
 });
 
-describe('DI / Plugin system', () => {
+describe('Plugin system', () => {
   beforeEach(() => {
     clearComponentOverrides();
   });
@@ -173,20 +173,19 @@ describe('DI / Plugin system', () => {
     expect(engine.navigationManager).toBeInstanceOf(NavigationManager);
   });
 
-  it('plugin can override a manager', () => {
-    class CustomEventManager extends EventManager {
-      readonly isCustom = true;
-    }
+  it('plugin setup receives inventoryManager', () => {
+    let receivedContext: PluginContext | null = null;
 
     const plugin: VylosPlugin = {
-      setup(container) {
-        container.register('EventManager', { useClass: CustomEventManager });
+      setup(context) {
+        receivedContext = context;
       },
     };
 
     const callbacks = makeCallbacks();
-    const engine = createEngine({ callbacks, plugin });
-    expect((engine.eventManager as CustomEventManager).isCustom).toBe(true);
+    createEngine({ callbacks, plugin });
+    expect(receivedContext).not.toBeNull();
+    expect(receivedContext!.inventoryManager).toBeDefined();
   });
 
   it('plugin can register component overrides', () => {
