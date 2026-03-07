@@ -1,11 +1,12 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 import { system, unknown } from '@game';
 
 /**
  * First conversation with the unknown number.
  * Placeholder for a deeper messaging system.
  */
-const unknownChat: VylosEvent = {
+const unknownChat: VylosEvent<GameState> = {
   id: 'unknown_chat',
   locationId: 'messages',
 
@@ -13,7 +14,7 @@ const unknownChat: VylosEvent = {
 
   locked: (state) => state.flags['unknown_chat_done'] === true,
 
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('You open the conversation with Unknown Number.', { from: system });
 
     await engine.say("So you found the phone.", { from: unknown });
@@ -42,10 +43,7 @@ const unknownChat: VylosEvent = {
     await engine.say("Not everything here is what it seems.", { from: unknown });
 
     state.flags['unknown_chat_done'] = true;
-    (state as Record<string, unknown>).story = {
-      ...((state as Record<string, unknown>).story as Record<string, unknown> || {}),
-      mainQuestStep: 1,
-    };
+    state.story.mainQuestStep = 1;
   },
 };
 

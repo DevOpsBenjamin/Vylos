@@ -1,17 +1,18 @@
-import type { VylosEvent, VylosEventAPI, VylosGameState } from '@vylos/core';
+import type { VylosEvent, VylosEventAPI } from '@vylos/core';
+import type { GameState } from '@game/gameState';
 
 /**
  * Boot sequence — the phone turns on for the first time.
  * Sets up the initial state and introduces the concept.
  */
-const boot: VylosEvent = {
+const boot: VylosEvent<GameState> = {
   id: 'boot',
 
   conditions: (state) => !state.flags['booted'],
 
   locked: (state) => state.flags['booted'] === true,
 
-  async execute(engine: VylosEventAPI, state: VylosGameState) {
+  async execute(engine: VylosEventAPI, state: GameState) {
     await engine.say('...');
     await engine.say('The screen flickers to life.');
     await engine.say('Welcome to LifeOS v1.0');
