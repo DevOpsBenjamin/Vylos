@@ -9,7 +9,7 @@ export interface BackgroundEntry {
 }
 
 /** Location definition */
-export interface VylosLocation {
+export interface VylosLocation<TState extends VylosGameState = VylosGameState> {
   /** Unique location ID */
   id: string;
 
@@ -20,13 +20,13 @@ export interface VylosLocation {
   backgrounds: BackgroundEntry[];
 
   /** Whether this location is accessible — defaults to true */
-  accessible?<TState extends VylosGameState>(state: TState): boolean;
+  accessible?(state: TState): boolean;
 }
 
 /** Location link (navigation graph edge) */
-export interface LocationLink {
+export interface LocationLink<TState extends VylosGameState = VylosGameState> {
   from: string;
   to: string;
   /** Whether this link is currently traversable */
-  condition?<TState extends VylosGameState>(state: TState): boolean;
+  condition?(state: TState): boolean;
 }

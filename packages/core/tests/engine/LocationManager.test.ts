@@ -32,11 +32,11 @@ const hallway: VylosLocation = {
   backgrounds: [{ path: '/hallway.jpg' }],
 };
 
-const cafe: VylosLocation = {
+const cafe: VylosLocation<TestState> = {
   id: 'cafe',
   name: { en: 'Cafe', fr: 'Café' },
   backgrounds: [{ path: '/cafe.jpg' }],
-  accessible: (state) => (state as unknown as TestState).flags['has_key'] === true,
+  accessible: (state) => state.flags['has_key'] === true,
 };
 
 describe('LocationManager', () => {
@@ -98,7 +98,7 @@ describe('LocationManager', () => {
         {
           from: 'bedroom',
           to: 'cafe',
-          condition: (state) => (state as unknown as TestState).flags['secret_path'] === true,
+          condition: (state) => (state as TestState).flags['secret_path'] === true,
         },
       ]);
 
