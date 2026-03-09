@@ -4,11 +4,4 @@ import config from './vylos.config';
 import plugin from './setup';
 import * as project from 'virtual:vylos-project';
 
-setupVylos({
-  config,
-  plugin,
-  ...project,
-  onNewGame() {
-    console.log('[Advanced] New game — state reset');
-  },
-});
+setupVylos({ config, plugin, ...project });

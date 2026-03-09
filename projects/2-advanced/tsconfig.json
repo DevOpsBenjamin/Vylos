@@ -1,12 +1,22 @@
 {
-  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
     "jsx": "preserve",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "paths": {
-      "@vylos/core": ["../../packages/core/src"],
-      "@game": ["./plugins/advanced"],
-      "@game/*": ["./plugins/advanced/*"]
+      "@game": ["./plugins/aegis"],
+      "@game/*": ["./plugins/aegis/*"]
     }
   },
   "include": ["./**/*.ts", "./**/*.vue", "./env.d.ts"],
