@@ -1,0 +1,10 @@
+1. bridge-day
+2. bridge-night
+3. reactor-day
+4. reactor-night
+5. medbay-day
+6. medbay-night
+7. airlock-day
+8. airlock-night
+9. quarters-day
+10. quarters-night
