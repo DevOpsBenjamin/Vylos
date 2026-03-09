@@ -1,15 +1,14 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import { advanceTime, BALANCE } from '@game/gameState/time';
 import texts from 'vylos:texts';
 const t = texts.bridge.actions;
 
-const endShift = {
+const endShift: Action = {
   id: 'end_shift',
   locationId: 'bridge',
   label: t.endShift,
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     // Advance time by 1 tick
     advanceTime(state);
 
@@ -35,6 +34,6 @@ const endShift = {
     // Clamp materials just in case
     state.station.materials = Math.max(0, Math.min(50, state.station.materials));
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default endShift;

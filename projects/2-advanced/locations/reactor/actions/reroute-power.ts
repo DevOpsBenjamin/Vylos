@@ -1,20 +1,19 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import texts from 'vylos:texts';
 const t = texts.reactor.actions;
 
-const reroutePower = {
+const reroutePower: Action = {
   id: 'reroute_power',
   locationId: 'reactor',
   label: t.reroutePower,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     return state.station.energy < 80;
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     state.station.energy = Math.min(100, state.station.energy + 10);
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default reroutePower;

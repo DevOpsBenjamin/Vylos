@@ -1,20 +1,19 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import { BALANCE } from '@game/gameState/time';
 import texts from 'vylos:texts';
 const t = texts.medbay.actions;
 
-const counselCrew = {
+const counselCrew: Action = {
   id: 'counsel_crew',
   locationId: 'medbay',
   label: t.counselCrew,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     const { elena, jax, kael } = state.crews;
     return elena.stress > 30 || jax.stress > 30 || kael.stress > 30;
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     const members = [state.crews.elena, state.crews.jax, state.crews.kael];
     // Find the most stressed crew member
     let mostStressed = members[0];
@@ -26,6 +25,6 @@ const counselCrew = {
     const reduction = Math.abs(BALANCE.stressPerRest);
     mostStressed.stress = Math.max(0, mostStressed.stress - reduction);
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default counselCrew;

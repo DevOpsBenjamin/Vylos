@@ -1,16 +1,15 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import texts from 'vylos:texts';
 const t = texts.bridge.actions;
 
-const viewStatus = {
+const viewStatus: Action = {
   id: 'view_status',
   locationId: 'bridge',
   label: t.viewStatus,
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     state.ui.stationOverviewOpen = true;
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default viewStatus;

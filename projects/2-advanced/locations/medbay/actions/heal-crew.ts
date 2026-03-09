@@ -1,25 +1,24 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import texts from 'vylos:texts';
 const t = texts.medbay.actions;
 
-const healCrew = {
+const healCrew: Action = {
   id: 'heal_crew',
   locationId: 'medbay',
   label: t.healCrew,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     const { elena, jax, kael } = state.crews;
     return elena.status === 'injured' || jax.status === 'injured' || kael.status === 'injured';
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     const members = [state.crews.elena, state.crews.jax, state.crews.kael];
     const injured = members.find((m) => m.status === 'injured');
     if (injured) {
       injured.status = 'idle';
     }
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default healCrew;

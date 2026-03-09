@@ -1,15 +1,14 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import texts from 'vylos:texts';
 const t = texts.global.actions;
 
-const openScanner = {
+const openScanner: Action = {
   id: 'open_scanner',
   label: t.openScanner,
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     state.ui.scannerOpen = true;
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default openScanner;

@@ -1,21 +1,20 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import { BALANCE } from '@game/gameState/time';
 import texts from 'vylos:texts';
 const t = texts.airlock.actions;
 
-const scavenge = {
+const scavenge: Action = {
   id: 'scavenge',
   locationId: 'airlock',
   label: t.scavenge,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     return state.station.materials < 50;
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     state.station.materials = Math.min(50, state.station.materials + BALANCE.scavengeAmount);
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default scavenge;

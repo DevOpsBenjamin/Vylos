@@ -1,20 +1,19 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import texts from 'vylos:texts';
 const t = texts.bridge.actions;
 
-const sendDistress = {
+const sendDistress: Action = {
   id: 'send_distress',
   locationId: 'bridge',
   label: t.sendDistress,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     return !state.flags.distressSignalSent;
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     state.flags.distressSignalSent = true;
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default sendDistress;

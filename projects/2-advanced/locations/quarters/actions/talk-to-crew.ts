@@ -1,5 +1,4 @@
-import type { VylosAction, VylosActionAPI } from '@vylos/core';
-import type { GameState } from '@game/gameState';
+import type { Action } from '@game/types';
 import type { CrewMember } from '@game/gameState/crews';
 import texts from 'vylos:texts';
 const t = texts.quarters.actions;
@@ -24,17 +23,17 @@ function triggerNextConversation(member: CrewMember & Record<string, unknown>): 
   }
 }
 
-const talkToCrew = {
+const talkToCrew: Action = {
   id: 'talk_to_crew',
   locationId: 'quarters',
   label: t.talkToCrew,
 
-  unlocked(state: GameState) {
+  unlocked(state) {
     const members = [state.crews.elena, state.crews.jax, state.crews.kael];
     return members.some((m) => m.location === 'quarters' && hasAvailableConversation(m));
   },
 
-  execute(_engine: VylosActionAPI, state: GameState) {
+  execute(_engine, state) {
     const members = [state.crews.elena, state.crews.jax, state.crews.kael];
     for (const m of members) {
       if (m.location === 'quarters' && hasAvailableConversation(m)) {
@@ -42,6 +41,6 @@ const talkToCrew = {
       }
     }
   },
-} satisfies VylosAction<GameState>;
+};
 
 export default talkToCrew;
