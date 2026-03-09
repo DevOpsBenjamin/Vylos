@@ -1,7 +1,8 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
 import { BALANCE } from '@game/gameState/time';
-import t from 'vylos:texts/reactor/actions';
+import texts from 'vylos:texts';
+const t = texts.reactor.actions;
 
 const repairReactor = {
   id: 'repair_reactor',

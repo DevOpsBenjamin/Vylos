@@ -1,7 +1,8 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
 import type { CrewMember } from '@game/gameState/crews';
-import t from 'vylos:texts/quarters/actions';
+import texts from 'vylos:texts';
+const t = texts.quarters.actions;
 
 function hasAvailableConversation(member: CrewMember & Record<string, unknown>): boolean {
   if (member.status !== 'idle') return false;

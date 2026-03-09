@@ -1,7 +1,8 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
 import { BALANCE } from '@game/gameState/time';
-import t from 'vylos:texts/quarters/actions';
+import texts from 'vylos:texts';
+const t = texts.quarters.actions;
 
 const rest = {
   id: 'rest',

@@ -1,6 +1,7 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
-import t from 'vylos:texts/quarters/actions';
+import texts from 'vylos:texts';
+const t = texts.quarters.actions;
 
 const eat = {
   id: 'eat',

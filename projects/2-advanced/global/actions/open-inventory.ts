@@ -1,6 +1,7 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
-import t from 'vylos:texts/global/actions';
+import texts from 'vylos:texts';
+const t = texts.global.actions;
 
 const openInventory = {
   id: 'open_inventory',

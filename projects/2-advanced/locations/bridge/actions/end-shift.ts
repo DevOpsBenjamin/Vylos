@@ -1,7 +1,8 @@
 import type { VylosAction, VylosActionAPI } from '@vylos/core';
 import type { GameState } from '@game/gameState';
 import { advanceTime, BALANCE } from '@game/gameState/time';
-import t from 'vylos:texts/bridge/actions';
+import texts from 'vylos:texts';
+const t = texts.bridge.actions;
 
 const endShift = {
   id: 'end_shift',
