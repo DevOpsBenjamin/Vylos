@@ -76,7 +76,7 @@ export class EventManager {
   }
 
   /** Get all ready drawable events at the current location whose conditions are met */
-  getDrawableEvents(state: VylosGameState, resolveText?: (text: string | Record<string, string>) => string): DrawableEventEntry[] {
+  getDrawableEvents(state: VylosGameState): DrawableEventEntry[] {
     const result: DrawableEventEntry[] = [];
     for (const entry of this.events.values()) {
       if (entry.status !== EventStatus.Ready) continue;
@@ -84,12 +84,9 @@ export class EventManager {
       if (entry.event.locationId && entry.event.locationId !== state.locationId) continue;
       if (entry.event.conditions && !entry.event.conditions(state)) continue;
       const draw = entry.event.draw;
-      const label = typeof draw.label === 'string'
-        ? draw.label
-        : resolveText?.(draw.label) ?? Object.values(draw.label)[0] ?? entry.event.id;
       result.push({
         id: entry.event.id,
-        label,
+        label: draw.label,
         position: draw.position ?? 'center',
         icon: draw.icon,
       });

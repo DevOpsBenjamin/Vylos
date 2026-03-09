@@ -3,6 +3,11 @@ import type { TextEntry } from '../engine/types';
 
 const currentLanguage = ref<string>('en');
 
+/** Update the reactive language ref. Called from setup when SettingsManager detects a change. */
+export function setGlobalLanguage(lang: string): void {
+  currentLanguage.value = lang;
+}
+
 /**
  * Composable for language management.
  */

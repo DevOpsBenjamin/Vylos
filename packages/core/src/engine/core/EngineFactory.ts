@@ -23,6 +23,8 @@ export interface CreateEngineOptions {
   callbacks: EventRunnerCallbacks;
   /** Project ID for storage isolation (default: 'default') */
   projectId?: string;
+  /** Called when the language setting changes (wires SettingsManager → LanguageManager) */
+  onLanguageChange?: (lang: string) => void;
 }
 
 /**
@@ -41,7 +43,7 @@ export function createEngine(options: CreateEngineOptions): Engine {
   // Storage + persistence managers
   const storage = new VylosStorage(options.projectId ?? 'default');
   const saveManager = new SaveManager(storage);
-  const settingsManager = new SettingsManager(storage);
+  const settingsManager = new SettingsManager(storage, options.onLanguageChange);
 
   // Apply plugin setup (register items, categories, etc.)
   if (options.plugin?.setup) {

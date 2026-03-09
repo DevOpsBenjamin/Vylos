@@ -21,9 +21,11 @@ export class SettingsManager {
   private storage: VylosStorage;
   private ready: Promise<void>;
   private current: EngineSettings = { ...DEFAULT_SETTINGS };
+  private onLanguageChange?: (lang: string) => void;
 
-  constructor(storage: VylosStorage) {
+  constructor(storage: VylosStorage, onLanguageChange?: (lang: string) => void) {
     this.storage = storage;
+    this.onLanguageChange = onLanguageChange;
     this.ready = this.init();
   }
 
@@ -53,12 +55,16 @@ export class SettingsManager {
   /** Update settings and persist */
   async update(partial: Partial<EngineSettings>): Promise<void> {
     await this.ready;
+    const prevLang = this.current.language;
     this.current = JSON.parse(JSON.stringify({ ...this.current, ...partial }));
     try {
       await this.storage.put(STORE, SETTINGS_KEY, this.current);
       logger.debug('Settings saved');
     } catch (error) {
       logger.error('Settings save failed:', error);
+    }
+    if (this.current.language !== prevLang && this.onLanguageChange) {
+      this.onLanguageChange(this.current.language);
     }
   }
 

@@ -7,14 +7,14 @@
       <button
         v-for="action in engineState.availableActions"
         :key="action.id"
-        :title="action.label"
+        :title="resolveText(action.label)"
         class="act-btn group"
         @click="engine?.navigationManager.selectAction(action.id)"
       >
         <div class="act-btn__bg"></div>
         <div class="act-btn__ring"></div>
         <div class="act-btn__label">
-          <span class="act-btn__text">{{ action.label }}</span>
+          <span class="act-btn__text">{{ resolveText(action.label) }}</span>
         </div>
         <div class="act-btn__gradient"></div>
       </button>
@@ -26,10 +26,12 @@
 import { inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { useLanguage } from '../../composables/useLanguage';
 import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const { resolveText } = useLanguage();
 </script>
 
 <style scoped>

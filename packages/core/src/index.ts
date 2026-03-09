@@ -50,7 +50,7 @@ export { VylosStorage } from './engine/storage/VylosStorage';
 // Composables
 export { useEngine, ENGINE_INJECT_KEY } from './composables/useEngine';
 export { useGameState } from './composables/useGameState';
-export { useLanguage } from './composables/useLanguage';
+export { useLanguage, setGlobalLanguage } from './composables/useLanguage';
 export { CONFIG_INJECT_KEY } from './composables/useConfig';
 
 // Components — app

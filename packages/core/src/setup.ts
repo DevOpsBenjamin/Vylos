@@ -9,6 +9,7 @@ import { CONFIG_INJECT_KEY } from './composables/useConfig';
 import { LocationManager } from './engine/managers/LocationManager';
 import { ActionManager } from './engine/managers/ActionManager';
 import { LanguageManager } from './engine/managers/LanguageManager';
+import { setGlobalLanguage } from './composables/useLanguage';
 import { EnginePhase } from './engine/types/engine';
 import { attachDevConsole } from './engine/utils/devConsole';
 import type { VylosConfig } from './engine/types/config';
@@ -73,7 +74,11 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
   actionManager.registerAll(actions);
 
   const callbacks = buildCallbacks(engineState, gameStore, locationManager, resolveText);
-  const engine = createEngine({ callbacks, projectId: config.id, plugin });
+  const onLanguageChange = (lang: string) => {
+    languageManager?.setLanguage(lang);
+    setGlobalLanguage(lang);
+  };
+  const engine = createEngine({ callbacks, projectId: config.id, plugin, onLanguageChange });
   attachDevConsole(engine, () => gameStore.getState(), config);
 
   app.provide(ENGINE_INJECT_KEY, engine);
@@ -90,19 +95,19 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
       const locs = locationManager.getAccessibleFrom(state.locationId, state as TState);
       engineState.setLocations(locs.map(l => ({
         id: l.id,
-        name: resolveText(l.name),
+        name: l.name,
         accessible: true,
       })));
 
       const acts = actionManager.getAvailable(state.locationId, state);
       engineState.setActions(acts.map(a => ({
         id: a.id,
-        label: resolveText(a.label),
+        label: a.label,
         locationId: a.locationId ?? '',
       })));
 
       engineState.setDrawableEvents(
-        engine.eventManager.getDrawableEvents(state, resolveText),
+        engine.eventManager.getDrawableEvents(state),
       );
 
       const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
@@ -170,7 +175,9 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
 
 function createLanguageManager(config: VylosConfig): LanguageManager {
   const lm = new LanguageManager();
-  lm.setLanguage(config.defaultLanguage ?? config.languages[0].code);
+  const lang = config.defaultLanguage ?? config.languages[0].code;
+  lm.setLanguage(lang);
+  setGlobalLanguage(lang);
   return lm;
 }
 

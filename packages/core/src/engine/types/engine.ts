@@ -1,4 +1,4 @@
-import type { DrawableEventEntry } from './events';
+import type { DrawableEventEntry, TextEntry } from './events';
 import type { VylosCharacter } from './dialogue';
 
 /** A single foreground layer (character sprite, object, etc.) */
@@ -79,13 +79,13 @@ export interface ChoiceOption {
 
 export interface ActionEntry {
   id: string;
-  label: string;
+  label: string | TextEntry;
   locationId: string;
 }
 
 export interface LocationEntry {
   id: string;
-  name: string;
+  name: string | TextEntry;
   accessible: boolean;
 }
 

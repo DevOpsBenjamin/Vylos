@@ -6,14 +6,14 @@
     <button
       v-for="entry in engineState.drawableEvents"
       :key="entry.id"
-      :title="entry.label"
+      :title="resolveText(entry.label)"
       :class="['draw-btn', `draw-btn--${entry.position}`]"
       @click.stop="engine?.navigationManager.selectDrawableEvent(entry.id)"
     >
       <div class="draw-btn__bg"></div>
       <div class="draw-btn__content">
         <span v-if="entry.icon" class="draw-btn__icon">{{ entry.icon }}</span>
-        <span class="draw-btn__label">{{ entry.label }}</span>
+        <span class="draw-btn__label">{{ resolveText(entry.label) }}</span>
       </div>
     </button>
   </div>
@@ -23,10 +23,12 @@
 import { inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { useLanguage } from '../../composables/useLanguage';
 import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const { resolveText } = useLanguage();
 </script>
 
 <style scoped>

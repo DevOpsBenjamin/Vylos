@@ -8,14 +8,14 @@
         v-for="location in engineState.availableLocations"
         :key="location.id"
         :disabled="!location.accessible"
-        :title="location.name"
+        :title="resolveText(location.name)"
         class="loc-btn group"
         @click="engine?.navigationManager.selectLocation(location.id)"
       >
         <div class="loc-btn__bg"></div>
         <div class="loc-btn__ring"></div>
         <div class="loc-btn__label">
-          <span class="loc-btn__text">{{ location.name }}</span>
+          <span class="loc-btn__text">{{ resolveText(location.name) }}</span>
         </div>
         <div class="loc-btn__gradient"></div>
       </button>
@@ -27,10 +27,12 @@
 import { inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { useLanguage } from '../../composables/useLanguage';
 import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const { resolveText } = useLanguage();
 </script>
 
 <style scoped>

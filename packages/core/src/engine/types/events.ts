@@ -83,7 +83,7 @@ export interface DrawableEventConfig {
 /** A drawable event entry for UI rendering */
 export interface DrawableEventEntry {
   id: string;
-  label: string;
+  label: string | TextEntry;
   position: 'left' | 'center' | 'right';
   icon?: string;
 }
