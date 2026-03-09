@@ -1,6 +1,6 @@
 import type { VylosPlugin } from '@vylos/core';
+import { useGameStore } from '@game/gameState';
 
-// TODO: Import useGameStore from '@game/gameStore' once implemented
 // TODO: Import scanner and inventory plugin setup once implemented
 
 /**
@@ -20,8 +20,7 @@ const plugin: VylosPlugin = {
     // LocationOverlay: AegisLocationOverlay,
     // Background: AegisBackground,
   },
-  // TODO: Wire custom game store
-  // gameStore: (pinia) => useGameStore(pinia),
+  gameStore: (pinia) => useGameStore(pinia),
 };
 
 export default plugin;

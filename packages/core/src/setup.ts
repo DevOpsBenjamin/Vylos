@@ -170,7 +170,7 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
 
 function createLanguageManager(config: VylosConfig): LanguageManager {
   const lm = new LanguageManager();
-  lm.setLanguage(config.defaultLanguage ?? config.languages[0]);
+  lm.setLanguage(config.defaultLanguage ?? config.languages[0].code);
   return lm;
 }
 

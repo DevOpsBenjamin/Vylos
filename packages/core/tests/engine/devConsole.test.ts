@@ -6,7 +6,7 @@ const baseConfig: VylosConfig = {
   name: 'Test Game',
   id: 'test-game',
   version: '1.2.3',
-  languages: ['en'],
+  languages: [{ code: 'en', label: 'English' }],
   defaultLanguage: 'en',
   defaultLocation: 'home',
   resolution: { width: 1920, height: 1080 },

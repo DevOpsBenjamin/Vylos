@@ -1,8 +1,13 @@
+export interface LanguageEntry {
+  code: string;
+  label: string;
+}
+
 export interface VylosConfig {
   name: string;
   id: string;
   version: string;
-  languages: string[];
+  languages: LanguageEntry[];
   defaultLanguage: string;
   defaultLocation: string;
   resolution: { width: number; height: number };

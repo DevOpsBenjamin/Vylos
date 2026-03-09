@@ -4,9 +4,9 @@ export default {
   name: 'Aegis Protocol',
   id: 'aegis',
   version: '1.0.0',
-  languages: ['en', 'fr'],
+  languages: [{ code: 'en', label: 'English' }, { code: 'fr', label: 'Français' }],
   defaultLanguage: 'fr',
   defaultLocation: 'bridge',
-  startGameTime: 8,
+  startGameTime: 6,
   resolution: { width: 1920, height: 1080 },
 } satisfies VylosConfig;

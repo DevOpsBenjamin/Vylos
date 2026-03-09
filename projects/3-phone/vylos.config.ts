@@ -4,7 +4,7 @@ export default {
   name: 'LifeOS',
   id: 'phone',
   version: '0.1.0',
-  languages: ['en'],
+  languages: [{ code: 'en', label: 'English' }],
   defaultLanguage: 'en',
   defaultLocation: 'homescreen',
   startGameTime: 22.5,

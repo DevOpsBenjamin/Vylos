@@ -78,10 +78,12 @@
 import { reactive, inject, onMounted } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { CONFIG_INJECT_KEY } from '../../composables/useConfig';
 import type { Engine } from '../../engine/core/Engine';
 import type { EngineSettings } from '../../engine/types';
 
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const config = inject(CONFIG_INJECT_KEY);
 const engineState = useEngineStateStore();
 
 // Local copy — only committed on Apply
@@ -93,7 +95,7 @@ const local = reactive<EngineSettings>({
   fullscreen: false,
 });
 
-const languages = [{ code: 'en', label: 'English' }];
+const languages = config?.languages ?? [{ code: 'en', label: 'English' }];
 
 onMounted(() => {
   if (engine) {
