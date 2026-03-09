@@ -24,7 +24,7 @@ function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: 
     onSetForeground: vi.fn(),
     onSetLocation: vi.fn(),
     onClear: vi.fn(),
-    resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
+    normalizeText: vi.fn((text: unknown) => typeof text === 'string' ? { en: text } : text),
     getState: vi.fn(() => s),
     setState: vi.fn((newState: VylosGameState) => { Object.assign(s, newState); }),
   };
@@ -53,7 +53,7 @@ describe('EventRunner', () => {
 
       // Wait a tick for the say to be called
       await vi.waitFor(() => {
-        expect(callbacks.onSay).toHaveBeenCalledWith('Hello world', null);
+        expect(callbacks.onSay).toHaveBeenCalledWith({ en: 'Hello world' }, null, undefined);
       });
 
       // Simulate player clicking continue
@@ -75,7 +75,7 @@ describe('EventRunner', () => {
       const promise = runner.executeEvent(event);
 
       await vi.waitFor(() => {
-        expect(callbacks.onSay).toHaveBeenCalledWith('Hi!', barista);
+        expect(callbacks.onSay).toHaveBeenCalledWith({ en: 'Hi!' }, barista, undefined);
       });
 
       runner.resolveWait();
@@ -83,7 +83,7 @@ describe('EventRunner', () => {
     });
 
     it('interpolates variables', async () => {
-      callbacks.resolveText = vi.fn((t: unknown) => typeof t === 'string' ? t : 'resolved');
+      callbacks.normalizeText = vi.fn((t: unknown) => typeof t === 'string' ? { en: t } : t);
 
       const event: VylosEvent = {
         id: 'test-vars',
@@ -95,7 +95,11 @@ describe('EventRunner', () => {
       const promise = runner.executeEvent(event);
 
       await vi.waitFor(() => {
-        expect(callbacks.onSay).toHaveBeenCalledWith('Hello Bob!', null);
+        expect(callbacks.onSay).toHaveBeenCalledWith(
+          { en: 'Hello {name}!' },
+          null,
+          { name: 'Bob' },
+        );
       });
 
       runner.resolveWait();
@@ -157,7 +161,7 @@ describe('EventRunner', () => {
   describe('inline choice branching', () => {
     it('supports if/else based on choice result', async () => {
       const spoken: string[] = [];
-      callbacks.onSay = vi.fn((_text: string) => { spoken.push(_text); });
+      callbacks.onSay = vi.fn((text: Record<string, string>) => { spoken.push(text.en ?? Object.values(text)[0]); });
 
       const event: VylosEvent = {
         id: 'test-branch',
@@ -233,7 +237,7 @@ describe('EventRunner', () => {
   describe('end()', () => {
     it('ends event cleanly', async () => {
       const spoken: string[] = [];
-      callbacks.onSay = vi.fn((t: string) => spoken.push(t));
+      callbacks.onSay = vi.fn((t: Record<string, string>) => spoken.push(t.en ?? Object.values(t)[0]));
 
       const event: VylosEvent = {
         id: 'test-end',

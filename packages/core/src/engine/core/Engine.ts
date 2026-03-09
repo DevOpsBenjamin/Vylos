@@ -357,6 +357,7 @@ export class Engine {
       console.log('Live Dialogue:', {
         speaker: runner.liveDialogue.speaker?.name ?? '(narrator)',
         text: runner.liveDialogue.text,
+        variables: runner.liveDialogue.variables,
       });
     }
 

@@ -1,6 +1,31 @@
 Release Notes — @vylos/core + @vylos/cli
 
 ========================================
+v1.2.1
+========================================
+
+BREAKING CHANGES:
+- Internal UI types (DialogueState.text, ChoiceOption.text, ActionEntry.label,
+  LocationEntry.name, DrawableEventEntry.label) changed from `string` to `TextEntry`.
+  Components that override DialogueBox, ChoicePanel, ActionOverlay, LocationOverlay,
+  or DrawableOverlay must now call `resolveText()` from `useLanguage()` on these fields.
+- EventRunnerCallbacks: `resolveText` replaced by `normalizeText` (string|TextEntry → TextEntry).
+  `onSay` signature: (text: TextEntry, speaker, variables?) instead of (text: string, speaker).
+  `onChoice` signature: (options: ChoiceOption[]) — ChoiceOption.text is now TextEntry.
+- EventManager.getDrawableEvents() now requires a `normalizeText` parameter.
+
+NEW:
+- Full reactive i18n: language changes in settings instantly update ALL displayed text
+  (dialogue, choices, actions, locations, drawable events, history) without navigation.
+- DialogueState.variables: interpolation variables stored separately, resolved at render time.
+- setGlobalLanguage() exported from @vylos/core for override authors.
+
+FIXES:
+- Language change in settings had no effect (SettingsManager → LanguageManager not wired)
+- Language change required navigation to update overlays (pre-resolved strings in store)
+- History browsing showed text in the language it was originally displayed in, not current language
+
+========================================
 v1.2.0
 ========================================
 

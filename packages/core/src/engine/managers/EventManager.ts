@@ -1,4 +1,4 @@
-import type { VylosEvent, VylosGameState, DrawableEventEntry } from '../types';
+import type { VylosEvent, VylosGameState, DrawableEventEntry, TextEntry } from '../types';
 import { EventStatus } from '../types';
 import { logger } from '../utils/logger';
 
@@ -76,7 +76,7 @@ export class EventManager {
   }
 
   /** Get all ready drawable events at the current location whose conditions are met */
-  getDrawableEvents(state: VylosGameState): DrawableEventEntry[] {
+  getDrawableEvents(state: VylosGameState, normalizeText: (entry: string | TextEntry) => TextEntry): DrawableEventEntry[] {
     const result: DrawableEventEntry[] = [];
     for (const entry of this.events.values()) {
       if (entry.status !== EventStatus.Ready) continue;
@@ -86,7 +86,7 @@ export class EventManager {
       const draw = entry.event.draw;
       result.push({
         id: entry.event.id,
-        label: draw.label,
+        label: normalizeText(draw.label),
         position: draw.position ?? 'center',
         icon: draw.icon,
       });

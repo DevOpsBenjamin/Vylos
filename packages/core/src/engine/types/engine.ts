@@ -57,9 +57,10 @@ export interface EngineState {
 }
 
 export interface DialogueState {
-  text: string;
+  text: TextEntry;
   speaker: VylosCharacter | null;
   isNarration: boolean;
+  variables?: Record<string, string | number>;
 }
 
 export interface ChoiceState {
@@ -72,20 +73,20 @@ export interface ChoiceState {
 }
 
 export interface ChoiceOption {
-  text: string;
+  text: TextEntry;
   value: string;
   disabled?: boolean;
 }
 
 export interface ActionEntry {
   id: string;
-  label: string | TextEntry;
+  label: TextEntry;
   locationId: string;
 }
 
 export interface LocationEntry {
   id: string;
-  name: string | TextEntry;
+  name: TextEntry;
   accessible: boolean;
 }
 

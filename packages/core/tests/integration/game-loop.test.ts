@@ -33,7 +33,7 @@ function makeCallbacks(state?: VylosGameState): EventRunnerCallbacks & { state: 
     onSetForeground: vi.fn(),
     onSetLocation: vi.fn(),
     onClear: vi.fn(),
-    resolveText: vi.fn((text: unknown) => typeof text === 'string' ? text : 'resolved'),
+    normalizeText: vi.fn((text: unknown) => typeof text === 'string' ? { en: text } : text),
     getState: vi.fn(() => s),
     setState: vi.fn((newState: VylosGameState) => { Object.assign(s, newState); }),
   };
@@ -75,11 +75,11 @@ describe('Game loop integration', () => {
     const runPromise = engine.run([event], callbacks.getState);
 
     // Wait for first say
-    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith('Hello', null));
+    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith({ en: 'Hello' }, null, undefined));
     eventRunner.resolveWait();
 
     // Wait for second say
-    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith('World', null));
+    await vi.waitFor(() => expect(callbacks.onSay).toHaveBeenCalledWith({ en: 'World' }, null, undefined));
     eventRunner.resolveWait();
 
     // Event complete — now we need to handle navigation wait
@@ -120,7 +120,7 @@ describe('Game loop integration', () => {
     });
 
     const spoken: string[] = [];
-    callbacks.onSay = vi.fn((text: string) => spoken.push(text));
+    callbacks.onSay = vi.fn((text: Record<string, string>) => spoken.push(text.en ?? Object.values(text)[0]));
 
     const events: VylosEvent[] = [
       {

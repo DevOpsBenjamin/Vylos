@@ -22,7 +22,7 @@
           class="text-white text-[2cqw] leading-relaxed m-0"
           :class="{ 'italic text-white/80': engineState.dialogue.isNarration }"
         >
-          {{ engineState.dialogue.text }}
+          {{ dialogueText }}
         </p>
 
         <!-- Continue / History indicator -->
@@ -43,6 +43,7 @@
 import { computed } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { useLanguage } from '../../composables/useLanguage';
+import { interpolate } from '../../engine/utils/TimeHelper';
 
 const engineState = useEngineStateStore();
 const { resolveText } = useLanguage();
@@ -51,6 +52,13 @@ const speakerName = computed(() => {
   const speaker = engineState.dialogue?.speaker;
   if (!speaker) return '';
   return resolveText(speaker.name);
+});
+
+const dialogueText = computed(() => {
+  const d = engineState.dialogue;
+  if (!d) return '';
+  const text = resolveText(d.text);
+  return d.variables ? interpolate(text, d.variables) : text;
 });
 </script>
 

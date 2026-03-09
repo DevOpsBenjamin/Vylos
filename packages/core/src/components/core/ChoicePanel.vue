@@ -16,7 +16,7 @@
           ]"
           @click="handleChoice(option.value)"
         >
-          {{ option.text }}
+          {{ resolveText(option.text) }}
         </button>
       </div>
     </div>
@@ -27,10 +27,12 @@
 import { computed, inject } from 'vue';
 import { useEngineStateStore } from '../../stores/engineState';
 import { ENGINE_INJECT_KEY } from '../../composables/useEngine';
+import { useLanguage } from '../../composables/useLanguage';
 import type { Engine } from '../../engine/core/Engine';
 
 const engineState = useEngineStateStore();
 const engine = inject<Engine>(ENGINE_INJECT_KEY);
+const { resolveText } = useLanguage();
 
 const isRedoMode = computed(() => engineState.choices?.historyStepIndex != null);
 

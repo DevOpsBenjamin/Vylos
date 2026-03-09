@@ -25,9 +25,9 @@ import { interpolate } from '../utils/TimeHelper';
 
 export interface EventRunnerCallbacks {
   /** Called when dialogue should be displayed */
-  onSay(text: string, speaker: VylosCharacter | null): void;
+  onSay(text: TextEntry, speaker: VylosCharacter | null, variables?: Record<string, string | number>): void;
   /** Called when choices should be displayed */
-  onChoice(options: Array<{ text: string; value: string; disabled?: boolean }>): void;
+  onChoice(options: ChoiceOption[]): void;
   /** Called to update background */
   onSetBackground(path: string): void;
   /** Called to update foreground */
@@ -36,8 +36,8 @@ export interface EventRunnerCallbacks {
   onSetLocation(locationId: string): void;
   /** Called to clear dialogue/choices (between steps) */
   onClear(): void;
-  /** Resolve a TextEntry to a string using current language */
-  resolveText(entry: string | TextEntry): string;
+  /** Normalize a string | TextEntry to a TextEntry */
+  normalizeText(entry: string | TextEntry): TextEntry;
   /** Get current game state */
   getState(): VylosGameState;
   /** Set game state (after rollback) */
@@ -73,7 +73,7 @@ export class EventRunner implements VylosEventAPI {
   /** History browsing index (-1 = live, not browsing) */
   private browseIndex = -1;
   /** The live dialogue being displayed when history browsing started */
-  private liveDialogue: { text: string; speaker: VylosCharacter | null } | null = null;
+  private liveDialogue: DialogueState | null = null;
   /** Current background path (tracked for checkpoint storage) */
   private currentBackground: string | null = null;
   /** Current foreground layers (tracked for checkpoint storage) */
@@ -124,7 +124,7 @@ export class EventRunner implements VylosEventAPI {
   }
 
   /** Get the live dialogue for restoring display after exiting history */
-  getLiveDialogue(): { text: string; speaker: VylosCharacter | null } | null {
+  getLiveDialogue(): DialogueState | null {
     return this.liveDialogue;
   }
 
@@ -267,14 +267,8 @@ export class EventRunner implements VylosEventAPI {
   async say(text: string | TextEntry, options?: SayOptions): Promise<void> {
     this.checkInterrupt();
 
-    let resolvedText = this.callbacks.resolveText(text);
-
-    // Interpolate variables
-    if (options?.variables) {
-      resolvedText = interpolate(resolvedText, options.variables);
-    }
-
-    // Resolve speaker
+    const normalizedText = this.callbacks.normalizeText(text);
+    const variables = options?.variables;
     const speaker: VylosCharacter | null = options?.from ?? null;
 
     // If replaying, fast-forward: capture checkpoint and resolve immediately
@@ -284,11 +278,13 @@ export class EventRunner implements VylosEventAPI {
       return;
     }
 
+    const dialogue: DialogueState = { text: normalizedText, speaker, isNarration: !speaker, variables };
+
     // Track the live dialogue (for history browsing restoration)
-    this.liveDialogue = { text: resolvedText, speaker };
+    this.liveDialogue = dialogue;
 
     // Show dialogue in UI
-    this.callbacks.onSay(resolvedText, speaker);
+    this.callbacks.onSay(normalizedText, speaker, variables);
 
     // Wait for player to click continue
     await this.waitManager.wait();
@@ -302,7 +298,7 @@ export class EventRunner implements VylosEventAPI {
       'say' as CheckpointType,
       undefined,
       {
-        dialogue: { text: resolvedText, speaker, isNarration: !speaker },
+        dialogue,
         background: this.currentBackground,
         foreground: this.currentForeground,
       },
@@ -319,9 +315,9 @@ export class EventRunner implements VylosEventAPI {
     // Filter by condition
     const available = items.filter(item => !item.condition || item.condition());
 
-    // Resolve text entries
-    const resolvedOptions = available.map(item => ({
-      text: this.callbacks.resolveText(item.text),
+    // Normalize text entries to TextEntry
+    const normalizedOptions: ChoiceOption[] = available.map(item => ({
+      text: this.callbacks.normalizeText(item.text),
       value: item.value,
       disabled: item.disabled,
     }));
@@ -336,11 +332,11 @@ export class EventRunner implements VylosEventAPI {
       }
       // Fallback: if no stored result, pick first option
       logger.warn('No stored choice result during replay, using first option');
-      return resolvedOptions[0].value as T;
+      return normalizedOptions[0].value as T;
     }
 
     // Show choices in UI
-    this.callbacks.onChoice(resolvedOptions);
+    this.callbacks.onChoice(normalizedOptions);
 
     // Wait for player selection
     const result = await this.waitManager.wait<string>();
@@ -350,7 +346,7 @@ export class EventRunner implements VylosEventAPI {
       this.callbacks.getState(),
       'choice' as CheckpointType,
       result,
-      { choiceOptions: resolvedOptions, foreground: this.currentForeground },
+      { choiceOptions: normalizedOptions, foreground: this.currentForeground },
     );
 
     this.callbacks.onClear();
@@ -479,7 +475,7 @@ export class EventRunner implements VylosEventAPI {
     interrupted: boolean;
     browsingHistory: boolean;
     browseIndex: number;
-    liveDialogue: { text: string; speaker: VylosCharacter | null } | null;
+    liveDialogue: DialogueState | null;
     checkpoints: { count: number; isReplaying: boolean; replayStep: number };
     hasPendingRedo: boolean;
     currentBackground: string | null;

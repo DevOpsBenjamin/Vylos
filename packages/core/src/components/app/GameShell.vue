@@ -110,11 +110,7 @@ function applyHistoryStep(step: HistoryStep): void {
 function restoreLiveDisplay(): void {
   const live = engine!.eventRunner.getLiveDialogue();
   if (live) {
-    engineState.setDialogue({
-      text: live.text,
-      speaker: live.speaker,
-      isNarration: !live.speaker,
-    });
+    engineState.setDialogue(live);
   }
   engineState.setChoices(null);
 }

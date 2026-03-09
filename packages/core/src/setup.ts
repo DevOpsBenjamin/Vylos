@@ -57,7 +57,7 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
   const languageManager = config.languages.length > 1
     ? createLanguageManager(config)
     : null;
-  const resolveText = buildResolveText(languageManager, config);
+  const normalizeText = buildNormalizeText(config);
 
   const locationManager = new LocationManager<TState>();
   locationManager.registerAll(locations);
@@ -73,7 +73,7 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
   const actionManager = new ActionManager();
   actionManager.registerAll(actions);
 
-  const callbacks = buildCallbacks(engineState, gameStore, locationManager, resolveText);
+  const callbacks = buildCallbacks(engineState, gameStore, locationManager, normalizeText);
   const onLanguageChange = (lang: string) => {
     languageManager?.setLanguage(lang);
     setGlobalLanguage(lang);
@@ -95,19 +95,19 @@ export function setupVylos<TState extends VylosGameState = VylosGameState>(optio
       const locs = locationManager.getAccessibleFrom(state.locationId, state as TState);
       engineState.setLocations(locs.map(l => ({
         id: l.id,
-        name: l.name,
+        name: normalizeText(l.name),
         accessible: true,
       })));
 
       const acts = actionManager.getAvailable(state.locationId, state);
       engineState.setActions(acts.map(a => ({
         id: a.id,
-        label: a.label,
+        label: normalizeText(a.label),
         locationId: a.locationId ?? '',
       })));
 
       engineState.setDrawableEvents(
-        engine.eventManager.getDrawableEvents(state),
+        engine.eventManager.getDrawableEvents(state, normalizeText),
       );
 
       const bg = locationManager.resolveBackground(state.locationId, state.gameTime);
@@ -181,18 +181,12 @@ function createLanguageManager(config: VylosConfig): LanguageManager {
   return lm;
 }
 
-function buildResolveText(
-  languageManager: LanguageManager | null,
+function buildNormalizeText(
   config: VylosConfig,
-): (entry: string | TextEntry) => string {
-  if (languageManager) {
-    return (entry) => languageManager.resolve(entry);
-  }
-  const lang = config.defaultLanguage ?? 'en';
+): (entry: string | TextEntry) => TextEntry {
+  const defaultLang = config.defaultLanguage ?? 'en';
   return (entry) =>
-    typeof entry === 'string'
-      ? entry
-      : entry[lang] ?? Object.values(entry)[0] ?? '';
+    typeof entry === 'string' ? { [defaultLang]: entry } : entry;
 }
 
 type EngineStateStore = ReturnType<typeof useEngineStateStore>;
@@ -201,11 +195,11 @@ function buildCallbacks(
   engineState: EngineStateStore,
   gameStore: VylosGameStore,
   locationManager: LocationManager,
-  resolveText: (entry: string | TextEntry) => string,
+  normalizeText: (entry: string | TextEntry) => TextEntry,
 ): EventRunnerCallbacks {
   return {
-    onSay(text: string, speaker: VylosCharacter | null) {
-      engineState.setDialogue({ text, speaker, isNarration: !speaker });
+    onSay(text, speaker, variables) {
+      engineState.setDialogue({ text, speaker, isNarration: !speaker, variables });
     },
     onChoice(options) {
       engineState.setChoices({ prompt: null, options });
@@ -227,7 +221,7 @@ function buildCallbacks(
       engineState.setDialogue(null);
       engineState.setChoices(null);
     },
-    resolveText,
+    normalizeText,
     getState() {
       return gameStore.getState();
     },
