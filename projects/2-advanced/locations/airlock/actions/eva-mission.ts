@@ -12,8 +12,7 @@ const evaMission: Action = {
   },
 
   execute(_engine, state) {
-    state.station.energy = Math.max(0, state.station.energy - 2);
-    state.crews.kael.stress = Math.max(0, state.crews.kael.stress - 10);
+    state.station.modules.airlock.actionState = 'eva';
   },
 };
 

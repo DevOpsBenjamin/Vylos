@@ -13,11 +13,7 @@ const healCrew: Action = {
   },
 
   execute(_engine, state) {
-    const members = [state.crews.elena, state.crews.jax, state.crews.kael];
-    const injured = members.find((m) => m.status === 'injured');
-    if (injured) {
-      injured.status = 'idle';
-    }
+    state.station.modules.medbay.actionState = 'heal';
   },
 };
 

@@ -1,7 +1,9 @@
 import type { ModuleState } from './index';
 
+export type BridgeAction = 'none' | 'send_distress';
+
 export interface BridgeData extends ModuleState {
-    // Bridge-specific flags
+    actionState: BridgeAction;
 }
 
 export function createBridge(): BridgeData {
@@ -9,5 +11,6 @@ export function createBridge(): BridgeData {
         integrity: 100,
         powered: true,
         damaged: false,
+        actionState: 'none',
     };
 }

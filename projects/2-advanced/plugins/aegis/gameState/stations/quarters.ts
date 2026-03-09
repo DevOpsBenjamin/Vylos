@@ -1,7 +1,9 @@
 import type { ModuleState } from './index';
 
+export type QuartersAction = 'none' | 'rest' | 'eat' | 'talk';
+
 export interface QuartersData extends ModuleState {
-    // Quarters-specific flags
+    actionState: QuartersAction;
 }
 
 export function createQuarters(): QuartersData {
@@ -9,5 +11,6 @@ export function createQuarters(): QuartersData {
         integrity: 100,
         powered: true,
         damaged: false,
+        actionState: 'none',
     };
 }

@@ -1,7 +1,9 @@
 import type { VylosPlugin } from '@vylos/core';
 import { useGameStore } from '@game/gameState';
-
-// TODO: Import scanner and inventory plugin setup once implemented
+import AegisTopBar from '@game/components/AegisTopBar.vue';
+import AegisActionOverlay from '@game/components/AegisActionOverlay.vue';
+import AegisLocationOverlay from '@game/components/AegisLocationOverlay.vue';
+import AegisDialogueBox from '@game/components/AegisDialogueBox.vue';
 
 /**
  * Aegis Protocol plugin — composes station scanner, inventory,
@@ -13,12 +15,10 @@ const plugin: VylosPlugin = {
     // TODO: Initialize station scanner
   },
   components: {
-    // TODO: Override with Aegis-themed components
-    // DialogueBox: AegisDialogueBox,
-    // TopBar: AegisTopBar,
-    // ActionOverlay: AegisActionOverlay,
-    // LocationOverlay: AegisLocationOverlay,
-    // Background: AegisBackground,
+    TopBar: AegisTopBar,
+    ActionOverlay: AegisActionOverlay,
+    LocationOverlay: AegisLocationOverlay,
+    DialogueBox: AegisDialogueBox,
   },
   gameStore: (pinia) => useGameStore(pinia),
 };

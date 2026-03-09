@@ -1,5 +1,4 @@
 import type { Action } from '@game/types';
-import { BALANCE } from '@game/gameState/time';
 import texts from 'vylos:texts';
 const t = texts.quarters.actions;
 
@@ -14,11 +13,7 @@ const rest: Action = {
   },
 
   execute(_engine, state) {
-    const reduction = Math.abs(BALANCE.stressPerRest);
-    const members = [state.crews.elena, state.crews.jax, state.crews.kael];
-    for (const m of members) {
-      m.stress = Math.max(0, m.stress - reduction);
-    }
+    state.station.modules.quarters.actionState = 'rest';
   },
 };
 

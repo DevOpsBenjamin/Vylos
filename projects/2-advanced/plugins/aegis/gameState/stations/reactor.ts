@@ -1,7 +1,9 @@
 import type { ModuleState } from './index';
 
+export type ReactorAction = 'none' | 'repair' | 'reroute' | 'boost';
+
 export interface ReactorData extends ModuleState {
-    // Reactor-specific flags
+    actionState: ReactorAction;
 }
 
 export function createReactor(): ReactorData {
@@ -9,5 +11,6 @@ export function createReactor(): ReactorData {
         integrity: 100,
         powered: true,
         damaged: false,
+        actionState: 'none',
     };
 }

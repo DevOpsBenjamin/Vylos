@@ -1,7 +1,6 @@
 /**
- * Typed flags for event gating.
- * Using a typed interface instead of Record<string, boolean> gives
- * autocomplete and compile-time safety on every flag check.
+ * Typed flags for story progression and system events.
+ * Action triggers live on each module's `actionState` field instead.
  */
 export interface AegisFlags {
   // Solar flare tracking

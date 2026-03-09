@@ -1,7 +1,9 @@
 import type { ModuleState } from './index';
 
+export type MedbayAction = 'none' | 'heal' | 'craft' | 'counsel';
+
 export interface MedbayData extends ModuleState {
-    // Medbay-specific flags
+    actionState: MedbayAction;
 }
 
 export function createMedbay(): MedbayData {
@@ -9,5 +11,6 @@ export function createMedbay(): MedbayData {
         integrity: 100,
         powered: true,
         damaged: false,
+        actionState: 'none',
     };
 }

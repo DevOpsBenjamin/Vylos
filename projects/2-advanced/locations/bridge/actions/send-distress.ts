@@ -12,7 +12,7 @@ const sendDistress: Action = {
   },
 
   execute(_engine, state) {
-    state.flags.distressSignalSent = true;
+    state.station.modules.bridge.actionState = 'send_distress';
   },
 };
 

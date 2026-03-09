@@ -12,12 +12,7 @@ const boostEnergy: Action = {
   },
 
   execute(_engine, state) {
-    state.station.energy = Math.min(100, state.station.energy + 15);
-    const reactor = state.station.modules.reactor;
-    reactor.integrity = Math.max(0, reactor.integrity - 5);
-    if (reactor.integrity < 30) {
-      reactor.damaged = true;
-    }
+    state.station.modules.reactor.actionState = 'boost';
   },
 };
 

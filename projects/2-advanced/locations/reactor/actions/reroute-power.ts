@@ -12,7 +12,7 @@ const reroutePower: Action = {
   },
 
   execute(_engine, state) {
-    state.station.energy = Math.min(100, state.station.energy + 10);
+    state.station.modules.reactor.actionState = 'reroute';
   },
 };
 

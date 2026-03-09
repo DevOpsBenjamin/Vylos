@@ -1,5 +1,4 @@
 import type { Action } from '@game/types';
-import { BALANCE } from '@game/gameState/time';
 import texts from 'vylos:texts';
 const t = texts.reactor.actions;
 
@@ -13,12 +12,7 @@ const repairReactor: Action = {
   },
 
   execute(_engine, state) {
-    state.station.materials -= 5;
-    const reactor = state.station.modules.reactor;
-    reactor.integrity = Math.min(100, reactor.integrity + BALANCE.repairAmount);
-    if (reactor.integrity >= 30) {
-      reactor.damaged = false;
-    }
+    state.station.modules.reactor.actionState = 'repair';
   },
 };
 

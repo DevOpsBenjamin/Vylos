@@ -39,7 +39,11 @@ export function createTimeState(): TimeState {
 
 /**
  * Advance the shift phase by `ticks` steps.
- * Handles day rollover (night -> dawn = new day) and syncs gameTime.
+ * Handles day rollover (night -> dawn = new day), syncs gameTime,
+ * and applies per-phase resource drain + module degradation.
+ *
+ * Call this inside any action that "costs time".
+ * Free actions (talk, view status) should NOT call this.
  */
 export function advanceTime(state: GameState, ticks = 1): void {
   for (let i = 0; i < ticks; i++) {
@@ -53,5 +57,37 @@ export function advanceTime(state: GameState, ticks = 1): void {
     state.time.phase = PHASES[nextIndex];
     state.time.totalPhases++;
     state.gameTime = PHASE_HOURS[state.time.phase];
+
+    // --- Per-phase survival pressure ---
+    applyDrain(state);
   }
+}
+
+/** Apply resource drain and module degradation for one phase. */
+function applyDrain(state: GameState): void {
+  // Resource consumption
+  state.station.oxygen = clamp(state.station.oxygen + BALANCE.oxygenPerShift, 0, 100);
+  state.station.energy = clamp(state.station.energy + BALANCE.energyPerShift, 0, 100);
+
+  // Module degradation
+  const modules = state.station.modules;
+  for (const key of Object.keys(modules) as Array<keyof typeof modules>) {
+    const mod = modules[key];
+    mod.integrity = clamp(mod.integrity + BALANCE.degradationPerShift, 0, 100);
+    if (mod.integrity < 30) {
+      mod.damaged = true;
+    }
+  }
+
+  // Solar flare roll — schedule for a future day if not already scheduled
+  if (state.flags.solarFlareScheduledDay === 0 && Math.random() < 0.15) {
+    state.flags.solarFlareScheduledDay = state.time.day + 1;
+  }
+
+  // Clamp materials
+  state.station.materials = clamp(state.station.materials, 0, 50);
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.max(min, Math.min(max, value));
 }

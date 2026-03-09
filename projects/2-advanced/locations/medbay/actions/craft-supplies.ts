@@ -11,9 +11,8 @@ const craftSupplies: Action = {
     return state.station.materials >= 3;
   },
 
-  execute(engine, state) {
-    state.station.materials -= 3;
-    engine.inventory.add('default', 'med-supplies');
+  execute(_engine, state) {
+    state.station.modules.medbay.actionState = 'craft';
   },
 };
 
