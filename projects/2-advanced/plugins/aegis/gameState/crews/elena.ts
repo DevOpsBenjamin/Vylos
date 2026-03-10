@@ -15,7 +15,7 @@ export function createElena(): ElenaData {
         location: 'medbay',
         stress: 5,
         affinity: 50,
-        portrait: 'elena.webp',
+        portrait: 'assets/characters/elena.png',
         conversation1: false,
         conversation2: false,
     }

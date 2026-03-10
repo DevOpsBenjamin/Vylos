@@ -16,7 +16,7 @@ export function createJax(): JaxData {
         location: 'bridge',
         stress: 10,
         affinity: 40,
-        portrait: 'jax.webp',
+        portrait: 'assets/characters/jax.png',
         conversation1: false,
         conversation2: false,
         conversation3: false,

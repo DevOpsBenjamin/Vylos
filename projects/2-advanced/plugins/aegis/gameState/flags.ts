@@ -13,6 +13,9 @@ export interface AegisFlags {
   reactorRepaired: boolean;
   hullBreachSealed: boolean;
 
+  // Intro
+  introDone: boolean;
+
   // Crisis events
   oxygenCriticalTriggered: boolean;
   crewBreakdownTriggered: boolean;
@@ -20,6 +23,7 @@ export interface AegisFlags {
 
 export function createFlags(): AegisFlags {
   return {
+    introDone: false,
     solarFlareScheduledDay: 0,
     solarFlareDay: 0,
     solarFlareWarningGiven: false,
