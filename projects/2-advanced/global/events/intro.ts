@@ -16,10 +16,12 @@ const intro: Event = {
     await engine.say('You are Commander of the Aegis Station — a deep-space research outpost on the edge of charted territory.');
     await engine.say('The last thing you remember is a violent impact. An asteroid? A system failure? The details are hazy.');
 
+    const bg = 'assets/locations/bridge/bg/night.png';
+
     // --- Jax enters ---
     engine.setForeground([
-      { path: 'assets/locations/bridge/bg/night.png', scale: 1 },
-      { path: 'assets/characters/jax.png', scale: 0.8, x: 25, y: 10 },
+      { path: bg, scale: 1 },
+      { path: state.crews.jax.fullBody, scale: 0.8, x: 25, y: 10 },
     ]);
     await engine.say("Commander! You're awake. Thank god.", { from: state.crews.jax });
     await engine.say("The hull took a serious hit. I've patched what I could, but the reactor's running at half capacity.", { from: state.crews.jax });
@@ -27,8 +29,8 @@ const intro: Event = {
 
     // --- Elena enters ---
     engine.setForeground([
-      { path: 'assets/locations/bridge/bg/night.png', scale: 1 },
-      { path: 'assets/characters/elena.png', scale: 0.8, x: 25, y: 10 },
+      { path: bg, scale: 1 },
+      { path: state.crews.elena.fullBody, scale: 0.8, x: 25, y: 10 },
     ]);
     await engine.say("Commander, please don't move too quickly. You took a nasty hit to the head.", { from: state.crews.elena });
     await engine.say("I'm Elena, station medic. I've checked the crew — we lost contact with the rest of the station.", { from: state.crews.elena });
@@ -36,8 +38,8 @@ const intro: Event = {
 
     // --- Kael enters ---
     engine.setForeground([
-      { path: 'assets/locations/bridge/bg/night.png', scale: 1 },
-      { path: 'assets/characters/kael.png', scale: 0.8, x: 25, y: 10 },
+      { path: bg, scale: 1 },
+      { path: state.crews.kael.fullBody, scale: 0.8, x: 25, y: 10 },
     ]);
     await engine.say("So sleeping beauty finally wakes up.", { from: state.crews.kael });
     await engine.say("Kael. Scout and pilot. I'd fly us out of here, but the nav system is fried.", { from: state.crews.kael });

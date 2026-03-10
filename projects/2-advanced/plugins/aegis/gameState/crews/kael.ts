@@ -14,7 +14,8 @@ export function createKael(): KaelData {
         location: 'airlock',
         stress: 20,
         affinity: 30,
-        portrait: 'assets/characters/kael.png',
+        portrait: 'assets/characters/kael/portrait.png',
+        fullBody: 'assets/characters/kael/full.png',
         conversation1: false,
     }
 };

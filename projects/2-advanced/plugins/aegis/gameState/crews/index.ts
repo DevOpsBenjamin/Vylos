@@ -17,6 +17,7 @@ export interface CrewMember extends VylosCharacter {
     stress: number;
     affinity: number;
     portrait: string;
+    fullBody: string;
 }
 
 export interface Crews {

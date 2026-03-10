@@ -41,6 +41,13 @@
         >
           <span class="text-[1.2cqw]">STATION</span>
         </button>
+        <button
+          class="hud-btn"
+          :class="{ 'hud-btn--active': state.ui.crewAssignmentOpen }"
+          @click="togglePanel('crewAssignmentOpen')"
+        >
+          <span class="text-[1.2cqw]">ASSIGN</span>
+        </button>
       </div>
     </div>
 
@@ -52,24 +59,27 @@
     <!-- Panels (conditionally rendered) -->
     <CrewRosterPanel v-if="state.ui.crewRosterOpen" @close="state.ui.crewRosterOpen = false" />
     <StationOverviewPanel v-if="state.ui.stationOverviewOpen" @close="state.ui.stationOverviewOpen = false" />
+    <CrewAssignmentPanel v-if="state.ui.crewAssignmentOpen" @close="state.ui.crewAssignmentOpen = false" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useGameStore } from '@game/gameState';
-import type { AegisUIState } from '@game/gameState/ui';
 import ResourceGauge from './hud/ResourceGauge.vue';
 import CrewIndicator from './hud/CrewIndicator.vue';
 import CrewRosterPanel from './panels/CrewRosterPanel.vue';
 import StationOverviewPanel from './panels/StationOverviewPanel.vue';
+import CrewAssignmentPanel from './panels/CrewAssignmentPanel.vue';
 
 const gameStore = useGameStore();
 const state = computed(() => gameStore.state);
 
 const crewList = computed(() => [state.value.crews.jax, state.value.crews.elena, state.value.crews.kael]);
 
-function togglePanel(key: keyof AegisUIState) {
+type PanelKey = 'crewRosterOpen' | 'stationOverviewOpen' | 'crewAssignmentOpen' | 'scannerOpen' | 'inventoryOpen';
+
+function togglePanel(key: PanelKey) {
   gameStore.state.ui[key] = !gameStore.state.ui[key];
 }
 </script>
